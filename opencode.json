@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "username": "kplat",
+  "model": "deepseek-v4-flash",
+  "agent": {
+    "mentor": {
+      "description": "Senior Fullstack Engineer and Architectural Mentor",
+      "location": "file:///.mentor/skills/fullstack-mentor.md"
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "skills": {}
+}
