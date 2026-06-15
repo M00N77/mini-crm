@@ -1,9 +1,10 @@
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);
+create table if not exists users (
+    id serial primary key,
+    name varchar(100) not null,
+    email varchar(255) unique not null,
+    hashed_password varchar(60) not null,
+    created_at timestamp default now()
+    );
 
 CREATE TABLE IF NOT EXISTS tasks (
     id SERIAL PRIMARY KEY,
