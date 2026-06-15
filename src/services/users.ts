@@ -6,9 +6,9 @@ export async function getAllUsers() {
   return result.rows;
 }
 
-export async function getUserById(id: number) {
-  const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-  return result.rows[0] || null;
+export async  function getUserById(id: number) {
+    const result = await pool.query('select id,email,created_at from users where id=$1', [id]);
+    return result.rows[0] || null
 }
 
 export async function createUser(email:string,password:string) {
@@ -17,3 +17,10 @@ export async function createUser(email:string,password:string) {
     const result = await pool.query('INSERT INTO USERS (email,hashed_password) VALUES ($1,$2) RETURNING id,email,created_at',[email,hash]);
     return result.rows[0] || null;
 }
+
+export async function deleteUserById(id: number){
+    const result = await pool.query('DELETE FROM users WHERE id=$1 returning id', [id]);
+    return result.rows[0]||null;
+
+}
+
