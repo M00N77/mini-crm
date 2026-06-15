@@ -1,0 +1,7 @@
+POST localhost:3000/users
+Content-Type: application/json
+
+{
+  "email": "test@mail.ru",
+  "password": "123456"
+}
