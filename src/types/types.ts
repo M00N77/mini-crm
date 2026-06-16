@@ -6,3 +6,11 @@ export interface Task{
     status: string;
     createdAt: Date
 }
+export interface Contact {
+    id: number;
+    name: string;
+    email: string | null;
+    phone: string | null;
+    userId: number;
+    createdAt: Date;
+}

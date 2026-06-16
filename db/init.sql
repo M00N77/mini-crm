@@ -14,3 +14,12 @@ CREATE TABLE IF NOT EXISTS tasks (
     status VARCHAR(20) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS contacts (
+    id serial primary key,
+    name varchar(255) not null,
+    email varchar(255) ,
+    phone varchar(255) ,
+    user_id int references users(id) on DELETE cascade ,
+    created_at timestamp default now()
+);
