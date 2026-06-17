@@ -1,8 +1,8 @@
 import pool from "../db";
-import {Task} from "../types/types";
 
-export async function getAllTasksByUserId(id:number){
-    const result = await pool.query("SELECT id, title, description, user_id AS \"userId\", status, created_at AS \"createdAt\" FROM tasks where user_id = $1",[id]);
+
+export async function getAllTasksByUserId(userId:number){
+    const result = await pool.query("SELECT id, title, description, user_id AS \"userId\", status, created_at AS \"createdAt\" FROM tasks where user_id = $1",[userId]);
     return result.rows
 }
 

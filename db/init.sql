@@ -23,3 +23,10 @@ CREATE TABLE IF NOT EXISTS contacts (
     user_id int references users(id) on DELETE cascade ,
     created_at timestamp default now()
 );
+
+create table if not exists notes (
+    id serial primary key,
+    content text not null,
+    contact_id int references contacts(id) on delete cascade,
+    created_at timestamp default now()
+);

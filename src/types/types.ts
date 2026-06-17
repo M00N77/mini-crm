@@ -14,3 +14,10 @@ export interface Contact {
     userId: number;
     createdAt: Date;
 }
+
+export interface Notes {
+    id: number;
+    content: string;
+    contentId: number;
+    createdAt: Date;
+}
