@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import * as tasksService from '../services/tasks';
 
 export async function getTasks(req: Request, res: Response) {
-    const  id  = req.query.userId
-    const result = await tasksService.getAllTasksByUserId(Number(id));
+    const userId  = Number(req.params.userId);
+    const result = await tasksService.getAllTasksByUserId(userId);
 
     return res.status(200).send(result);
 }

@@ -3,7 +3,7 @@ import pool from './db';
 import usersRouter from './routes/users';
 import tasksRouter from './routes/tasks';
 import contactsRouter from "./routes/contacts";
-
+import notesRouter from './routes/notes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +12,7 @@ app.use(express.json());
 app.use('/users', usersRouter);
 app.use('/tasks', tasksRouter);
 app.use('/contacts',contactsRouter)
+app.use('/notes',notesRouter)
 
 app.listen(PORT, async () => {
   console.log("Server started on port 3000");
