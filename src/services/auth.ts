@@ -2,6 +2,26 @@ import pool from '../db'
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 
+interface TokenPayload {
+    userId: number;
+    email: string;
+    name?: string;
+}
+
+
+
+async function generateRefreshToken(payload: TokenPayload, secretKey:string) {
+    const userId = Number(payload.userId);
+    const timeForRefreshToken = {expiresIn: '7d'};
+    const refreshTokenExpiresIn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const refreshToken = jwt.sign(payload, secretKey, timeForRefreshToken);
+    const saltForRefreshToken = await bcrypt.genSalt(10);
+    const hashedRefreshToken = await bcrypt.hash(refreshToken,  saltForRefreshToken);
+    const addRefreshToken = await pool.query('insert into refresh_tokens (user_id,token_hash,expires_at) values ($1,$2,$3) returning *',[userId,hashedRefreshToken,refreshTokenExpiresIn])
+
+    return {refreshToken, hashedRefreshToken}
+}
+
 export async function registerUser(email: string, password: string,name: string) {
     const emailExists = await pool.query('select * from users where email=$1',[email]);
     if(emailExists.rows.length > 0) throw new Error('Email already exists');
@@ -9,15 +29,18 @@ export async function registerUser(email: string, password: string,name: string)
     const hashedPassword = await bcrypt.hash(password, salt);
     const result = await pool.query('insert into users (email,hashed_password,name) values($1,$2,$3) returning id,email,created_at',[email,hashedPassword,name]);
 
-    const payload = {
+    const payload : TokenPayload = {
         userId: result.rows[0].id,
         email: email,
         name:name
     }
 
     const secretKey = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
-    const accessToken = jwt.sign(payload, secretKey, {expiresIn: '1h'});
-    const refreshToken = jwt.sign(payload, secretKey, {expiresIn: '7d'});
+    const timeForAccessToken = {expiresIn: '1h'}
+    const accessToken = jwt.sign(payload, secretKey, timeForAccessToken);
+
+    const {refreshToken, hashedRefreshToken} = await generateRefreshToken(payload, secretKey);
+
     return {
         user: result.rows[0],
         accessToken : accessToken,
@@ -34,13 +57,13 @@ export async function loginUser(email: string, password: string) {
 
         const secretKey = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
 
-        const payload = {
+        const payload : TokenPayload = {
             userId: user.rows[0].id,
             email: email,
         }
 
         const accessToken = jwt.sign(payload, secretKey, {expiresIn: '1h'});
-        const refreshToken = jwt.sign(payload, secretKey, {expiresIn: '7d'});
+        const {refreshToken, hashedRefreshToken} = await generateRefreshToken(payload, secretKey);
 
         return {
             user: userWithoutPassword,
@@ -51,3 +74,21 @@ export async function loginUser(email: string, password: string) {
     throw new Error('User not found');
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

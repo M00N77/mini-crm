@@ -1,4 +1,4 @@
-import {virificationToken} from "../middleware/auth";
+import {verificationToken} from "../middleware/auth";
 
 declare global {
     namespace Express {
