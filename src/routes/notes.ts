@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import * as controllerNotes from '../controllers/notes';
-import { virificationToken } from '../middleware/auth';
+import { verificationToken } from '../middleware/auth';
 
 const router = Router();
 
-router.get('/', virificationToken, controllerNotes.getAllNotes)
-router.get('/:id', virificationToken, controllerNotes.getNote)
-router.post('/', virificationToken, controllerNotes.createNote)
-router.put('/:id', virificationToken, controllerNotes.updateNote)
-router.delete('/:id', virificationToken, controllerNotes.deleteNote)
+router.get('/', verificationToken, controllerNotes.getAllNotes)
+router.get('/:id', verificationToken, controllerNotes.getNote)
+router.post('/', verificationToken, controllerNotes.createNote)
+router.put('/:id', verificationToken, controllerNotes.updateNote)
+router.delete('/:id', verificationToken, controllerNotes.deleteNote)
 
 export default router;

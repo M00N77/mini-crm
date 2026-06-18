@@ -1,9 +1,7 @@
 import {Request,Response,NextFunction} from "express";
 import jwt from "jsonwebtoken";
 
-
-
-export async function virificationToken(req: Request, res: Response, next: NextFunction){
+export async function verificationToken(req: Request, res: Response, next: NextFunction){
     const {authorization} = req.headers;
 
     try {
@@ -16,12 +14,5 @@ export async function virificationToken(req: Request, res: Response, next: NextF
     } catch(e){
         res.status(401).send({error: e});
     }
-
-
-
-
-
-
-
-
 }
+

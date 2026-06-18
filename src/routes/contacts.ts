@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import * as contactsController from '../controllers/contacts';
-import { virificationToken } from '../middleware/auth';
+import { verificationToken } from '../middleware/auth';
 
 const router = Router();
 
-router.get('/', virificationToken, contactsController.getContacts)
-router.get('/:id', virificationToken, contactsController.getContactById)
-router.post('/', virificationToken, contactsController.createContact)
-router.put('/:id', virificationToken, contactsController.updateContact)
-router.delete('/:id', virificationToken, contactsController.deleteContact)
+router.get('/', verificationToken, contactsController.getContacts)
+router.get('/:id', verificationToken, contactsController.getContactById)
+router.post('/', verificationToken, contactsController.createContact)
+router.put('/:id', verificationToken, contactsController.updateContact)
+router.delete('/:id', verificationToken, contactsController.deleteContact)
 
 export default router;

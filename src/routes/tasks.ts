@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import * as tasksController from '../controllers/tasks';
-import { virificationToken } from '../middleware/auth';
+import { verificationToken } from '../middleware/auth';
 
 const router = Router();
 
-router.get('/', virificationToken, tasksController.getTasks);
-router.get('/:id', virificationToken, tasksController.getTaskByIdAndUserId)
-router.post('/', virificationToken, tasksController.createTask);
-router.put('/:id', virificationToken, tasksController.updateTask);
-router.delete('/:id', virificationToken, tasksController.deleteTask);
+router.get('/', verificationToken, tasksController.getTasks);
+router.get('/:id', verificationToken, tasksController.getTaskByIdAndUserId)
+router.post('/', verificationToken, tasksController.createTask);
+router.put('/:id', verificationToken, tasksController.updateTask);
+router.delete('/:id', verificationToken, tasksController.deleteTask);
 
 export default router;

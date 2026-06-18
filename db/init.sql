@@ -30,3 +30,11 @@ create table if not exists notes (
     contact_id int references contacts(id) on delete cascade,
     created_at timestamp default now()
 );
+
+create table if not exists refresh_tokens (
+    id serial primary key,
+    user_id int references  users(id) on delete cascade,
+    token_hash varchar(255),
+    expires_at timestamp,
+    created_at timestamp default now()
+) ;

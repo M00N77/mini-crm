@@ -5,7 +5,7 @@ import tasksRouter from './routes/tasks';
 import contactsRouter from "./routes/contacts";
 import notesRouter from './routes/notes';
 import authRouter from './routes/auth';
-import {virificationToken} from "./middleware/auth";
+import {verificationToken} from "./middleware/auth";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,3 +28,5 @@ app.listen(PORT, async () => {
     console.error("DB connection error:", err);
   }
 });
+
+
