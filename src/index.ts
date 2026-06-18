@@ -5,6 +5,7 @@ import tasksRouter from './routes/tasks';
 import contactsRouter from "./routes/contacts";
 import notesRouter from './routes/notes';
 import authRouter from './routes/auth';
+import {virificationToken} from "./middleware/auth";
 
 const app = express();
 const PORT = process.env.PORT || 3000;

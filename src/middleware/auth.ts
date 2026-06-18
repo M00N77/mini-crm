@@ -1,21 +1,16 @@
 import {Request,Response,NextFunction} from "express";
 import jwt from "jsonwebtoken";
 
-declare  global {
-    namespace Express {
-        interface Request {
-            user?: {id: number, email: string};
-        }
-    }
-}
+
 
 export async function virificationToken(req: Request, res: Response, next: NextFunction){
     const {authorization} = req.headers;
 
     try {
-        const token = authorization?.split(' ')[1] || null;
+        const token = authorization?.split(' ')[1] ;
+        if (!token) return res.status(401).json({ error: 'No token provided' });
         const secretKey = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
-        const decode = await jwt.verify(token, secretKey);
+        const decode = jwt.verify(token, secretKey) as { id: number; email: string };
         req.user = decode;
         next()
     } catch(e){
