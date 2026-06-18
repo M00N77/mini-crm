@@ -1,5 +1,5 @@
 import * as serviceAuth from '../services/auth'
-import {Request,Response,NextFunction} from "express";
+import {Request,Response} from "express";
 
 export async function registerUser(req: Request, res: Response)  {
     const {email,password,name} = req.body;
@@ -15,3 +15,4 @@ export async function loginUser(req: Request, res: Response)  {
 
     return res.status(200).send(result)
 }
+
