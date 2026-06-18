@@ -24,3 +24,30 @@ export async function registerUser(email: string, password: string,name: string)
         refreshToken : refreshToken,
     }
 }
+
+export async function loginUser(email: string, password: string) {
+    const user = await pool.query('select * from users where email=$1',[email]);
+    if(user.rows.length > 0) {
+        const isValidPassword = await bcrypt.compare(password, user.rows[0].hashed_password);
+        if(!isValidPassword) throw new Error('Incorrect password');
+        const { hashed_password, ...userWithoutPassword } = user.rows[0];
+
+        const secretKey = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
+
+        const payload = {
+            userId: user.rows[0].id,
+            email: email,
+        }
+
+        const accessToken = jwt.sign(payload, secretKey, {expiresIn: '1h'});
+        const refreshToken = jwt.sign(payload, secretKey, {expiresIn: '7d'});
+
+        return {
+            user: userWithoutPassword,
+            accessToken:accessToken,
+            refreshToken:refreshToken,
+        }
+    }
+    throw new Error('User not found');
+
+}
