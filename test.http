@@ -1,0 +1,53 @@
+### 1. Register
+POST localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@mail.ru",
+  "password": "123456",
+  "name": "Test User"
+}
+
+### 2. Login
+# @name login
+POST localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@mail.ru",
+  "password": "123456"
+}
+
+### 3. Get all users
+GET localhost:3000/users
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### 4. Create contact
+POST localhost:3000/contacts
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Ivan Ivanov",
+  "email": "ivan@mail.ru",
+  "phone": "+79991234567"
+}
+
+### 5. Create task
+POST localhost:3000/tasks
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Finish backend",
+  "description": "Test all endpoints",
+  "status": "pending"
+}
+
+### 6. Refresh token
+POST localhost:3000/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{login.response.body.refreshToken}}"
+}

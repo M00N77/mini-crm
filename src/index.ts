@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import pool from './db';
 import usersRouter from './routes/users';
@@ -7,6 +8,7 @@ import notesRouter from './routes/notes';
 import authRouter from './routes/auth';
 import {verificationToken} from "./middleware/auth";
 import {errorHandler} from "./middleware/errorHandler";
+import './types/express';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
