@@ -17,7 +17,7 @@ async function generateRefreshToken(payload: TokenPayload, secretKey:string) {
     const refreshToken = jwt.sign(payload, secretKey, timeForRefreshToken);
     const saltForRefreshToken = await bcrypt.genSalt(10);
     const hashedRefreshToken = await bcrypt.hash(refreshToken,  saltForRefreshToken);
-    const addRefreshToken = await pool.query('insert into refresh_tokens (user_id,token_hash,expires_at) values ($1,$2,$3) returning *',[userId,hashedRefreshToken,refreshTokenExpiresIn])
+    await pool.query('insert into refresh_tokens (user_id,token_hash,expires_at) values ($1,$2,$3) returning *',[userId,hashedRefreshToken,refreshTokenExpiresIn])
 
     return {refreshToken, hashedRefreshToken}
 }
@@ -35,7 +35,7 @@ export async function rotateRefreshToken(curRefreshToken: string, ) {
 
 
 
-        const deleteOldRefreshToken = await pool.query('delete from refresh_tokens where id=$1 and user_id = $2',[row[0].id,row[0].user_id])
+        await pool.query('delete from refresh_tokens where id=$1 and user_id = $2',[row[0].id,row[0].user_id])
         const {refreshToken} = await generateRefreshToken(payload, secretKey)
         const timeForAccessToken = {expiresIn: '15m'};
         const accessToken = jwt.sign(payload,secretKey,timeForAccessToken)

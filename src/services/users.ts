@@ -14,8 +14,9 @@ export async  function getUserById(id: number) {
 export async function createUser(email:string,password:string,name:string) {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
+
     const result = await pool.query('INSERT INTO USERS (email,hashed_password,name) VALUES ($1,$2,$3) RETURNING id,email,created_at',[email,hash,name]);
-    return result.rows[0] || null;
+    return result.rows[0];
 }
 
 export async function deleteUserById(id: number){
