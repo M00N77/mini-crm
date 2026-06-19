@@ -8,10 +8,10 @@ interface TokenPayload {
     name?: string;
 }
 
-
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
 
 async function generateRefreshToken(payload: TokenPayload, secretKey:string) {
-    const userId = Number(payload.userId);
+    const userId = payload.userId;
     const timeForRefreshToken = {expiresIn: '7d'};
     const refreshTokenExpiresIn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const refreshToken = jwt.sign(payload, secretKey, timeForRefreshToken);
@@ -20,6 +20,30 @@ async function generateRefreshToken(payload: TokenPayload, secretKey:string) {
     const addRefreshToken = await pool.query('insert into refresh_tokens (user_id,token_hash,expires_at) values ($1,$2,$3) returning *',[userId,hashedRefreshToken,refreshTokenExpiresIn])
 
     return {refreshToken, hashedRefreshToken}
+}
+
+export async function rotateRefreshToken(curRefreshToken: string, ) {
+    try{
+        const secretKey = JWT_SECRET;
+        const payload :TokenPayload = jwt.verify(curRefreshToken, secretKey) || null;
+
+        const row = (await pool.query('select * from refresh_tokens where user_id=$1', [payload.userId])).rows;
+        if(row.length === 0) return null;
+
+        const isValid = await bcrypt.compare(curRefreshToken, row[0].token_hash);
+        if(!isValid) throw new Error('Invalid password');
+
+
+
+        const deleteOldRefreshToken = await pool.query('delete from refresh_tokens where id=$1 and user_id = $2',[row[0].id,row[0].user_id])
+        const {refreshToken} = await generateRefreshToken(payload, secretKey)
+        const timeForAccessToken = {expiresIn: '15m'};
+        const accessToken = jwt.sign(payload,secretKey,timeForAccessToken)
+
+        return {refreshToken, accessToken}
+    } catch (e){
+        throw new Error('Invalid refreshToken', { cause: e });
+    }
 }
 
 export async function registerUser(email: string, password: string,name: string) {
@@ -35,7 +59,7 @@ export async function registerUser(email: string, password: string,name: string)
         name:name
     }
 
-    const secretKey = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
+    const secretKey = JWT_SECRET;
     const timeForAccessToken = {expiresIn: '1h'}
     const accessToken = jwt.sign(payload, secretKey, timeForAccessToken);
 
@@ -50,30 +74,33 @@ export async function registerUser(email: string, password: string,name: string)
 
 export async function loginUser(email: string, password: string) {
     const user = await pool.query('select * from users where email=$1',[email]);
-    if(user.rows.length > 0) {
-        const isValidPassword = await bcrypt.compare(password, user.rows[0].hashed_password);
-        if(!isValidPassword) throw new Error('Incorrect password');
-        const { hashed_password, ...userWithoutPassword } = user.rows[0];
 
-        const secretKey = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
+    if(user.rows.length === 0) throw new Error('User not found');
 
-        const payload : TokenPayload = {
-            userId: user.rows[0].id,
-            email: email,
-        }
+    const isValidPassword = await bcrypt.compare(password, user.rows[0].hashed_password);
+    if(!isValidPassword) throw new Error('Incorrect password');
+    const { hashed_password, ...userWithoutPassword } = user.rows[0];
 
-        const accessToken = jwt.sign(payload, secretKey, {expiresIn: '1h'});
-        const {refreshToken, hashedRefreshToken} = await generateRefreshToken(payload, secretKey);
+    const secretKey = JWT_SECRET;
 
-        return {
-            user: userWithoutPassword,
-            accessToken:accessToken,
-            refreshToken:refreshToken,
-        }
+    const payload : TokenPayload = {
+        userId: user.rows[0].id,
+        email: email,
     }
-    throw new Error('User not found');
+
+    const accessToken = jwt.sign(payload, secretKey, {expiresIn: '1h'});
+    const {refreshToken, hashedRefreshToken} = await generateRefreshToken(payload, secretKey);
+
+    return {
+        user: userWithoutPassword,
+        accessToken:accessToken,
+        refreshToken:refreshToken,
+    }
+
 
 }
+
+
 
 
 
