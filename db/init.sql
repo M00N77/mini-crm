@@ -1,8 +1,11 @@
+
+
+
 create table if not exists users (
     id serial primary key,
-    name varchar(100) not null,
+    name varchar(255) not null,
     email varchar(255) unique not null,
-    hashed_password varchar(60) not null,
+    hashed_password varchar(255) not null,
     created_at timestamp default now()
     );
 

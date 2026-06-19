@@ -12,7 +12,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
 
 async function generateRefreshToken(payload: TokenPayload, secretKey:string) {
     const userId = payload.userId;
-    const timeForRefreshToken = {expiresIn: '7d'};
+    const timeForRefreshToken = {expiresIn: '7d' as const};
     const refreshTokenExpiresIn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const refreshToken = jwt.sign(payload, secretKey, timeForRefreshToken);
     const saltForRefreshToken = await bcrypt.genSalt(10);
@@ -25,7 +25,7 @@ async function generateRefreshToken(payload: TokenPayload, secretKey:string) {
 export async function rotateRefreshToken(curRefreshToken: string, ) {
     try{
         const secretKey = JWT_SECRET;
-        const payload :TokenPayload = jwt.verify(curRefreshToken, secretKey) || null;
+        const payload = jwt.verify(curRefreshToken, secretKey) as TokenPayload;
 
         const row = (await pool.query('select * from refresh_tokens where user_id=$1', [payload.userId])).rows;
         if(row.length === 0) return null;
@@ -37,7 +37,7 @@ export async function rotateRefreshToken(curRefreshToken: string, ) {
 
         await pool.query('delete from refresh_tokens where id=$1 and user_id = $2',[row[0].id,row[0].user_id])
         const {refreshToken} = await generateRefreshToken(payload, secretKey)
-        const timeForAccessToken = {expiresIn: '15m'};
+        const timeForAccessToken = {expiresIn: '15m' as const};
         const accessToken = jwt.sign(payload,secretKey,timeForAccessToken)
 
         return {refreshToken, accessToken}
@@ -60,7 +60,7 @@ export async function registerUser(email: string, password: string,name: string)
     }
 
     const secretKey = JWT_SECRET;
-    const timeForAccessToken = {expiresIn: '1h'}
+    const timeForAccessToken = {expiresIn: '1h' as const}
     const accessToken = jwt.sign(payload, secretKey, timeForAccessToken);
 
     const {refreshToken, hashedRefreshToken} = await generateRefreshToken(payload, secretKey);
@@ -88,7 +88,7 @@ export async function loginUser(email: string, password: string) {
         email: email,
     }
 
-    const accessToken = jwt.sign(payload, secretKey, {expiresIn: '1h'});
+    const accessToken = jwt.sign(payload, secretKey, {expiresIn: '1h' as const});
     const {refreshToken, hashedRefreshToken} = await generateRefreshToken(payload, secretKey);
 
     return {
