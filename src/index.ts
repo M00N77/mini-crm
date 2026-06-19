@@ -6,6 +6,7 @@ import contactsRouter from "./routes/contacts";
 import notesRouter from './routes/notes';
 import authRouter from './routes/auth';
 import {verificationToken} from "./middleware/auth";
+import {errorHandler} from "./middleware/errorHandler";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +20,7 @@ app.use('/tasks', tasksRouter);
 app.use('/contacts',contactsRouter)
 app.use('/notes',notesRouter)
 
+app.use(errorHandler);
 
 app.listen(PORT, async () => {
   console.log("Server started on port 3000");

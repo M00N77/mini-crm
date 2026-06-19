@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import * as userController from '../controllers/users';
 import { verificationToken } from '../middleware/auth';
+import { asyncHandler } from '../utils/asyncHandler';
 
 const router = Router();
 
-router.get('/', verificationToken, userController.getUsers);
-router.get('/:id', verificationToken, userController.getUser);
-router.post('/', userController.createUser);
-router.delete('/:id', verificationToken, userController.deleteUser);
+router.get('/', verificationToken, asyncHandler(userController.getUsers));
+router.get('/:id', verificationToken, asyncHandler(userController.getUser));
+router.delete('/:id', verificationToken, asyncHandler(userController.deleteUser));
 
 
 export default router;

@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import * as tasksService from '../services/tasks';
+import {AppError} from "../utils/AppError";
 
 export async function getTasks(req: Request, res: Response) {
-    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
+    if (!req.user) throw new AppError('You are not logged in', 401);
     const userId  = Number(req.user.id);
     const result = await tasksService.getAllTasksByUserId(userId);
 
@@ -10,7 +11,7 @@ export async function getTasks(req: Request, res: Response) {
 }
 
 export async function getTaskByIdAndUserId(req: Request, res: Response) {
-    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
+    if (!req.user) throw new AppError('You are not logged in', 401);
     const id = req.params.id;
     const userId = req.user.id;
     const result = await tasksService.getTaskByIdAndUserId(Number(id),Number(userId));
@@ -19,7 +20,7 @@ export async function getTaskByIdAndUserId(req: Request, res: Response) {
 }
 
 export async function createTask(req: Request, res: Response) {
-    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
+    if (!req.user) throw new AppError('You are not logged in', 401);
     const {title, description, status} = req.body;
     const result = await tasksService.createTask(title, description, Number(req.user.id),status);
 
@@ -27,7 +28,7 @@ export async function createTask(req: Request, res: Response) {
 }
 
 export async function updateTask(req: Request, res: Response) {
-    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
+    if (!req.user) throw new AppError('You are not logged in', 401);
     const id = Number(req.params.id);
     const {title,description, status} = req.body;
     const result = await tasksService.updateTask(Number(id),Number(req.user.id),{title:title,description:description,status:status});
@@ -36,7 +37,7 @@ export async function updateTask(req: Request, res: Response) {
 }
 
 export async function deleteTask(req: Request, res: Response) {
-    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
+    if (!req.user) throw new AppError('You are not logged in', 401);
     const id = Number(req.params.id);
     const userId = Number(req.user.id);
 

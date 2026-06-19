@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import * as serviceNotes from '../services/notes';
-
+import {AppError} from "../utils/AppError";
 
 export async function getAllNotes(req:Request, res:Response){
-    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
+    if (!req.user)  throw new AppError('You are not logged in', 401);
     const userId = Number(req.user.id);
     const result = await serviceNotes.getAllNotesById(userId)
 
@@ -11,7 +11,7 @@ export async function getAllNotes(req:Request, res:Response){
 }
 
 export async function getNote(req:Request, res:Response){
-    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
+    if (!req.user)  throw new AppError('You are not logged in', 401);
     const noteId = Number(req.params.id);
     const userId = Number(req.user.id);
     const result = await serviceNotes.getNoteById(userId, noteId);
@@ -20,7 +20,7 @@ export async function getNote(req:Request, res:Response){
 }
 
 export async function createNote(req:Request, res:Response){
-    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
+    if (!req.user)  throw new AppError('You are not logged in', 401);
     const userId = Number(req.user.id);
     const {contactId, content } = req.body;
     const result = await serviceNotes.createNote(userId, contactId, content);
@@ -29,7 +29,7 @@ export async function createNote(req:Request, res:Response){
 }
 
 export async function updateNote(req:Request, res:Response){
-    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
+    if (!req.user)  throw new AppError('You are not logged in', 401);
     const noteId = Number(req.params.id);
     const userId = Number(req.user.id);
     const content = String(req.body.content);
@@ -39,7 +39,7 @@ export async function updateNote(req:Request, res:Response){
 }
 
 export async function deleteNote(req:Request, res:Response){
-    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
+    if (!req.user)  throw new AppError('You are not logged in', 401);
     const noteId = Number(req.params.id);
     const userId = Number(req.user.id);
 
