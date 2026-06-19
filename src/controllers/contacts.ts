@@ -4,7 +4,7 @@ import * as contactsService from '../services/contacts';
 
 
 export async function getContacts(req: Request, res: Response) {
-    if (!req.user) return res.status(401)
+    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
     const userId = Number(req.user.id);
     const result = await contactsService.getContacts(userId)
 
@@ -12,7 +12,7 @@ export async function getContacts(req: Request, res: Response) {
 }
 
 export async function getContactById(req: Request, res: Response) {
-    if (!req.user) return res.status(401)
+    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
     const userId = Number(req.user.id);
     const id = Number(req.params.id);
     const result = await contactsService.getContactById(userId,id)
@@ -21,7 +21,7 @@ export async function getContactById(req: Request, res: Response) {
 }
 
 export async function createContact(req: Request, res: Response) {
-    if (!req.user) return res.status(401)
+    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
     const userId = Number(req.user.id);
     const { name,email, phone} = req.body;
 
@@ -30,7 +30,7 @@ export async function createContact(req: Request, res: Response) {
 }
 
 export async function updateContact(req: Request, res: Response) {
-    if (!req.user) return res.status(401)
+    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
     const userId = Number(req.user.id);
     const id = Number(req.params.id);
     const { name,email, phone } = req.body;
@@ -38,7 +38,7 @@ export async function updateContact(req: Request, res: Response) {
     res.status(201).send(result);
 }
 export async function deleteContact (req: Request, res: Response) {
-    if (!req.user) return res.status(401)
+    if (!req.user) return res.status(401).json({message: 'You are not logged in!'});
     const id = Number(req.params.id);
     const userId = Number(req.user.id);
 
