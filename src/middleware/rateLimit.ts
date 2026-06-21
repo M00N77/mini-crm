@@ -3,7 +3,8 @@ import {Request,Response, NextFunction} from "express";
 const lastRequestMap = new Map<number, number>()
 
 export function rateLimit(req: Request, res: Response, next: NextFunction) {
-    const userId = Number(req.user.id)
+    if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+    const userId = Number(req.user.userId)
     const currentDate = Date.now()
     const lastTimeRequest = lastRequestMap.get(userId);
     if(!lastTimeRequest){
