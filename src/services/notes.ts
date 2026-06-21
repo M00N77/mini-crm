@@ -1,9 +1,15 @@
 import pool from "../db";
+import {paginate} from "../utils/paginate";
 
-export async function getAllNotesById(userId:number){
-    const result = await pool.query('select * from notes join contacts on contacts.id = notes.contact_id where contacts.user_id = $1',[userId]);
+export async function getAllNotesById(userId:number,pageInput:number,limitInput:number) {
+    const paginateData = await paginate('notes join contacts on contacts.id = notes.contact_id',userId,'contacts.user_id',pageInput,limitInput);
+    const {offset,limit} = paginateData
+    const result = await pool.query('select * from notes join contacts on contacts.id = notes.contact_id where contacts.user_id = $1 offset $2 limit $3',[userId,offset,limit]);
 
-    return result.rows;
+    return {
+        "data":result.rows,
+        pagination: {...paginateData}
+    }
 }
 
 export async function getNoteById(userId:number,noteId: number){

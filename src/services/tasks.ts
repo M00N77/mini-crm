@@ -1,9 +1,15 @@
 import pool from "../db";
+import {paginate} from "../utils/paginate";
 
 
-export async function getAllTasksByUserId(userId:number){
-    const result = await pool.query("SELECT id, title, description, user_id AS \"userId\", status, created_at AS \"createdAt\" FROM tasks where user_id = $1",[userId]);
-    return result.rows
+export async function getAllTasksByUserId(userId:number,pageInput:number,limitInput:number){
+    const paginationData = await paginate('tasks',userId,'user_id',pageInput,limitInput,)
+    const {offset,limit} = paginationData
+    const result = await pool.query("SELECT id, title, description, user_id AS \"userId\", status, created_at AS \"createdAt\" FROM tasks where user_id = $1 offset $2 limit $3",[userId,offset,limit]);
+    return {
+        "data": result.rows,
+        "pagination": {...paginationData}
+    }
 }
 
 export async function getTaskByIdAndUserId(id:number,userId:number){

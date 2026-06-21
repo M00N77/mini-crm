@@ -1,23 +1,15 @@
 import pool from '../db'
+import {paginate} from "../utils/paginate";
 
 export async function getContacts(userId: number,pageInput: number, limitInput: number) {
-    const totalContacts = Number((await pool.query('select count(*) from contacts where user_id=$1', [userId])).rows[0].count);
-    const page = Math.max(1, pageInput || 1);
-    const limit = Math.min(100, Math.max(1, limitInput || 10));
-    const totalPages = Math.ceil(totalContacts / limit);
-    const offset = (page - 1) * limit;
-    const hasMore = page < totalPages;
 
-    const result = await pool.query('select * from contacts where user_id=$1 ORDER BY id asc offset $2 limit $3 ',[userId,offset,limit])
+    const paginationData = await paginate('contacts',userId,'user_id',pageInput,limitInput)
+    const {offset,limit} = paginationData
+    const result = await pool.query(`select * from contacts where user_id=$1 ORDER BY id asc offset $2 limit $3`,[userId,offset,limit])
+
     return {
         "data": result.rows,
-        "pagination": {
-            "page":page,
-            "limit":limit,
-            "total":totalContacts,
-            "totalPages":totalPages,
-            "hasMore":hasMore
-        }
+        "pagination": {...paginationData}
     };
 }
 
