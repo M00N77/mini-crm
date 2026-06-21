@@ -1,7 +1,9 @@
 import pool from '../db';
 import bcrypt from 'bcrypt';
+import {paginate} from "../utils/paginate";
 
 export async function getAllUsers() {
+  const paginateData = await paginate('users')
   const result = await pool.query('SELECT id, email, name, created_at FROM users ORDER BY id');
   return result.rows;
 }
