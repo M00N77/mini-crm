@@ -21,3 +21,10 @@ export interface Notes {
     contentId: number;
     createdAt: Date;
 }
+
+export interface TokenPayload {
+    userId: number;
+    email: string;
+    name?: string;
+}
+

@@ -2,11 +2,8 @@ import pool from '../db'
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 
-interface TokenPayload {
-    userId: number;
-    email: string;
-    name?: string;
-}
+import {TokenPayload} from '../types/types'
+import {AppError} from '../utils/AppError'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
 
@@ -31,7 +28,7 @@ export async function rotateRefreshToken(curRefreshToken: string, ) {
         if(row.length === 0) return null;
 
         const isValid = await bcrypt.compare(curRefreshToken, row[0].token_hash);
-        if(!isValid) throw new Error('Invalid password');
+        if(!isValid) throw new AppError('Invalid refresh token', 401);
 
 
 
@@ -42,13 +39,13 @@ export async function rotateRefreshToken(curRefreshToken: string, ) {
 
         return {refreshToken, accessToken}
     } catch (e){
-        throw new Error('Invalid refreshToken', { cause: e });
+        throw new AppError('Invalid refreshToken', 401);
     }
 }
 
 export async function registerUser(email: string, password: string,name: string) {
     const emailExists = await pool.query('select * from users where email=$1',[email]);
-    if(emailExists.rows.length > 0) throw new Error('Email already exists');
+    if(emailExists.rows.length > 0) throw new AppError('Email already exists', 409);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const result = await pool.query('insert into users (email,hashed_password,name) values($1,$2,$3) returning id,email,created_at',[email,hashedPassword,name]);
@@ -75,10 +72,10 @@ export async function registerUser(email: string, password: string,name: string)
 export async function loginUser(email: string, password: string) {
     const user = await pool.query('select * from users where email=$1',[email]);
 
-    if(user.rows.length === 0) throw new Error('User not found');
+    if(user.rows.length === 0) throw new AppError('Invalid email or password', 401);
 
     const isValidPassword = await bcrypt.compare(password, user.rows[0].hashed_password);
-    if(!isValidPassword) throw new Error('Incorrect password');
+    if(!isValidPassword) throw new AppError('Invalid email or password', 401);
     const { hashed_password, ...userWithoutPassword } = user.rows[0];
 
     const secretKey = JWT_SECRET;
