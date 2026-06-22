@@ -19,7 +19,7 @@ async function generateRefreshToken(payload: TokenPayload, secretKey:string) {
     return {refreshToken, hashedRefreshToken}
 }
 
-export async function rotateRefreshToken(curRefreshToken: string, ) {
+export async function rotateRefreshToken(curRefreshToken: string) {
     try{
         const secretKey = JWT_SECRET;
         const payload = jwt.verify(curRefreshToken, secretKey) as TokenPayload;
@@ -30,9 +30,8 @@ export async function rotateRefreshToken(curRefreshToken: string, ) {
         const isValid = await bcrypt.compare(curRefreshToken, row[0].token_hash);
         if(!isValid) throw new AppError('Invalid refresh token', 401);
 
-
-
         await pool.query('delete from refresh_tokens where id=$1 and user_id = $2',[row[0].id,row[0].user_id])
+
         const {refreshToken} = await generateRefreshToken(payload, secretKey)
         const timeForAccessToken = {expiresIn: '15m' as const};
         const accessToken = jwt.sign(payload,secretKey,timeForAccessToken)
