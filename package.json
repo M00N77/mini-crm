@@ -4,11 +4,11 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "ts-node server/index.ts",
     "dev": "nodemon",
-    "hh": "ts-node src/index.ts --source=hh",
-    "tg": "ts-node src/index.ts --source=tg",
-    "watch": "ts-node src/index.ts --watch"
+    "hh": "ts-node server/index.ts --source=hh",
+    "tg": "ts-node server/index.ts --source=tg",
+    "watch": "ts-node server/index.ts --watch"
   },
   "keywords": [],
   "author": "",
