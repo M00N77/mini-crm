@@ -1,3 +1,5 @@
+import AuthTabs from "@/app/components/auth/AuthTabs";
+
 export default function DashboardPage() {
-  return <h2>DashboardPage</h2>;
+  return <AuthTabs/>
 }

@@ -1,3 +1,5 @@
+import RegisterForm from "@/app/components/auth/RegisterForm";
+
 export default function RegisterPage() {
-  return <h2>RegisterPage</h2>;
+  return <RegisterForm/>
 }
