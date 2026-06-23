@@ -3,12 +3,13 @@
 import AuthTabs from '../components/auth/AuthTabs'
 import {Typography} from "@/src/components/atoms/Typography";
 import {FiCheckCircle} from "react-icons/fi";
+import {ReactNode} from "react";
 interface advantage {
     id:number,
-    name: string,
+    title: string,
 }
-const AuthLayout = ({children}) => {
-    const advantagesList = [
+const AuthLayout = ({children} : { children: ReactNode }) => {
+    const advantagesList : advantage[] = [
         {id:1,title:'Unified contacts, notes & pipeline'},
         {id:2,title:'Tasks that sync with every deal'},
         {id:3,title:'Built for teams that move fast'},
