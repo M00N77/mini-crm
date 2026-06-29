@@ -1,47 +1,34 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, type ElementType } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '../../lib/utils';
 
-type TypographyVariant = 'h1' | 'h2' | 'h3' | 'p' | 'caption';
+const typographyVariants = cva('', {
+  variants: {
+    variant: {
+      h1: 'text-3xl font-semibold tracking-tight text-[var(--text-primary)]',
+      h2: 'text-xl font-semibold text-[var(--text-primary)]',
+      h3: 'text-lg font-medium text-[var(--text-primary)]',
+      p: 'text-base font-normal text-[var(--text-primary)]',
+      caption: 'text-sm font-normal text-[var(--text-secondary)]',
+    },
+  },
+  defaultVariants: {
+    variant: 'p',
+  },
+});
 
-interface TypographyProps {
-  as?: TypographyVariant;
+type Variant = 'h1' | 'h2' | 'h3' | 'p' | 'caption';
+
+interface TypographyProps extends VariantProps<typeof typographyVariants> {
+  as?: Variant;
   children: ReactNode;
+  className?: string;
 }
 
-const styles: Record<TypographyVariant, React.CSSProperties> = {
-  h1: {
-    fontSize: 'var(--text-3xl)',
-    fontWeight: 'var(--font-semibold)',
-    lineHeight: 1.25,
-    letterSpacing: '-0.025em',
-    color: 'var(--text-primary)',
-  },
-  h2: {
-    fontSize: 'var(--text-xl)',
-    fontWeight: 'var(--font-semibold)',
-    lineHeight: 1.3,
-    color: 'var(--text-primary)',
-  },
-  h3: {
-    fontSize: 'var(--text-lg)',
-    fontWeight: 'var(--font-medium)',
-    lineHeight: 1.4,
-    color: 'var(--text-primary)',
-  },
-  p: {
-    fontSize: 'var(--text-base)',
-    fontWeight: 'var(--font-normal)',
-    lineHeight: 1.5,
-    color: 'var(--text-primary)',
-  },
-  caption: {
-    fontSize: 'var(--text-sm)',
-    fontWeight: 'var(--font-normal)',
-    lineHeight: 1.4,
-    color: 'var(--text-secondary)',
-  },
-};
-
-export function Typography({ as = 'p', children }: TypographyProps) {
-  const Tag = as === 'caption' ? 'span' : as;
-  return <Tag style={styles[as]}>{children}</Tag>;
+function Typography({ as = 'p', children, className }: TypographyProps) {
+  const Comp: ElementType = as === 'caption' ? 'span' : as;
+  return <Comp className={cn(typographyVariants({ variant: as }), className)}>{children}</Comp>;
 }
+
+export { Typography, typographyVariants };
+export type { TypographyProps };

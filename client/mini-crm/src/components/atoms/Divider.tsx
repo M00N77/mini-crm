@@ -1,21 +1,26 @@
-interface DividerProps {
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '../../lib/utils';
+
+const dividerVariants = cva('flex-shrink-0 bg-[var(--border-subtle)]', {
+  variants: {
+    orientation: {
+      horizontal: 'h-px w-full',
+      vertical: 'w-px h-full min-h-5',
+    },
+  },
+  defaultVariants: {
+    orientation: 'horizontal',
+  },
+});
+
+interface DividerProps extends VariantProps<typeof dividerVariants> {
   orientation?: 'horizontal' | 'vertical';
+  className?: string;
 }
 
-export function Divider({ orientation = 'horizontal' }: DividerProps) {
-  if (orientation === 'vertical') {
-    return (
-      <div
-        style={{
-          width: 1,
-          height: '100%',
-          minHeight: 20,
-          background: 'var(--border-subtle)',
-          flexShrink: 0,
-        }}
-      />
-    );
-  }
-
-  return <div style={{ height: 1, width: '100%', background: 'var(--border-subtle)', flexShrink: 0 }} />;
+function Divider({ orientation, className }: DividerProps) {
+  return <div className={cn(dividerVariants({ orientation }), className)} />;
 }
+
+export { Divider, dividerVariants };
+export type { DividerProps };

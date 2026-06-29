@@ -1,100 +1,65 @@
-import { type ReactNode, type ButtonHTMLAttributes } from 'react';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '../../lib/utils';
 import { Spinner } from './Spinner';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
-type ButtonSize = 'sm' | 'md' | 'lg';
+const buttonVariants = cva(
+  'inline-flex items-center justify-center rounded-[var(--radius-md)] font-medium whitespace-nowrap transition-all duration-150 disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
+  {
+    variants: {
+      variant: {
+        primary:
+          'bg-[var(--action-primary-bg)] text-[var(--text-inverse)] hover:bg-[var(--action-primary-hover)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--action-primary-bg)]',
+        secondary:
+          'bg-[var(--action-secondary-bg)] text-[var(--text-primary)] border border-[var(--border-subtle)] hover:bg-[var(--action-secondary-hover)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--border-strong)]',
+        ghost:
+          'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--action-secondary-bg)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--border-strong)]',
+        danger:
+          'bg-transparent text-[var(--color-danger)] border border-[var(--color-danger)] hover:bg-[var(--color-danger)]/10 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--color-danger)]',
+      },
+      size: {
+        sm: 'h-8 px-3 text-xs gap-1.5',
+        md: 'h-10 px-4 text-sm gap-2',
+        lg: 'h-12 px-6 text-base gap-2',
+      },
+    },
+    defaultVariants: {
+      variant: 'primary',
+      size: 'md',
+    },
+  }
+);
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
+interface ButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
   loading?: boolean;
   iconLeft?: ReactNode;
   iconRight?: ReactNode;
   children?: ReactNode;
 }
 
-const variantStyles: Record<ButtonVariant, React.CSSProperties> = {
-  primary: {
-    background: 'var(--action-primary-bg)',
-    color: 'var(--text-inverse)',
-    border: 'none',
-  },
-  secondary: {
-    background: 'var(--action-secondary-bg)',
-    color: 'var(--text-primary)',
-    border: '1px solid var(--border-subtle)',
-  },
-  ghost: {
-    background: 'transparent',
-    color: 'var(--text-secondary)',
-    border: 'none',
-  },
-  danger: {
-    background: 'transparent',
-    color: 'var(--color-danger)',
-    border: '1px solid var(--color-danger)',
-  },
-};
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, loading, iconLeft, iconRight, children, disabled, ...props }, ref) => {
+    return (
+      <button
+        className={cn(buttonVariants({ variant, size }), loading && 'pointer-events-none opacity-50', className)}
+        ref={ref}
+        disabled={disabled || loading}
+        {...props}
+      >
+        {loading ? (
+          <Spinner size="sm" />
+        ) : iconLeft ? (
+          <span className="flex [&_svg]:size-4 [&_svg]:shrink-0">{iconLeft}</span>
+        ) : null}
+        {children}
+        {iconRight && <span className="flex [&_svg]:size-4 [&_svg]:shrink-0">{iconRight}</span>}
+      </button>
+    );
+  }
+);
+Button.displayName = 'Button';
 
-const sizeStyles: Record<ButtonSize, React.CSSProperties> = {
-  sm: { padding: 'var(--space-1) var(--space-3)', fontSize: 'var(--text-sm)', gap: 'var(--space-1)' },
-  md: { padding: 'var(--space-2) var(--space-4)', fontSize: 'var(--text-base)', gap: 'var(--space-2)' },
-  lg: { padding: 'var(--space-3) var(--space-6)', fontSize: 'var(--text-base)', gap: 'var(--space-2)' },
-};
-
-const baseStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: 'var(--radius-md)',
-  fontWeight: 'var(--font-medium)',
-  cursor: 'pointer',
-  transition: 'all var(--transition-fast)',
-  lineHeight: 1,
-  whiteSpace: 'nowrap',
-};
-
-export function Button({
-  variant = 'primary',
-  size = 'md',
-  loading = false,
-  iconLeft,
-  iconRight,
-  children,
-  disabled,
-  style,
-  ...rest
-}: ButtonProps) {
-  const hoverStyle: React.CSSProperties = {};
-  if (variant === 'primary') hoverStyle.background = 'var(--action-primary-hover)';
-  if (variant === 'secondary') hoverStyle.background = 'var(--action-secondary-hover)';
-  if (variant === 'ghost') hoverStyle.color = 'var(--text-primary)';
-  if (variant === 'danger') hoverStyle.background = 'rgba(239, 68, 68, 0.1)';
-
-  return (
-    <button
-      style={{
-        ...baseStyle,
-        ...variantStyles[variant],
-        ...sizeStyles[size],
-        ...(disabled || loading ? { opacity: 0.5, cursor: 'not-allowed' } : {}),
-        ...style,
-      }}
-      disabled={disabled || loading}
-      onMouseEnter={(e) => {
-        if (!disabled && !loading) Object.assign(e.currentTarget.style, hoverStyle);
-      }}
-      onMouseLeave={(e) => {
-        if (!disabled && !loading) {
-          e.currentTarget.style.background = (variantStyles[variant].background as string) || '';
-          e.currentTarget.style.color = (variantStyles[variant].color as string) || '';
-        }
-      }}
-      {...rest}
-    >
-      {loading ? <Spinner size="sm" /> : iconLeft}
-      {children}
-      {iconRight}
-    </button>
-  );
-}
+export { Button, buttonVariants };
+export type { ButtonProps };
