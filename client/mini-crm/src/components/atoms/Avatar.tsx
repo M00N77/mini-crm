@@ -1,16 +1,18 @@
-type AvatarSize = 'sm' | 'md' | 'lg';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '../../lib/utils';
 
-interface AvatarProps {
-  src?: string;
-  name: string;
-  size?: AvatarSize;
-}
-
-const sizeMap: Record<AvatarSize, { dim: number; font: string }> = {
-  sm: { dim: 28, font: 'var(--text-xs)' },
-  md: { dim: 36, font: 'var(--text-sm)' },
-  lg: { dim: 44, font: 'var(--text-base)' },
-};
+const avatarVariants = cva('rounded-full object-cover flex-shrink-0', {
+  variants: {
+    size: {
+      sm: 'size-7 text-xs',
+      md: 'size-9 text-sm',
+      lg: 'size-11 text-base',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
 const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#14b8a6', '#f97316', '#06b6d4'];
 
@@ -29,40 +31,38 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-export function Avatar({ src, name, size = 'md' }: AvatarProps) {
-  const { dim, font } = sizeMap[size];
-  const initials = getInitials(name);
-  const bg = getColor(name);
+interface AvatarProps extends VariantProps<typeof avatarVariants> {
+  src?: string;
+  name: string;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
 
+function Avatar({ src, name, size, className }: AvatarProps) {
   if (src) {
     return (
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={src}
         alt={name}
-        width={dim}
-        height={dim}
-        style={{ borderRadius: 'var(--radius-full)', objectFit: 'cover', flexShrink: 0 }}
+        className={cn(avatarVariants({ size }), className)}
       />
     );
   }
 
   return (
     <div
-      style={{
-        width: dim,
-        height: dim,
-        borderRadius: 'var(--radius-full)',
-        background: bg,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: font,
-        fontWeight: 'var(--font-semibold)',
-        color: '#fff',
-        flexShrink: 0,
-      }}
+      className={cn(
+        'rounded-full flex items-center justify-center font-semibold text-white flex-shrink-0',
+        avatarVariants({ size }),
+        className
+      )}
+      style={{ backgroundColor: getColor(name) }}
     >
-      {initials}
+      {getInitials(name)}
     </div>
   );
 }
+
+export { Avatar };
+export type { AvatarProps };

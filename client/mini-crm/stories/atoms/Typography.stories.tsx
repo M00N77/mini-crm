@@ -20,3 +20,15 @@ export const Heading2: Story = { args: { as: 'h2', children: 'Recent Contacts' }
 export const Heading3: Story = { args: { as: 'h3', children: 'Task Details' } };
 export const Paragraph: Story = { args: { as: 'p', children: 'This is a paragraph of text used for descriptions and longer content.' } };
 export const Caption: Story = { args: { as: 'caption', children: '2 hours ago' } };
+
+export const AllVariants: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <Typography as="h1">Dashboard (h1)</Typography>
+      <Typography as="h2">Recent Contacts (h2)</Typography>
+      <Typography as="h3">Task Details (h3)</Typography>
+      <Typography as="p">This is a paragraph of text used for descriptions and longer content.</Typography>
+      <Typography as="caption">2 hours ago (caption)</Typography>
+    </div>
+  ),
+};

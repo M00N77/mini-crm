@@ -1,4 +1,5 @@
-import { type InputHTMLAttributes, type ReactNode, forwardRef } from 'react';
+import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from 'react';
+import { cn } from '../../lib/utils';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -7,58 +8,53 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   iconRight?: ReactNode;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, iconLeft, iconRight, style, ...rest }, ref) => {
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ label, error, iconLeft, iconRight, className, id, disabled, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+      <div className="flex flex-col gap-1">
         {label && (
-          <label style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', fontWeight: 'var(--font-medium)' }}>
+          <label htmlFor={inputId} className="text-sm text-[var(--text-secondary)] font-medium">
             {label}
           </label>
         )}
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <div className="relative flex items-center">
           {iconLeft && (
-            <span style={{ position: 'absolute', left: 12, color: 'var(--text-secondary)', display: 'flex' }}>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] flex [&_svg]:size-4">
               {iconLeft}
             </span>
           )}
           <input
+            id={inputId}
             ref={ref}
-            style={{
-              width: '100%',
-              padding: 'var(--space-2) var(--space-3)',
-              paddingLeft: iconLeft ? 40 : 'var(--space-3)',
-              paddingRight: iconRight ? 40 : 'var(--space-3)',
-              background: 'var(--bg-surface)',
-              border: `1px solid ${error ? 'var(--color-danger)' : 'var(--border-subtle)'}`,
-              borderRadius: 'var(--radius-md)',
-              color: 'var(--text-primary)',
-              fontSize: 'var(--text-sm)',
-              lineHeight: 1.5,
-              outline: 'none',
-              transition: 'border-color var(--transition-fast)',
-              ...style,
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = error ? 'var(--color-danger)' : 'var(--border-strong)';
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = error ? 'var(--color-danger)' : 'var(--border-subtle)';
-            }}
-            {...rest}
+            disabled={disabled}
+            aria-invalid={!!error}
+            className={cn(
+              'flex h-10 w-full rounded-[var(--radius-md)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]',
+              'border border-[var(--border-subtle)] transition-colors duration-150',
+              'focus:outline-none focus:border-[var(--border-strong)]',
+              'disabled:cursor-not-allowed disabled:opacity-50',
+              error && 'border-[var(--color-danger)] focus:border-[var(--color-danger)]',
+              iconLeft && 'pl-10',
+              iconRight && 'pr-10',
+              className
+            )}
+            {...props}
           />
           {iconRight && (
-            <span style={{ position: 'absolute', right: 12, color: 'var(--text-secondary)', display: 'flex' }}>
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] flex [&_svg]:size-4">
               {iconRight}
             </span>
           )}
         </div>
-        {error && (
-          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-danger)' }}>{error}</span>
-        )}
+        {error && <span className="text-xs text-[var(--color-danger)]">{error}</span>}
       </div>
     );
   }
 );
-
 Input.displayName = 'Input';
+
+export { Input };
+export type { InputProps };

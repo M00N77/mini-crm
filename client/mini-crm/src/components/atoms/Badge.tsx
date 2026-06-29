@@ -1,50 +1,39 @@
 import { type ReactNode } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '../../lib/utils';
 
-type BadgeVariant = 'success' | 'warning' | 'error' | 'info';
+const badgeVariants = cva(
+  'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap',
+  {
+    variants: {
+      variant: {
+        success: 'bg-[var(--color-success)]/10 text-[var(--color-success)]',
+        warning: 'bg-[var(--color-warning)]/10 text-[var(--color-warning)]',
+        error: 'bg-[var(--color-danger)]/10 text-[var(--color-danger)]',
+        info: 'bg-[var(--color-info)]/10 text-[var(--color-info)]',
+      },
+    },
+    defaultVariants: {
+      variant: 'info',
+    },
+  }
+);
 
-interface BadgeProps {
-  variant?: BadgeVariant;
+interface BadgeProps extends VariantProps<typeof badgeVariants> {
+  variant?: 'success' | 'warning' | 'error' | 'info';
   dot?: boolean;
   children: ReactNode;
+  className?: string;
 }
 
-const colorMap: Record<BadgeVariant, string> = {
-  success: 'var(--color-success)',
-  warning: 'var(--color-warning)',
-  error: 'var(--color-danger)',
-  info: 'var(--color-info)',
-};
-
-export function Badge({ variant = 'info', dot = false, children }: BadgeProps) {
-  const color = colorMap[variant];
-
+function Badge({ variant, dot = false, children, className }: BadgeProps) {
   return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 'var(--space-1)',
-        padding: '2px var(--space-2)',
-        borderRadius: 'var(--radius-full)',
-        fontSize: 'var(--text-xs)',
-        fontWeight: 'var(--font-medium)',
-        background: `${color}1A`,
-        color,
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {dot && (
-        <span
-          style={{
-            width: 6,
-            height: 6,
-            borderRadius: 'var(--radius-full)',
-            background: color,
-            flexShrink: 0,
-          }}
-        />
-      )}
+    <span className={cn(badgeVariants({ variant }), className)}>
+      {dot && <span className="size-1.5 rounded-full bg-current flex-shrink-0" />}
       {children}
     </span>
   );
 }
+
+export { Badge, badgeVariants };
+export type { BadgeProps };

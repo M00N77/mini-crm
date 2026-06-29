@@ -21,3 +21,25 @@ export const Vertical: Story = {
     </div>
   ),
 };
+
+export const AllVariants: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <Typography as="p">Horizontal divider below:</Typography>
+        <Divider orientation="horizontal" />
+        <Typography as="p">Content after divider</Typography>
+      </div>
+      <div>
+        <Typography as="p">Vertical divider between items:</Typography>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, height: 40, marginTop: 8 }}>
+          <Typography as="p">Left</Typography>
+          <Divider orientation="vertical" />
+          <Typography as="p">Center</Typography>
+          <Divider orientation="vertical" />
+          <Typography as="p">Right</Typography>
+        </div>
+      </div>
+    </div>
+  ),
+};

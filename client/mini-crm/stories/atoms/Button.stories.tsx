@@ -24,3 +24,27 @@ export const WithIconLeft: Story = { args: { variant: 'primary', iconLeft: <FiSe
 export const WithIconRight: Story = { args: { variant: 'secondary', children: 'Clear', iconRight: <FiX /> } };
 export const Small: Story = { args: { variant: 'primary', size: 'sm', children: 'Small' } };
 export const Large: Story = { args: { variant: 'primary', size: 'lg', children: 'Large' } };
+
+export const AllVariants: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <Button variant="primary">Primary</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button variant="danger">Danger</Button>
+      </div>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <Button variant="primary" size="sm">Small</Button>
+        <Button variant="primary" size="md">Medium</Button>
+        <Button variant="primary" size="lg">Large</Button>
+      </div>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <Button variant="primary" loading>Loading</Button>
+        <Button variant="primary" disabled>Disabled</Button>
+        <Button variant="primary" iconLeft={<FiSearch />}>Icon Left</Button>
+        <Button variant="secondary" iconRight={<FiX />}>Icon Right</Button>
+      </div>
+    </div>
+  ),
+};

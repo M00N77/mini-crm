@@ -14,4 +14,18 @@ export const Default: Story = { args: { placeholder: 'Enter text...' } };
 export const WithLabel: Story = { args: { label: 'Email', placeholder: 'you@example.com' } };
 export const WithIcon: Story = { args: { label: 'Email', placeholder: 'you@example.com', iconLeft: <FiMail /> } };
 export const WithError: Story = { args: { label: 'Password', type: 'password', iconLeft: <FiLock />, error: 'Password must be at least 8 characters' } };
-export const Disabled: Story = { args: { label: 'Disabled', placeholder: 'Can\'t type', disabled: true } };
+export const Disabled: Story = { args: { label: 'Disabled', placeholder: "Can't type", disabled: true } };
+
+export const AllVariants: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 320 }}>
+      <Input placeholder="Default input" />
+      <Input label="Email" placeholder="you@example.com" />
+      <Input label="Email" placeholder="you@example.com" iconLeft={<FiMail />} />
+      <Input label="Password" type="password" iconLeft={<FiLock />} error="Password must be at least 8 characters" />
+      <Input label="Disabled" placeholder="Can't type" disabled />
+      <Input label="With right icon" placeholder="Search..." iconRight={<FiMail />} />
+      <Input label="Both icons" placeholder="Both sides" iconLeft={<FiMail />} iconRight={<FiLock />} />
+    </div>
+  ),
+};
