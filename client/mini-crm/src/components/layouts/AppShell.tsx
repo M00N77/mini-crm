@@ -4,19 +4,11 @@ import { Header } from '../organisms/Header';
 
 interface AppShellProps {
   children: ReactNode;
-  activeRoute: string;
-  onNavigate: (route: string) => void;
-  searchValue: string;
-  onSearchChange: (value: string) => void;
   userName?: string;
 }
 
 export function AppShell({
   children,
-  activeRoute,
-  onNavigate,
-  searchValue,
-  onSearchChange,
   userName,
 }: AppShellProps) {
   return (
@@ -28,16 +20,12 @@ export function AppShell({
       }}
     >
       <Sidebar
-        activeRoute={activeRoute}
-        onNavigate={onNavigate}
         userName={userName}
       />
 
       <div style={{ display: 'flex', flex: 1, flexDirection: 'column', minWidth: 0 }}>
         <div style={{ position: 'sticky', top: 0, zIndex: 100 }}>
           <Header
-            searchValue={searchValue}
-            onSearchChange={onSearchChange}
             userName={userName}
           />
         </div>

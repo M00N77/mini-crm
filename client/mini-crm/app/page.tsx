@@ -1,5 +1,6 @@
-import AuthTabs from "@/app/components/auth/AuthTabs";
+import MainLayout from '../app/(main)/layout'
 
 export default function DashboardPage() {
-  return <AuthTabs/>
+
+  return <MainLayout/>
 }

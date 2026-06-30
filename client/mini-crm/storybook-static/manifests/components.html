@@ -1,0 +1,3320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Components Manifest</title>
+  <style>
+      :root {
+          --bg: #0b0c10;
+          --panel: #121318;
+          --muted: #9aa0a6;
+          --fg: #e8eaed;
+          --ok: #22c55e;
+          --info: #1e88e5;
+          --err: #c62828;
+          --ok-bg: #0c1a13;
+          --info-bg: #0c1624;
+          --err-bg: #1a0e0e;
+          --chip: #1f2330;
+          --border: #2b2f3a;
+          --link: #8ab4f8;
+          --active-ring: 1px; /* 1px active ring for pills and toggles */
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      html,
+      body {
+          margin: 0;
+          background: var(--bg);
+          color: var(--fg);
+          font: 14px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Ubuntu,
+          Cantarell,
+          'Helvetica Neue',
+          Arial,
+          'Noto Sans';
+      }
+
+      .wrap {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 16px 20px;
+      }
+
+      header {
+          position: sticky;
+          top: 0;
+          backdrop-filter: blur(6px);
+          background: color-mix(in srgb, var(--bg) 84%, transparent);
+          border-bottom: 1px solid var(--border);
+          z-index: 10;
+      }
+
+      h1 {
+          font-size: 20px;
+          margin: 0 0 6px;
+      }
+
+      .summary {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          align-items: center;
+      }
+
+      /* Top filter pills */
+      .filter-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          background: var(--panel);
+          text-decoration: none;
+          cursor: pointer;
+          user-select: none;
+          color: var(--fg);
+      }
+
+      .filter-pill.ok {
+          color: #b9f6ca;
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+          background: color-mix(in srgb, var(--ok) 18%, #000);
+      }
+
+      .filter-pill.info {
+          color: #b3d9ff;
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+          background: var(--info-bg);
+      }
+
+      .filter-pill.err {
+          color: #ff9aa0;
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+          background: var(--err-bg);
+      }
+
+      .filter-pill.all {
+          color: #d7dbe0;
+          border-color: var(--border);
+          background: var(--panel);
+      }
+
+      .filter-pill[aria-disabled='true'] {
+          cursor: default;
+          text-decoration: none;
+      }
+
+      .filter-pill:focus,
+      .filter-pill:active {
+          outline: none;
+          box-shadow: none;
+      }
+
+      /* Selected top pill ring via :target */
+      #filter-all:target ~ header .filter-pill[data-k='all'],
+      #filter-errors:target ~ header .filter-pill[data-k='errors'],
+      #filter-infos:target ~ header .filter-pill[data-k='infos'],
+      #filter-story-errors:target ~ header .filter-pill[data-k='story-errors'],
+      #filter-doc-errors:target ~ header .filter-pill[data-k='docs'],
+      #filter-docs:target ~ header .filter-pill[data-k='docs'] {
+          box-shadow: 0 0 0 var(--active-ring) currentColor;
+          border-color: currentColor;
+      }
+
+      /* Hidden targets for filtering */
+      #filter-all,
+      #filter-errors,
+      #filter-infos,
+      #filter-story-errors,
+      #filter-doc-errors,
+      #filter-docs {
+          display: none;
+      }
+
+      main {
+          padding: 36px 0 40px;
+      }
+
+      .grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 18px;
+      }
+
+      /* one card per row */
+
+      .card {
+          border: 1px solid var(--border);
+          background: var(--panel);
+          border-radius: 14px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      .head {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+      }
+
+      .title {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+      }
+
+      .title h2 {
+          font-size: 16px;
+          margin: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .meta {
+          font-size: 12px;
+          color: var(--muted);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .kv {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+      }
+
+      .chip {
+          font-size: 12px;
+          padding: 4px 8px;
+          border-radius: 999px;
+          background: var(--chip);
+          border: 1px solid var(--border);
+      }
+
+      .hint {
+          color: var(--muted);
+          font-size: 12px;
+      }
+
+      .badges {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+
+      /* Per-card badges: labels become toggles when clickable */
+      .badge {
+          font-size: 12px;
+          padding: 3px 8px;
+          border-radius: 999px;
+          border: 1px solid var(--border);
+          background: var(--chip);
+          color: #d7dbe0;
+      }
+
+      .badge.ok {
+          color: #b9f6ca;
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+      }
+
+      .badge.info {
+          color: #b3d9ff;
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+      }
+
+      .badge.err {
+          color: #ff9aa0;
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+      }
+
+      .as-toggle {
+          cursor: pointer;
+      }
+
+      /* 1px ring on active toggle */
+      .tg-err:checked + label.as-toggle,
+      .tg-info:checked + label.as-toggle,
+      .tg-stories:checked + label.as-toggle,
+      .tg-docs:checked + label.as-toggle,
+      .tg-subcomponents:checked + label.as-toggle,
+      .tg-content:checked + label.as-toggle,
+      .tg-props:checked + label.as-toggle {
+          box-shadow: 0 0 0 var(--active-ring) currentColor;
+          border-color: currentColor;
+      }
+
+      /* Panels: hidden by default, shown when respective toggle checked */
+      .panels {
+          display: grid;
+          gap: 10px;
+      }
+
+      .panel {
+          display: none;
+      }
+
+      .tg-err:checked ~ .panels .panel-err {
+          display: grid;
+      }
+
+      .tg-info:checked ~ .panels .panel-info {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-subcomponents:checked ~ .panels .panel-subcomponents {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-content:checked ~ .panels .panel-content {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-props:checked ~ .panels .panel-props {
+          display: grid;
+      }
+
+      /* Colored notes for prop type error + info */
+      .note {
+          padding: 12px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+      }
+
+      .note.err {
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+          background: var(--err-bg);
+          color: #ffd1d4;
+      }
+
+      .note.info {
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+          background: var(--info-bg);
+          color: #d6e8ff;
+      }
+
+      .note.ok {
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+          background: var(--ok-bg);
+          color: var(--fg);
+      }
+
+      .note-title {
+          font-weight: 600;
+          margin-bottom: 6px;
+      }
+
+      .note-body {
+          white-space: normal;
+      }
+
+      /* Story error cards */
+      .ex {
+          padding: 10px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          background: #0f131b;
+      }
+
+      .ex.err {
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+      }
+
+      .row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+
+      .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          display: inline-block;
+      }
+
+      .dot-ok {
+          background: var(--ok);
+      }
+
+      .dot-err {
+          background: var(--err);
+      }
+
+      .ex-name {
+          font-weight: 600;
+      }
+
+      /* Error groups (visible in errors filter) */
+      .error-groups {
+          display: none;
+          margin-bottom: 16px;
+      }
+
+      .group {
+          border: 1px solid var(--border);
+          background: var(--panel);
+          border-radius: 14px;
+          overflow: hidden;
+      }
+
+      .group + .group {
+          margin-top: 12px;
+      }
+
+      .group-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 14px;
+          cursor: pointer;
+          border-bottom: 1px solid var(--border);
+      }
+
+      .group-header:hover {
+          background: #141722;
+      }
+
+      .group-title {
+          font-weight: 600;
+          flex: 1;
+      }
+
+      .group-count {
+          font-size: 12px;
+          color: var(--muted);
+      }
+
+      .group-cards {
+          display: none;
+          padding: 12px;
+      }
+
+      .group .card {
+          margin: 12px 0;
+      }
+
+      .group .card:first-child {
+          margin-top: 0;
+      }
+
+      .group .card:last-child {
+          margin-bottom: 0;
+      }
+
+      /* caret rotation */
+      .group-tg:checked + label .caret {
+          transform: rotate(90deg);
+      }
+
+      .caret {
+          transition: transform 0.15s ease;
+      }
+
+      /* toggle body */
+      .group-tg:checked ~ .group-cards {
+          display: block;
+      }
+
+      /* CSS-only filtering of cards via top pills */
+      #filter-errors:target ~ main .card:not(.has-error):not(.has-story-error) {
+          display: none;
+      }
+
+      #filter-infos:target ~ main .card:not(.has-info) {
+          display: none;
+      }
+
+      #filter-story-errors:target ~ main .card:not(.has-story-error) {
+          display: none;
+      }
+
+      #filter-doc-errors:target ~ main .card:not(.has-doc-error) {
+          display: none;
+      }
+
+      #filter-docs:target ~ main .card:has(> .tg-docs),
+      #filter-docs:target ~ main .card.is-doc {
+          display: block;
+      }
+
+      #filter-docs:target ~ main .card:not(:has(> .tg-docs)):not(.is-doc) {
+          display: none;
+      }
+
+      #filter-all:target ~ main .card {
+          display: block;
+      }
+
+      /* In errors view, hide standalone component-error cards in the regular grid (they will appear in groups) */
+      #filter-errors:target ~ main .grid .card.has-error {
+          display: none;
+      }
+
+      /* Show grouped section only in errors view */
+      #filter-errors:target ~ main .error-groups {
+          display: block;
+      }
+
+      /* Section titles */
+      .section-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--muted);
+          margin: 24px 0 12px;
+          padding-bottom: 8px;
+          border-bottom: 1px solid var(--border);
+      }
+      .section-title:first-child {
+          margin-top: 0;
+      }
+
+      /* When a toggle is checked, show the corresponding panel */
+      .card > .tg-err:checked ~ .panels .panel-err {
+          display: grid;
+      }
+      
+      .card > .tg-info:checked ~ .panels .panel-info {
+          display: grid;
+      }
+      
+      .card > .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+      }
+
+      .card > .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+      }
+
+      .card > .tg-subcomponents:checked ~ .panels .panel-subcomponents {
+          display: grid;
+      }
+
+      .card > .tg-content:checked ~ .panels .panel-content {
+          display: grid;
+      }
+
+      /* Add vertical spacing around panels only when any panel is visible */
+      .card > .tg-err:checked ~ .panels,
+      .card > .tg-info:checked ~ .panels,
+      .card > .tg-stories:checked ~ .panels,
+      .card > .tg-docs:checked ~ .panels,
+      .card > .tg-subcomponents:checked ~ .panels,
+      .card > .tg-content:checked ~ .panels,
+      .card > .tg-props:checked ~ .panels {
+          margin: 10px 0;
+      }
+
+      /* Optional: a subtle 1px ring on the active badge, using :has() if available */
+      @supports selector(.card:has(.tg-err:checked)) {
+          .card:has(.tg-err:checked) label[for$='-err'],
+          .card:has(.tg-info:checked) label[for$='-info'],
+          .card:has(.tg-stories:checked) label[for$='-stories'],
+          .card:has(.tg-docs:checked) label[for$='-docs'],
+          .card:has(.tg-subcomponents:checked) label[for$='-subcomponents'],
+          .card:has(.tg-content:checked) label[for$='-content'],
+          .card:has(.tg-props:checked) label[for$='-props'] {
+              box-shadow: 0 0 0 1px currentColor;
+              border-color: currentColor;
+          }
+      }
+
+      /* Wrap long lines in code blocks at ~120 characters */
+      pre, code {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      }
+      pre {
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          overflow-x: auto; /* fallback for extremely long tokens */
+          margin: 8px 0 0;
+      }
+      pre > code {
+          display: block;
+          white-space: inherit;
+          overflow-wrap: inherit;
+          word-break: inherit;
+          inline-size: min(100%, 120ch);
+      }
+
+      /* MDX content container for docs */
+      .mdx-content {
+          background: #0f131b;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          padding: 12px;
+          max-height: 400px;
+          overflow-y: auto;
+          margin-top: 8px;
+      }
+  </style>
+</head>
+<body>
+<!-- Hidden targets for the top-level filters -->
+<span id="filter-all"></span>
+<span id="filter-errors"></span>
+<span id="filter-infos"></span>
+<span id="filter-story-errors"></span>
+<span id="filter-doc-errors"></span>
+<span id="filter-docs"></span>
+<header>
+  <div class="wrap">
+    <h1>Manifest Debugger</h1>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">2/18 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">18/18 infos</a><span class="filter-pill ok" aria-disabled="true">68 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">1 doc ok</a></div>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+    <div class="note info" style="margin-bottom: 16px;">
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.5s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <pre><code>typescript: {
+  reactDocgen: 'react-docgen-typescript',
+}</code></pre>
+            Note: <code>react-docgen-typescript</code> can be slower. If performance is acceptable for your project, it generally produces better results.
+            <a href="https://storybook.js.org/docs/api/main-config/main-config-typescript#reactdocgen" target="_blank">Learn more</a>
+          </div>
+    <h2 class="section-title">Components</h2>
+    <div class="grid" role="list">
+      
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Avatar">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Avatar</h2>
+      <div class="badges">
+        <label for="c-0-atoms-avatar-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-0-atoms-avatar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-0-atoms-avatar-stories" class="badge ok as-toggle">7 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/atoms/Avatar.stories.tsx">atoms-avatar · ./stories/atoms/Avatar.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-0-atoms-avatar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-0-atoms-avatar-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-0-atoms-avatar-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src\components\atoms\Avatar.tsx::Avatar</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>className?: string
+
+name: string
+
+size?: &#39;sm&#39; | &#39;md&#39; | &#39;lg&#39;
+
+src?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Avatar } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Initials</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Initials = () =&gt; &lt;Avatar name=&quot;Alice Miller&quot; size=&quot;md&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Single Initial</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SingleInitial = () =&gt; &lt;Avatar name=&quot;John&quot; size=&quot;md&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Small</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Small = () =&gt; &lt;Avatar name=&quot;Bob Smith&quot; size=&quot;sm&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Large</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Large = () =&gt; &lt;Avatar name=&quot;Catherine Jones&quot; size=&quot;lg&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Image</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithImage = () =&gt; &lt;Avatar name=&quot;Demo User&quot; size=&quot;md&quot; src=&quot;https://i.pravatar.cc/150?u=demo&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllSizes = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 24, alignItems: &#39;center&#39; }}&gt;
+    &lt;Avatar name=&quot;Alice Miller&quot; size=&quot;sm&quot; /&gt;
+    &lt;Avatar name=&quot;Alice Miller&quot; size=&quot;md&quot; /&gt;
+    &lt;Avatar name=&quot;Alice Miller&quot; size=&quot;lg&quot; /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Color Variety</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ColorVariety = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 16, alignItems: &#39;center&#39; }}&gt;
+    &lt;Avatar name=&quot;Alice Miller&quot; /&gt;
+    &lt;Avatar name=&quot;Bob Smith&quot; /&gt;
+    &lt;Avatar name=&quot;Catherine Jones&quot; /&gt;
+    &lt;Avatar name=&quot;David Brown&quot; /&gt;
+    &lt;Avatar name=&quot;Eve Davis&quot; /&gt;
+    &lt;Avatar name=&quot;Frank Wilson&quot; /&gt;
+    &lt;Avatar name=&quot;Grace Lee&quot; /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Badge">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Badge</h2>
+      <div class="badges">
+        <label for="c-1-atoms-badge-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-1-atoms-badge-info" class="badge info as-toggle">1 info</label>
+        <label for="c-1-atoms-badge-stories" class="badge ok as-toggle">8 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/atoms/Badge.stories.tsx">atoms-badge · ./stories/atoms/Badge.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-1-atoms-badge-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-1-atoms-badge-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-1-atoms-badge-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src\components\atoms\Badge.tsx::Badge</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>children: ReactNode
+
+className?: string
+
+dot?: boolean = false
+
+variant?: &#39;success&#39; | &#39;warning&#39; | &#39;error&#39; | &#39;info&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Badge } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Success</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Success = () =&gt; &lt;Badge variant=&quot;success&quot;&gt;Completed&lt;/Badge&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Warning</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Warning = () =&gt; &lt;Badge variant=&quot;warning&quot;&gt;In Progress&lt;/Badge&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Error</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Error = () =&gt; &lt;Badge variant=&quot;error&quot;&gt;Overdue&lt;/Badge&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Info</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Info = () =&gt; &lt;Badge variant=&quot;info&quot;&gt;Pending&lt;/Badge&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Dot</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDot = () =&gt; &lt;Badge variant=&quot;success&quot; dot&gt;Online&lt;/Badge&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Trend Up</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const TrendUp = () =&gt; &lt;Badge variant=&quot;success&quot;&gt;+12%&lt;/Badge&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Variants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllVariants = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 8, alignItems: &#39;center&#39; }}&gt;
+    &lt;Badge variant=&quot;success&quot;&gt;Completed&lt;/Badge&gt;
+    &lt;Badge variant=&quot;warning&quot;&gt;In Progress&lt;/Badge&gt;
+    &lt;Badge variant=&quot;error&quot;&gt;Overdue&lt;/Badge&gt;
+    &lt;Badge variant=&quot;info&quot;&gt;Pending&lt;/Badge&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Dot Variants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDotVariants = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 8, alignItems: &#39;center&#39; }}&gt;
+    &lt;Badge variant=&quot;success&quot; dot&gt;Online&lt;/Badge&gt;
+    &lt;Badge variant=&quot;warning&quot; dot&gt;Away&lt;/Badge&gt;
+    &lt;Badge variant=&quot;error&quot; dot&gt;Offline&lt;/Badge&gt;
+    &lt;Badge variant=&quot;info&quot; dot&gt;Away&lt;/Badge&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Button">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Button</h2>
+      <div class="badges">
+        <label for="c-2-atoms-button-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-2-atoms-button-info" class="badge info as-toggle">1 info</label>
+        <label for="c-2-atoms-button-stories" class="badge ok as-toggle">11 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/atoms/Button.stories.tsx">atoms-button · ./stories/atoms/Button.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-2-atoms-button-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-2-atoms-button-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-2-atoms-button-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src\components\atoms\Button.tsx::Button</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>children?: ReactNode
+
+iconLeft?: ReactNode
+
+iconRight?: ReactNode
+
+loading?: boolean</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Button } from "mini-crm";
+import { FiSearch, FiX } from "react-icons/fi";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Primary = () =&gt; &lt;Button variant=&quot;primary&quot;&gt;Sign In&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Secondary</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Secondary = () =&gt; &lt;Button variant=&quot;secondary&quot;&gt;Cancel&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Ghost</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Ghost = () =&gt; &lt;Button variant=&quot;ghost&quot;&gt;Settings&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Danger</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Danger = () =&gt; &lt;Button variant=&quot;danger&quot;&gt;Delete&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Disabled = () =&gt; &lt;Button variant=&quot;primary&quot; disabled&gt;Disabled&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Loading = () =&gt; &lt;Button variant=&quot;primary&quot; loading&gt;Saving...&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Icon Left</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithIconLeft = () =&gt; &lt;Button variant=&quot;primary&quot; iconLeft={&lt;FiSearch /&gt;}&gt;Search&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Icon Right</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithIconRight = () =&gt; &lt;Button variant=&quot;secondary&quot; iconRight={&lt;FiX /&gt;}&gt;Clear&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Small</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Small = () =&gt; &lt;Button variant=&quot;primary&quot; size=&quot;sm&quot;&gt;Small&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Large</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Large = () =&gt; &lt;Button variant=&quot;primary&quot; size=&quot;lg&quot;&gt;Large&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Variants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllVariants = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: 16 }}&gt;
+    &lt;div style={{ display: &#39;flex&#39;, gap: 8, alignItems: &#39;center&#39; }}&gt;
+      &lt;Button variant=&quot;primary&quot;&gt;Primary&lt;/Button&gt;
+      &lt;Button variant=&quot;secondary&quot;&gt;Secondary&lt;/Button&gt;
+      &lt;Button variant=&quot;ghost&quot;&gt;Ghost&lt;/Button&gt;
+      &lt;Button variant=&quot;danger&quot;&gt;Danger&lt;/Button&gt;
+    &lt;/div&gt;
+    &lt;div style={{ display: &#39;flex&#39;, gap: 8, alignItems: &#39;center&#39; }}&gt;
+      &lt;Button variant=&quot;primary&quot; size=&quot;sm&quot;&gt;Small&lt;/Button&gt;
+      &lt;Button variant=&quot;primary&quot; size=&quot;md&quot;&gt;Medium&lt;/Button&gt;
+      &lt;Button variant=&quot;primary&quot; size=&quot;lg&quot;&gt;Large&lt;/Button&gt;
+    &lt;/div&gt;
+    &lt;div style={{ display: &#39;flex&#39;, gap: 8, alignItems: &#39;center&#39; }}&gt;
+      &lt;Button variant=&quot;primary&quot; loading&gt;Loading&lt;/Button&gt;
+      &lt;Button variant=&quot;primary&quot; disabled&gt;Disabled&lt;/Button&gt;
+      &lt;Button variant=&quot;primary&quot; iconLeft={&lt;FiSearch /&gt;}&gt;Icon Left&lt;/Button&gt;
+      &lt;Button variant=&quot;secondary&quot; iconRight={&lt;FiX /&gt;}&gt;Icon Right&lt;/Button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Card.Root">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> Card.Root</h2>
+      <div class="badges">
+        <label for="c-3-molecules-card-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-3-molecules-card-info" class="badge info as-toggle">1 info</label>
+        <label for="c-3-molecules-card-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/molecules/Card.stories.tsx">molecules-card · ./stories/molecules/Card.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-3-molecules-card-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-3-molecules-card-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-3-molecules-card-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>File: C:\dev\mini-crm\client\mini-crm\src\components\molecules\Card.tsx
+Error:
+No suitable component definition found.
+You can debug your component file in this playground: https://react-docgen.dev/playground
+Code:
+import { type ReactNode } from &#39;react&#39;;
+import { Divider } from &#39;../atoms/Divider&#39;;
+
+function Root({ children, style }: { children: ReactNode; style?: React.CSSProperties }) {
+  return (
+    &lt;div
+      style={{
+        background: &#39;var(--bg-surface)&#39;,
+        border: &#39;1px solid var(--border-subtle)&#39;,
+        borderRadius: &#39;var(--radius-lg)&#39;,
+        overflow: &#39;hidden&#39;,
+        ...style,
+      }}
+    &gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+
+function Header({ children, style }: { children: ReactNode; style?: React.CSSProperties }) {
+  return (
+    &lt;div style={{ padding: &#39;var(--space-4) var(--space-5)&#39;, display: &#39;flex&#39;, alignItems: &#39;center&#39;, justifyContent: &#39;space-between&#39;, ...style }}&gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+
+function Content({ children, style }: { children: ReactNode; style?: React.CSSProperties }) {
+  return &lt;div style={{ padding: &#39;0 var(--space-5) var(--space-5)&#39;, ...style }}&gt;{children}&lt;/div&gt;;
+}
+
+function Footer({ children, style }: { children: ReactNode; style?: React.CSSProperties }) {
+  return (
+    &lt;&gt;
+      &lt;Divider /&gt;
+      &lt;div style={{ padding: &#39;var(--space-3) var(--space-5)&#39;, display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: &#39;var(--space-2)&#39;, ...style }}&gt;
+        {children}
+      &lt;/div&gt;
+    &lt;/&gt;
+  );
+}
+
+export const Card = { Root, Header, Content, Footer };
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Badge, Card, IconButton, Typography } from "mini-crm";
+import { FiMoreHorizontal } from "react-icons/fi";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; (
+  &lt;Card.Root style={{ maxWidth: 400 }}&gt;
+    &lt;Card.Header&gt;
+      &lt;Typography as=&quot;h3&quot;&gt;Contact Details&lt;/Typography&gt;
+      &lt;IconButton icon={&lt;FiMoreHorizontal size={18} /&gt;} label=&quot;More&quot; /&gt;
+    &lt;/Card.Header&gt;
+    &lt;Card.Content&gt;
+      &lt;Typography as=&quot;p&quot;&gt;Email: alice@example.com&lt;/Typography&gt;
+      &lt;Typography as=&quot;p&quot;&gt;Phone: +1 234 567 890&lt;/Typography&gt;
+    &lt;/Card.Content&gt;
+    &lt;Card.Footer&gt;
+      &lt;Badge variant=&quot;success&quot;&gt;Active&lt;/Badge&gt;
+    &lt;/Card.Footer&gt;
+  &lt;/Card.Root&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Divider">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Divider</h2>
+      <div class="badges">
+        <label for="c-4-atoms-divider-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-4-atoms-divider-info" class="badge info as-toggle">1 info</label>
+        <label for="c-4-atoms-divider-stories" class="badge ok as-toggle">3 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/atoms/Divider.stories.tsx">atoms-divider · ./stories/atoms/Divider.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-4-atoms-divider-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-4-atoms-divider-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-4-atoms-divider-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">2 prop types</span>
+            </div>
+            <pre><code>Component: src\components\atoms\Divider.tsx::Divider</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>className?: string
+
+orientation?: &#39;horizontal&#39; | &#39;vertical&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Divider, Typography } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Horizontal</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Horizontal = () =&gt; &lt;Divider /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Vertical</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Vertical = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: &#39;var(--space-4)&#39;, height: 40 }}&gt;
+    &lt;Typography as=&quot;p&quot;&gt;Left&lt;/Typography&gt;
+    &lt;Divider orientation=&quot;vertical&quot; /&gt;
+    &lt;Typography as=&quot;p&quot;&gt;Right&lt;/Typography&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Variants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllVariants = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: 32 }}&gt;
+    &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: 8 }}&gt;
+      &lt;Typography as=&quot;p&quot;&gt;Horizontal divider below:&lt;/Typography&gt;
+      &lt;Divider orientation=&quot;horizontal&quot; /&gt;
+      &lt;Typography as=&quot;p&quot;&gt;Content after divider&lt;/Typography&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+      &lt;Typography as=&quot;p&quot;&gt;Vertical divider between items:&lt;/Typography&gt;
+      &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 16, height: 40, marginTop: 8 }}&gt;
+        &lt;Typography as=&quot;p&quot;&gt;Left&lt;/Typography&gt;
+        &lt;Divider orientation=&quot;vertical&quot; /&gt;
+        &lt;Typography as=&quot;p&quot;&gt;Center&lt;/Typography&gt;
+        &lt;Divider orientation=&quot;vertical&quot; /&gt;
+        &lt;Typography as=&quot;p&quot;&gt;Right&lt;/Typography&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Drawer">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> Drawer</h2>
+      <div class="badges">
+        <label for="c-5-organisms-drawer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-5-organisms-drawer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-5-organisms-drawer-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/organisms/Drawer.stories.tsx">organisms-drawer · ./stories/organisms/Drawer.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-5-organisms-drawer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-5-organisms-drawer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-5-organisms-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>File: C:\dev\mini-crm\client\mini-crm\src\components\organisms\Drawer.tsx
+Error:
+No suitable component definition found.
+You can debug your component file in this playground: https://react-docgen.dev/playground
+Code:
+import { useEffect, type ReactNode } from &#39;react&#39;;
+import { createPortal } from &#39;react-dom&#39;;
+import { IconButton } from &#39;../atoms/IconButton&#39;;
+import { FiX } from &#39;react-icons/fi&#39;;
+import { Typography } from &#39;../atoms/Typography&#39;;
+
+interface DrawerProps {
+  open: boolean;
+  onClose: () =&gt; void;
+  title: string;
+  children: ReactNode;
+  width?: number;
+}
+
+export function Drawer({ open, onClose, title, children, width = 480 }: DrawerProps) {
+  useEffect(() =&gt; {
+    if (open) {
+      document.body.style.overflow = &#39;hidden&#39;;
+    } else {
+      document.body.style.overflow = &#39;&#39;;
+    }
+    return () =&gt; { document.body.style.overflow = &#39;&#39;; };
+  }, [open]);
+
+  useEffect(() =&gt; {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === &#39;Escape&#39; &amp;&amp; open) onClose();
+    }
+    window.addEventListener(&#39;keydown&#39;, handleKey);
+    return () =&gt; window.removeEventListener(&#39;keydown&#39;, handleKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return createPortal(
+    &lt;div style={{ position: &#39;fixed&#39;, inset: 0, zIndex: 1000, display: &#39;flex&#39; }}&gt;
+      &lt;div
+        style={{ flex: 1, background: &#39;rgba(0,0,0,0.6)&#39; }}
+        onClick={onClose}
+      /&gt;
+      &lt;div
+        style={{
+          width,
+          maxWidth: &#39;100vw&#39;,
+          background: &#39;var(--bg-base)&#39;,
+          borderLeft: &#39;1px solid var(--border-subtle)&#39;,
+          display: &#39;flex&#39;,
+          flexDirection: &#39;column&#39;,
+          animation: &#39;slideIn 0.2s ease&#39;,
+        }}
+      &gt;
+        &lt;div
+          style={{
+            display: &#39;flex&#39;,
+            alignItems: &#39;center&#39;,
+            justifyContent: &#39;space-between&#39;,
+            padding: &#39;var(--space-4) var(--space-5)&#39;,
+            borderBottom: &#39;1px solid var(--border-subtle)&#39;,
+          }}
+        &gt;
+          &lt;Typography as=&quot;h2&quot;&gt;{title}&lt;/Typography&gt;
+          &lt;IconButton icon={&lt;FiX size={20} /&gt;} label=&quot;Close&quot; onClick={onClose} /&gt;
+        &lt;/div&gt;
+        &lt;div style={{ flex: 1, overflow: &#39;auto&#39;, padding: &#39;var(--space-5)&#39; }}&gt;
+          {children}
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;style&gt;{`
+        @keyframes slideIn {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+      `}&lt;/style&gt;
+    &lt;/div&gt;,
+    document.body
+  );
+}
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Button, Drawer, Typography } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; {
+  const [open, setOpen] = useState(false);
+  return (
+    &lt;&gt;
+      &lt;Button onClick={() =&gt; setOpen(true)}&gt;Open Drawer&lt;/Button&gt;
+      &lt;Drawer open={open} onClose={() =&gt; setOpen(false)} title=&quot;Contact Details&quot;&gt;
+        &lt;Typography as=&quot;p&quot;&gt;Email: alice@example.com&lt;/Typography&gt;
+        &lt;Typography as=&quot;p&quot;&gt;Phone: +1 234 567 890&lt;/Typography&gt;
+      &lt;/Drawer&gt;
+    &lt;/&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="FormField">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> FormField</h2>
+      <div class="badges">
+        <label for="c-6-molecules-formfield-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-6-molecules-formfield-info" class="badge info as-toggle">1 info</label>
+        <label for="c-6-molecules-formfield-stories" class="badge ok as-toggle">2 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/molecules/FormField.stories.tsx">molecules-formfield · ./stories/molecules/FormField.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-6-molecules-formfield-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-6-molecules-formfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-6-molecules-formfield-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">3 prop types</span>
+            </div>
+            <pre><code>Component: src\components\molecules\FormField.tsx::FormField</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>children: ReactNode
+
+error?: string
+
+label: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { FormField, Input } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;FormField label=&quot;Email&quot;&gt;&lt;Input placeholder=&quot;you@example.com&quot; /&gt;&lt;/FormField&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Error</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithError = () =&gt; &lt;FormField label=&quot;Password&quot; error=&quot;Required&quot;&gt;&lt;Input type=&quot;password&quot; error=&quot;Required&quot; /&gt;&lt;/FormField&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Header">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Header</h2>
+      <div class="badges">
+        <label for="c-7-organisms-header-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-7-organisms-header-info" class="badge info as-toggle">1 info</label>
+        <label for="c-7-organisms-header-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/organisms/Header.stories.tsx">organisms-header · ./stories/organisms/Header.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-7-organisms-header-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-7-organisms-header-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-7-organisms-header-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">3 prop types</span>
+            </div>
+            <pre><code>Component: src\components\organisms\Header.tsx::Header</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>onSearchChange: (value: string) =&gt; void
+
+searchValue: string
+
+userName?: string = &#39;User&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Header } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; {
+  const [search, setSearch] = useState(&#39;&#39;);
+  return &lt;Header searchValue={search} onSearchChange={setSearch} userName=&quot;Alice&quot; /&gt;;
+};</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="IconButton">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> IconButton</h2>
+      <div class="badges">
+        <label for="c-8-atoms-iconbutton-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-8-atoms-iconbutton-info" class="badge info as-toggle">1 info</label>
+        <label for="c-8-atoms-iconbutton-stories" class="badge ok as-toggle">7 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/atoms/IconButton.stories.tsx">atoms-iconbutton · ./stories/atoms/IconButton.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-8-atoms-iconbutton-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-8-atoms-iconbutton-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-8-atoms-iconbutton-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">2 prop types</span>
+            </div>
+            <pre><code>Component: src\components\atoms\IconButton.tsx::IconButton</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>icon: ReactNode
+
+label: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { FiBell, FiSearch, FiSettings, FiTrash2, FiX } from "react-icons/fi";
+import { IconButton } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Bell</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Bell = () =&gt; &lt;IconButton icon={&lt;FiBell /&gt;} label=&quot;Notifications&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Settings</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Settings = () =&gt; &lt;IconButton icon={&lt;FiSettings /&gt;} label=&quot;Settings&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Close</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Close = () =&gt; &lt;IconButton icon={&lt;FiX /&gt;} label=&quot;Close&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Small</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Small = () =&gt; &lt;IconButton icon={&lt;FiSearch /&gt;} label=&quot;Search&quot; size=&quot;sm&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Large</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Large = () =&gt; &lt;IconButton icon={&lt;FiTrash2 /&gt;} label=&quot;Delete&quot; size=&quot;lg&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Disabled = () =&gt; &lt;IconButton icon={&lt;FiBell /&gt;} label=&quot;Notifications&quot; disabled /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Variants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllVariants = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 16, alignItems: &#39;center&#39; }}&gt;
+    &lt;IconButton icon={&lt;FiBell /&gt;} label=&quot;Notifications&quot; /&gt;
+    &lt;IconButton icon={&lt;FiSettings /&gt;} label=&quot;Settings&quot; /&gt;
+    &lt;IconButton icon={&lt;FiX /&gt;} label=&quot;Close&quot; /&gt;
+    &lt;IconButton icon={&lt;FiSearch /&gt;} label=&quot;Search&quot; size=&quot;sm&quot; /&gt;
+    &lt;IconButton icon={&lt;FiTrash2 /&gt;} label=&quot;Delete&quot; size=&quot;lg&quot; /&gt;
+    &lt;IconButton icon={&lt;FiBell /&gt;} label=&quot;Disabled&quot; disabled /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Input">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Input</h2>
+      <div class="badges">
+        <label for="c-9-atoms-input-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-9-atoms-input-info" class="badge info as-toggle">1 info</label>
+        <label for="c-9-atoms-input-stories" class="badge ok as-toggle">6 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/atoms/Input.stories.tsx">atoms-input · ./stories/atoms/Input.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-9-atoms-input-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-9-atoms-input-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-9-atoms-input-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src\components\atoms\Input.tsx::Input</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>error?: string
+
+iconLeft?: ReactNode
+
+iconRight?: ReactNode
+
+label?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { FiLock, FiMail } from "react-icons/fi";
+import { Input } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;Input placeholder=&quot;Enter text...&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Label</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithLabel = () =&gt; &lt;Input label=&quot;Email&quot; placeholder=&quot;you@example.com&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Icon</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithIcon = () =&gt; &lt;Input label=&quot;Email&quot; placeholder=&quot;you@example.com&quot; iconLeft={&lt;FiMail /&gt;} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Error</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithError = () =&gt; &lt;Input
+    label=&quot;Password&quot;
+    type=&quot;password&quot;
+    iconLeft={&lt;FiLock /&gt;}
+    error=&quot;Password must be at least 8 characters&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Disabled = () =&gt; &lt;Input label=&quot;Disabled&quot; placeholder=&quot;Can&#39;t type&quot; disabled /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Variants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllVariants = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: 16, maxWidth: 320 }}&gt;
+    &lt;Input placeholder=&quot;Default input&quot; /&gt;
+    &lt;Input label=&quot;Email&quot; placeholder=&quot;you@example.com&quot; /&gt;
+    &lt;Input label=&quot;Email&quot; placeholder=&quot;you@example.com&quot; iconLeft={&lt;FiMail /&gt;} /&gt;
+    &lt;Input label=&quot;Password&quot; type=&quot;password&quot; iconLeft={&lt;FiLock /&gt;} error=&quot;Password must be at least 8 characters&quot; /&gt;
+    &lt;Input label=&quot;Disabled&quot; placeholder=&quot;Can&#39;t type&quot; disabled /&gt;
+    &lt;Input label=&quot;With right icon&quot; placeholder=&quot;Search...&quot; iconRight={&lt;FiMail /&gt;} /&gt;
+    &lt;Input label=&quot;Both icons&quot; placeholder=&quot;Both sides&quot; iconLeft={&lt;FiMail /&gt;} iconRight={&lt;FiLock /&gt;} /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="KanbanColumn">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> KanbanColumn</h2>
+      <div class="badges">
+        <label for="c-10-organisms-kanbancolumn-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-10-organisms-kanbancolumn-info" class="badge info as-toggle">1 info</label>
+        <label for="c-10-organisms-kanbancolumn-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/organisms/KanbanColumn.stories.tsx">organisms-kanbancolumn · ./stories/organisms/KanbanColumn.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-10-organisms-kanbancolumn-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-10-organisms-kanbancolumn-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-10-organisms-kanbancolumn-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src\components\organisms\KanbanColumn.tsx::KanbanColumn</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>children: ReactNode
+
+count: number
+
+title: string
+
+variant?: &#39;success&#39; | &#39;warning&#39; | &#39;error&#39; | &#39;info&#39; = &#39;info&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { KanbanColumn, KanbanTask } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 24 }}&gt;
+    &lt;KanbanColumn title=&quot;To Do&quot; count={3} variant=&quot;info&quot;&gt;
+      &lt;KanbanTask title=&quot;Design login page&quot; /&gt;
+      &lt;KanbanTask title=&quot;Setup database&quot; /&gt;
+      &lt;KanbanTask title=&quot;Write API docs&quot; /&gt;
+    &lt;/KanbanColumn&gt;
+    &lt;KanbanColumn title=&quot;In Progress&quot; count={2} variant=&quot;warning&quot;&gt;
+      &lt;KanbanTask title=&quot;Implement auth&quot; /&gt;
+      &lt;KanbanTask title=&quot;Create contact form&quot; /&gt;
+    &lt;/KanbanColumn&gt;
+    &lt;KanbanColumn title=&quot;Done&quot; count={4} variant=&quot;success&quot;&gt;
+      &lt;KanbanTask title=&quot;Project setup&quot; /&gt;
+      &lt;KanbanTask title=&quot;Design system&quot; /&gt;
+    &lt;/KanbanColumn&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="NavItem">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> NavItem</h2>
+      <div class="badges">
+        <label for="c-11-molecules-navitem-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-11-molecules-navitem-info" class="badge info as-toggle">1 info</label>
+        <label for="c-11-molecules-navitem-stories" class="badge ok as-toggle">3 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/molecules/NavItem.stories.tsx">molecules-navitem · ./stories/molecules/NavItem.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-11-molecules-navitem-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-11-molecules-navitem-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-11-molecules-navitem-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src\components\molecules\NavItem.tsx::NavItem</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>active?: boolean = false
+
+icon: ReactNode
+
+label: string
+
+onClick?: () =&gt; void</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { FiCheckSquare, FiSettings, FiUsers } from "react-icons/fi";
+import { NavItem } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Contacts</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Contacts = () =&gt; &lt;NavItem icon={&lt;FiUsers size={18} /&gt;} label=&quot;Contacts&quot; active /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Tasks</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Tasks = () =&gt; &lt;NavItem icon={&lt;FiCheckSquare size={18} /&gt;} label=&quot;Tasks&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Settings</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Settings = () =&gt; &lt;NavItem icon={&lt;FiSettings size={18} /&gt;} label=&quot;Settings&quot; /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="SearchInput">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> SearchInput</h2>
+      <div class="badges">
+        <label for="c-12-molecules-searchinput-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-12-molecules-searchinput-info" class="badge info as-toggle">1 info</label>
+        <label for="c-12-molecules-searchinput-stories" class="badge ok as-toggle">2 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/molecules/SearchInput.stories.tsx">molecules-searchinput · ./stories/molecules/SearchInput.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-12-molecules-searchinput-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-12-molecules-searchinput-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-12-molecules-searchinput-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src\components\molecules\SearchInput.tsx::SearchInput</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>hotkey?: string = &#39;⌘K&#39;
+
+onChange: (value: string) =&gt; void
+
+placeholder?: string = &#39;Search...&#39;
+
+value: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { SearchInput } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; {
+  const [val, setVal] = useState(&#39;&#39;);
+  return &lt;SearchInput value={val} onChange={setVal} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Without Hotkey</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithoutHotkey = () =&gt; {
+  const [val, setVal] = useState(&#39;&#39;);
+  return &lt;SearchInput value={val} onChange={setVal} hotkey=&quot;&quot; /&gt;;
+};</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Sidebar">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Sidebar</h2>
+      <div class="badges">
+        <label for="c-13-organisms-sidebar-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-13-organisms-sidebar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-13-organisms-sidebar-stories" class="badge ok as-toggle">2 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/organisms/Sidebar.stories.tsx">organisms-sidebar · ./stories/organisms/Sidebar.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-13-organisms-sidebar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-13-organisms-sidebar-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-13-organisms-sidebar-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">3 prop types</span>
+            </div>
+            <pre><code>Component: src\components\organisms\Sidebar.tsx::Sidebar</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>activeRoute: string
+
+onNavigate: (route: string) =&gt; void
+
+userName?: string = &#39;User&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Sidebar } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Contacts Active</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ContactsActive = () =&gt; &lt;Sidebar activeRoute=&quot;contacts&quot; onNavigate={() =&gt; {}} userName=&quot;Alice&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Tasks Active</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const TasksActive = () =&gt; &lt;Sidebar activeRoute=&quot;tasks&quot; onNavigate={() =&gt; {}} userName=&quot;Bob&quot; /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Spinner">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Spinner</h2>
+      <div class="badges">
+        <label for="c-14-atoms-spinner-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-14-atoms-spinner-info" class="badge info as-toggle">1 info</label>
+        <label for="c-14-atoms-spinner-stories" class="badge ok as-toggle">4 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/atoms/Spinner.stories.tsx">atoms-spinner · ./stories/atoms/Spinner.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-14-atoms-spinner-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-14-atoms-spinner-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-14-atoms-spinner-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">2 prop types</span>
+            </div>
+            <pre><code>Component: src\components\atoms\Spinner.tsx::Spinner</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>className?: string
+
+size?: &#39;sm&#39; | &#39;md&#39; | &#39;lg&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Spinner } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Small</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Small = () =&gt; &lt;Spinner size=&quot;sm&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Medium</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Medium = () =&gt; &lt;Spinner size=&quot;md&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Large</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Large = () =&gt; &lt;Spinner size=&quot;lg&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllSizes = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 24, alignItems: &#39;center&#39; }}&gt;
+    &lt;Spinner size=&quot;sm&quot; /&gt;
+    &lt;Spinner size=&quot;md&quot; /&gt;
+    &lt;Spinner size=&quot;lg&quot; /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Tabs">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Tabs</h2>
+      <div class="badges">
+        <label for="c-15-molecules-tabs-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-15-molecules-tabs-info" class="badge info as-toggle">1 info</label>
+        <label for="c-15-molecules-tabs-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/molecules/Tabs.stories.tsx">molecules-tabs · ./stories/molecules/Tabs.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-15-molecules-tabs-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-15-molecules-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-15-molecules-tabs-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">3 prop types</span>
+            </div>
+            <pre><code>Component: src\components\molecules\Tabs.tsx::Tabs</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>activeTab: string
+
+onChange: (id: string) =&gt; void
+
+tabs: Tab[]</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Tabs } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; {
+  const [active, setActive] = useState(&#39;signin&#39;);
+  return &lt;Tabs tabs={tabs} activeTab={active} onChange={setActive} /&gt;;
+};</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="TimelineItem">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> TimelineItem</h2>
+      <div class="badges">
+        <label for="c-16-molecules-timelineitem-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-16-molecules-timelineitem-info" class="badge info as-toggle">1 info</label>
+        <label for="c-16-molecules-timelineitem-stories" class="badge ok as-toggle">2 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/molecules/TimelineItem.stories.tsx">molecules-timelineitem · ./stories/molecules/TimelineItem.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-16-molecules-timelineitem-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-16-molecules-timelineitem-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-16-molecules-timelineitem-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">3 prop types</span>
+            </div>
+            <pre><code>Component: src\components\molecules\TimelineItem.tsx::TimelineItem</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>active?: boolean = false
+
+children: ReactNode
+
+date: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { TimelineItem, Typography } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;TimelineItem date=&quot;2 hours ago&quot; active&gt;&lt;Typography as=&quot;p&quot;&gt;Called regarding project proposal&lt;/Typography&gt;&lt;/TimelineItem&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Inactive</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Inactive = () =&gt; &lt;TimelineItem date=&quot;Yesterday&quot; active={false}&gt;&lt;Typography as=&quot;p&quot;&gt;Sent follow-up email&lt;/Typography&gt;&lt;/TimelineItem&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Typography">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Typography</h2>
+      <div class="badges">
+        <label for="c-17-atoms-typography-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-17-atoms-typography-info" class="badge info as-toggle">1 info</label>
+        <label for="c-17-atoms-typography-stories" class="badge ok as-toggle">6 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/atoms/Typography.stories.tsx">atoms-typography · ./stories/atoms/Typography.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-17-atoms-typography-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-17-atoms-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-17-atoms-typography-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">3 prop types</span>
+            </div>
+            <pre><code>Component: src\components\atoms\Typography.tsx::Typography</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>as?: &#39;h1&#39; | &#39;h2&#39; | &#39;h3&#39; | &#39;p&#39; | &#39;caption&#39; = &#39;p&#39;
+
+children: ReactNode
+
+className?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Typography } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Heading 1</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Heading1 = () =&gt; &lt;Typography as=&quot;h1&quot;&gt;Dashboard&lt;/Typography&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Heading 2</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Heading2 = () =&gt; &lt;Typography as=&quot;h2&quot;&gt;Recent Contacts&lt;/Typography&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Heading 3</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Heading3 = () =&gt; &lt;Typography as=&quot;h3&quot;&gt;Task Details&lt;/Typography&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Paragraph</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Paragraph = () =&gt; &lt;Typography as=&quot;p&quot;&gt;This is a paragraph of text used for descriptions and longer content.&lt;/Typography&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Caption</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Caption = () =&gt; &lt;Typography as=&quot;caption&quot;&gt;2 hours ago&lt;/Typography&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Variants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllVariants = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: 12 }}&gt;
+    &lt;Typography as=&quot;h1&quot;&gt;Dashboard (h1)&lt;/Typography&gt;
+    &lt;Typography as=&quot;h2&quot;&gt;Recent Contacts (h2)&lt;/Typography&gt;
+    &lt;Typography as=&quot;h3&quot;&gt;Task Details (h3)&lt;/Typography&gt;
+    &lt;Typography as=&quot;p&quot;&gt;This is a paragraph of text used for descriptions and longer content.&lt;/Typography&gt;
+    &lt;Typography as=&quot;caption&quot;&gt;2 hours ago (caption)&lt;/Typography&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+    </div>
+    <div class="error-groups" role="region" aria-label="Prop type error groups">
+        <section class="group">
+          <input id="no-component-definition-found-toggle" class="group-tg" type="checkbox" hidden />
+          <label for="no-component-definition-found-toggle" class="group-header">
+            <span class="caret">▸</span>
+            <span class="group-title">No component definition found</span>
+            <span class="group-count">2</span>
+          </label>
+          <div class="group-cards">
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Card.Root">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> Card.Root</h2>
+      <div class="badges">
+        <label for="c-error-0-molecules-card-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-0-molecules-card-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-0-molecules-card-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/molecules/Card.stories.tsx">molecules-card · ./stories/molecules/Card.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-0-molecules-card-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-0-molecules-card-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-0-molecules-card-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>File: C:\dev\mini-crm\client\mini-crm\src\components\molecules\Card.tsx
+Error:
+No suitable component definition found.
+You can debug your component file in this playground: https://react-docgen.dev/playground
+Code:
+import { type ReactNode } from &#39;react&#39;;
+import { Divider } from &#39;../atoms/Divider&#39;;
+
+function Root({ children, style }: { children: ReactNode; style?: React.CSSProperties }) {
+  return (
+    &lt;div
+      style={{
+        background: &#39;var(--bg-surface)&#39;,
+        border: &#39;1px solid var(--border-subtle)&#39;,
+        borderRadius: &#39;var(--radius-lg)&#39;,
+        overflow: &#39;hidden&#39;,
+        ...style,
+      }}
+    &gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+
+function Header({ children, style }: { children: ReactNode; style?: React.CSSProperties }) {
+  return (
+    &lt;div style={{ padding: &#39;var(--space-4) var(--space-5)&#39;, display: &#39;flex&#39;, alignItems: &#39;center&#39;, justifyContent: &#39;space-between&#39;, ...style }}&gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+
+function Content({ children, style }: { children: ReactNode; style?: React.CSSProperties }) {
+  return &lt;div style={{ padding: &#39;0 var(--space-5) var(--space-5)&#39;, ...style }}&gt;{children}&lt;/div&gt;;
+}
+
+function Footer({ children, style }: { children: ReactNode; style?: React.CSSProperties }) {
+  return (
+    &lt;&gt;
+      &lt;Divider /&gt;
+      &lt;div style={{ padding: &#39;var(--space-3) var(--space-5)&#39;, display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: &#39;var(--space-2)&#39;, ...style }}&gt;
+        {children}
+      &lt;/div&gt;
+    &lt;/&gt;
+  );
+}
+
+export const Card = { Root, Header, Content, Footer };
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Badge, Card, IconButton, Typography } from "mini-crm";
+import { FiMoreHorizontal } from "react-icons/fi";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; (
+  &lt;Card.Root style={{ maxWidth: 400 }}&gt;
+    &lt;Card.Header&gt;
+      &lt;Typography as=&quot;h3&quot;&gt;Contact Details&lt;/Typography&gt;
+      &lt;IconButton icon={&lt;FiMoreHorizontal size={18} /&gt;} label=&quot;More&quot; /&gt;
+    &lt;/Card.Header&gt;
+    &lt;Card.Content&gt;
+      &lt;Typography as=&quot;p&quot;&gt;Email: alice@example.com&lt;/Typography&gt;
+      &lt;Typography as=&quot;p&quot;&gt;Phone: +1 234 567 890&lt;/Typography&gt;
+    &lt;/Card.Content&gt;
+    &lt;Card.Footer&gt;
+      &lt;Badge variant=&quot;success&quot;&gt;Active&lt;/Badge&gt;
+    &lt;/Card.Footer&gt;
+  &lt;/Card.Root&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Drawer">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> Drawer</h2>
+      <div class="badges">
+        <label for="c-error-1-organisms-drawer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-1-organisms-drawer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-1-organisms-drawer-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./stories/organisms/Drawer.stories.tsx">organisms-drawer · ./stories/organisms/Drawer.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-1-organisms-drawer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-1-organisms-drawer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-1-organisms-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>File: C:\dev\mini-crm\client\mini-crm\src\components\organisms\Drawer.tsx
+Error:
+No suitable component definition found.
+You can debug your component file in this playground: https://react-docgen.dev/playground
+Code:
+import { useEffect, type ReactNode } from &#39;react&#39;;
+import { createPortal } from &#39;react-dom&#39;;
+import { IconButton } from &#39;../atoms/IconButton&#39;;
+import { FiX } from &#39;react-icons/fi&#39;;
+import { Typography } from &#39;../atoms/Typography&#39;;
+
+interface DrawerProps {
+  open: boolean;
+  onClose: () =&gt; void;
+  title: string;
+  children: ReactNode;
+  width?: number;
+}
+
+export function Drawer({ open, onClose, title, children, width = 480 }: DrawerProps) {
+  useEffect(() =&gt; {
+    if (open) {
+      document.body.style.overflow = &#39;hidden&#39;;
+    } else {
+      document.body.style.overflow = &#39;&#39;;
+    }
+    return () =&gt; { document.body.style.overflow = &#39;&#39;; };
+  }, [open]);
+
+  useEffect(() =&gt; {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === &#39;Escape&#39; &amp;&amp; open) onClose();
+    }
+    window.addEventListener(&#39;keydown&#39;, handleKey);
+    return () =&gt; window.removeEventListener(&#39;keydown&#39;, handleKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return createPortal(
+    &lt;div style={{ position: &#39;fixed&#39;, inset: 0, zIndex: 1000, display: &#39;flex&#39; }}&gt;
+      &lt;div
+        style={{ flex: 1, background: &#39;rgba(0,0,0,0.6)&#39; }}
+        onClick={onClose}
+      /&gt;
+      &lt;div
+        style={{
+          width,
+          maxWidth: &#39;100vw&#39;,
+          background: &#39;var(--bg-base)&#39;,
+          borderLeft: &#39;1px solid var(--border-subtle)&#39;,
+          display: &#39;flex&#39;,
+          flexDirection: &#39;column&#39;,
+          animation: &#39;slideIn 0.2s ease&#39;,
+        }}
+      &gt;
+        &lt;div
+          style={{
+            display: &#39;flex&#39;,
+            alignItems: &#39;center&#39;,
+            justifyContent: &#39;space-between&#39;,
+            padding: &#39;var(--space-4) var(--space-5)&#39;,
+            borderBottom: &#39;1px solid var(--border-subtle)&#39;,
+          }}
+        &gt;
+          &lt;Typography as=&quot;h2&quot;&gt;{title}&lt;/Typography&gt;
+          &lt;IconButton icon={&lt;FiX size={20} /&gt;} label=&quot;Close&quot; onClick={onClose} /&gt;
+        &lt;/div&gt;
+        &lt;div style={{ flex: 1, overflow: &#39;auto&#39;, padding: &#39;var(--space-5)&#39; }}&gt;
+          {children}
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;style&gt;{`
+        @keyframes slideIn {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+      `}&lt;/style&gt;
+    &lt;/div&gt;,
+    document.body
+  );
+}
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Button, Drawer, Typography } from "mini-crm";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; {
+  const [open, setOpen] = useState(false);
+  return (
+    &lt;&gt;
+      &lt;Button onClick={() =&gt; setOpen(true)}&gt;Open Drawer&lt;/Button&gt;
+      &lt;Drawer open={open} onClose={() =&gt; setOpen(false)} title=&quot;Contact Details&quot;&gt;
+        &lt;Typography as=&quot;p&quot;&gt;Email: alice@example.com&lt;/Typography&gt;
+        &lt;Typography as=&quot;p&quot;&gt;Phone: +1 234 567 890&lt;/Typography&gt;
+      &lt;/Drawer&gt;
+    &lt;/&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article></div>
+        </section>
+      </div>
+    <h2 class="section-title">Unattached Docs</h2>
+    <div class="grid" role="list">
+      
+<article
+  class="card is-doc no-doc-error"
+  role="listitem"
+  aria-label="Docs">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Design System/Tokens</h2>
+      <div class="badges">
+        
+        <label for="doc-0-design-system-tokens-docs-content" class="badge ok as-toggle">view content</label>
+      </div>
+    </div>
+    <div class="meta" title="./stories/DesignTokens.mdx">design-system-tokens--docs · ./stories/DesignTokens.mdx</div>
+    
+  </div>
+
+  <!-- Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="doc-0-design-system-tokens-docs-content" class="tg tg-content" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-content">
+          <div class="mdx-content">
+            <pre><code>import { Meta } from &#39;@storybook/blocks&#39;;
+
+&lt;Meta title=&quot;Design System/Tokens&quot; /&gt;
+
+# Design Tokens
+
+## Colors
+
+| Token | Value | Preview |
+|-------|-------|---------|
+| `--bg-base` | #0a0a0a | &lt;div style={{background:&#39;var(--bg-base)&#39;,width:32,height:32,borderRadius:4,border:&#39;1px solid var(--border-subtle)&#39;}} /&gt; |
+| `--bg-surface` | #141414 | &lt;div style={{background:&#39;var(--bg-surface)&#39;,width:32,height:32,borderRadius:4,border:&#39;1px solid var(--border-subtle)&#39;}} /&gt; |
+| `--bg-elevated` | #1e1e1e | &lt;div style={{background:&#39;var(--bg-elevated)&#39;,width:32,height:32,borderRadius:4,border:&#39;1px solid var(--border-subtle)&#39;}} /&gt; |
+| `--action-primary-bg` | #ffffff | &lt;div style={{background:&#39;var(--action-primary-bg)&#39;,width:32,height:32,borderRadius:4}} /&gt; |
+| `--action-secondary-bg` | #27272a | &lt;div style={{background:&#39;var(--action-secondary-bg)&#39;,width:32,height:32,borderRadius:4,border:&#39;1px solid var(--border-subtle)&#39;}} /&gt; |
+| `--text-primary` | #f4f4f5 | &lt;div style={{background:&#39;var(--text-primary)&#39;,width:32,height:32,borderRadius:4}} /&gt; |
+| `--text-secondary` | #a1a1aa | &lt;div style={{background:&#39;var(--text-secondary)&#39;,width:32,height:32,borderRadius:4}} /&gt; |
+| `--color-success` | #10b981 | &lt;div style={{background:&#39;var(--color-success)&#39;,width:32,height:32,borderRadius:4}} /&gt; |
+| `--color-warning` | #f59e0b | &lt;div style={{background:&#39;var(--color-warning)&#39;,width:32,height:32,borderRadius:4}} /&gt; |
+| `--color-danger` | #ef4444 | &lt;div style={{background:&#39;var(--color-danger)&#39;,width:32,height:32,borderRadius:4}} /&gt; |
+| `--color-info` | #3b82f6 | &lt;div style={{background:&#39;var(--color-info)&#39;,width:32,height:32,borderRadius:4}} /&gt; |
+
+## Typography
+
+| Token | Value |
+|-------|-------|
+| `--text-xs` | 0.75rem |
+| `--text-sm` | 0.875rem |
+| `--text-base` | 1rem |
+| `--text-lg` | 1.125rem |
+| `--text-xl` | 1.25rem |
+| `--text-3xl` | 1.875rem |
+
+## Spacing
+
+| Token | Value |
+|-------|-------|
+| `--space-1` | 0.25rem (4px) |
+| `--space-2` | 0.5rem (8px) |
+| `--space-3` | 0.75rem (12px) |
+| `--space-4` | 1rem (16px) |
+| `--space-5` | 1.25rem (20px) |
+| `--space-6` | 1.5rem (24px) |
+| `--space-8` | 2rem (32px) |
+| `--space-12` | 3rem (48px) |
+
+## Border Radius
+
+| Token | Value |
+|-------|-------|
+| `--radius-sm` | 4px |
+| `--radius-md` | 8px |
+| `--radius-lg` | 12px |
+| `--radius-xl` | 16px |
+| `--radius-full` | 9999px |
+
+## Shadows
+
+| Token | Value |
+|-------|-------|
+| `--shadow-dropdown` | 0 10px 30px -10px rgba(0,0,0,0.5) |
+| `--glow-surface` | 0 0 0 1px rgba(255,255,255,0.05) |
+</code></pre>
+          </div>
+        </div>
+  </div>
+</article>
+    </div>
+    
+  </div>
+</main>
+</body>
+</html>  
