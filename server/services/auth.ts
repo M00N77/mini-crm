@@ -39,12 +39,7 @@ export async function rotateRefreshToken(curRefreshToken: string) {
 
         await pool.query('delete from refresh_tokens where user_id=$1 and jti=$2',[row[0].user_id,row[0].jti])
 
-        const refreshTokenPayload = {
-            ...payload,
-            jti: payload.jti,
-        }
-
-        const {refreshToken} = await generateRefreshToken(refreshTokenPayload, secretKey)
+        const {refreshToken} = await generateRefreshToken(payload, secretKey)
         const timeForAccessToken = {expiresIn: '15m' as const};
         const newPayload = {
             userId: payload.userId,
@@ -58,12 +53,12 @@ export async function rotateRefreshToken(curRefreshToken: string) {
     }
 }
 
-export async function registerUser(email: string, password: string) {
+export async function registerUser(email: string, password: string,name:string) {
     const emailExists = await pool.query('select * from users where email=$1',[email]);
     if(emailExists.rows.length > 0) throw new AppError('Email already exists', 409);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const result = await pool.query('insert into users (email,hashed_password) values($1,$2) returning id,email,created_at',[email,hashedPassword]);
+    const result = await pool.query('insert into users (email,hashed_password,name) values($1,$2,$3) returning id,email,created_at',[email,hashedPassword,name]);
 
     const payload : TokenPayload = {
         userId: result.rows[0].id,
