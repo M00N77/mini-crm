@@ -19,7 +19,7 @@ async function generateRefreshToken(payload: TokenPayload, secretKey:string) {
         jti: jti,
     }
     const refreshToken = jwt.sign(refreshTokenPayload, secretKey, timeForRefreshToken);
-    const hashedRefreshToken = await crypto.createHash('sha256').update(refreshToken).digest('hex')
+    const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex')
 
     await pool.query('insert into refresh_tokens (user_id,token_hash,expires_at,jti) values ($1,$2,$3,$4) returning *',[userId,hashedRefreshToken,refreshTokenExpiresIn,jti])
 
@@ -48,36 +48,45 @@ export async function rotateRefreshToken(curRefreshToken: string) {
         const accessToken = jwt.sign(newPayload,secretKey,timeForAccessToken)
 
         return {refreshToken, accessToken}
-    } catch (e){
-        throw new AppError('Invalid refreshToken', 401);
+    } catch (err : any){
+        if (err.name === 'TokenExpiredError') {
+            throw new AppError('Token Expired', 403)
+        } else if (err.name === 'JsonWebTokenError') {
+            throw new AppError('Invalid token', 401);
+        }
+        throw new AppError('Failed refresh', 500)
     }
 }
+
 
 export async function registerUser(email: string, password: string,name:string) {
-    const emailExists = await pool.query('select * from users where email=$1',[email]);
-    if(emailExists.rows.length > 0) throw new AppError('Email already exists', 409);
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    const result = await pool.query('insert into users (email,hashed_password,name) values($1,$2,$3) returning id,email,created_at',[email,hashedPassword,name]);
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const result = await pool.query('insert into users (email,hashed_password,name) values($1,$2,$3) returning id,email,name,created_at',[email,hashedPassword,name]);
+        const payload : TokenPayload = {
+            userId: result.rows[0].id,
+            email: email,
+        }
 
-    const payload : TokenPayload = {
-        userId: result.rows[0].id,
-        email: email,
-    }
+        const secretKey = JWT_SECRET;
+        const timeForAccessToken = {expiresIn: '15m' as const}
 
-    const secretKey = JWT_SECRET;
-    const timeForAccessToken = {expiresIn: '15m' as const}
+        const accessToken = jwt.sign(payload, secretKey, timeForAccessToken);
 
-    const accessToken = jwt.sign(payload, secretKey, timeForAccessToken);
+        const {refreshToken} = await generateRefreshToken(payload, secretKey);
 
-    const {refreshToken} = await generateRefreshToken(payload, secretKey);
+        return {
+            user: result.rows[0],
+            accessToken : accessToken,
+            refreshToken : refreshToken,
+        }
+    } catch (err : any  ) {
 
-    return {
-        user: result.rows[0],
-        accessToken : accessToken,
-        refreshToken : refreshToken,
-    }
-}
+        if ((err as any)?.code === '23505') throw new AppError('Email already exists', 409);
+        throw new AppError(`error: ${err.message}`, 500);
+
+}}
 
 export async function loginUser(email: string, password: string) {
     const user = await pool.query('select * from users where email=$1',[email]);
@@ -104,23 +113,3 @@ export async function loginUser(email: string, password: string) {
         refreshToken:refreshToken,
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import cookieParser from 'cookie-parser';
 import express from 'express';
 import pool from './db';
 import usersRouter from './routes/users';
@@ -6,7 +7,6 @@ import tasksRouter from './routes/tasks';
 import contactsRouter from "./routes/contacts";
 import notesRouter from './routes/notes';
 import authRouter from './routes/auth';
-import {verificationToken} from "./middleware/auth";
 import {errorHandler} from "./middleware/errorHandler";
 import './types/express';
 
@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/auth',authRouter)
 app.use('/users', usersRouter);
