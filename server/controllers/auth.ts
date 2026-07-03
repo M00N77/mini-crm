@@ -2,8 +2,8 @@ import * as serviceAuth from '../services/auth'
 import {Request,Response} from "express";
 
 export async function registerUser(req: Request, res: Response)  {
-    const {email,password,name} = req.body;
-    const result = await serviceAuth.registerUser(email,password,name);
+    const {email,password} = req.body;
+    const result = await serviceAuth.registerUser(email,password);
 
     res.status(201).send(result)
 }

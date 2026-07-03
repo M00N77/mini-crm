@@ -8,7 +8,7 @@ export async function getAllNotesById(userId:number,pageInput:number,limitInput:
 
     return {
         "data":result.rows,
-        pagination: {...paginateData}
+        "pagination": {...paginateData}
     }
 }
 
@@ -41,7 +41,7 @@ export async function updateNote(userId:number,noteId:number,content:string){
 }
 
 export async function deleteNote(userId:number,noteId:number){
-    const result = await pool.query('delete from notes USING contacts where contacts.id = notes.contact_id and contacts.user_id=$1 and notes.id=$2',[userId,noteId]);
+    const result = await pool.query('delete from notes USING contacts where contacts.id = notes.contact_id and contacts.user_id=$1 and notes.id=$2 returning  notes.*',[userId,noteId]);
 
 
     return result.rows[0] || null;

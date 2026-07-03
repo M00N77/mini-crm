@@ -3,9 +3,13 @@ import bcrypt from 'bcrypt';
 import {paginate} from "../utils/paginate";
 
 export async function getAllUsers() {
-  const paginateData = await paginate('users')
-  const result = await pool.query('SELECT id, email, name, created_at FROM users ORDER BY id');
-  return result.rows;
+  const paginateData = await paginate('users');
+  const {offset,limit} = paginateData;
+  const result = await pool.query('SELECT id, email, name, created_at FROM users  offset $1 limit $2 ORDER BY id',[offset,limit]);
+  return {
+      "data": result.rows,
+      "pagination": {...paginateData}
+  };
 }
 
 export async  function getUserById(id: number) {

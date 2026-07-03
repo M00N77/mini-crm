@@ -25,6 +25,7 @@ export interface Notes {
 export interface TokenPayload {
     userId: number;
     email: string;
-    name?: string;
+    jti?: string;
+
 }
 

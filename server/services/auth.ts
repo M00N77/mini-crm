@@ -1,5 +1,6 @@
 import pool from '../db'
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import jwt from 'jsonwebtoken';
 
 import {TokenPayload} from '../types/types'
@@ -8,13 +9,19 @@ import {AppError} from '../utils/AppError'
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
 
 async function generateRefreshToken(payload: TokenPayload, secretKey:string) {
-    const userId = payload.userId;
     const timeForRefreshToken = {expiresIn: '7d' as const};
     const refreshTokenExpiresIn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const refreshToken = jwt.sign(payload, secretKey, timeForRefreshToken);
-    const saltForRefreshToken = await bcrypt.genSalt(10);
-    const hashedRefreshToken = await bcrypt.hash(refreshToken,  saltForRefreshToken);
-    await pool.query('insert into refresh_tokens (user_id,token_hash,expires_at) values ($1,$2,$3) returning *',[userId,hashedRefreshToken,refreshTokenExpiresIn])
+    const jti = crypto.randomUUID();
+    const {userId,email} = payload
+    const refreshTokenPayload = {
+        userId:userId,
+        email:email,
+        jti: jti,
+    }
+    const refreshToken = jwt.sign(refreshTokenPayload, secretKey, timeForRefreshToken);
+    const hashedRefreshToken = await crypto.createHash('sha256').update(refreshToken).digest('hex')
+
+    await pool.query('insert into refresh_tokens (user_id,token_hash,expires_at,jti) values ($1,$2,$3,$4) returning *',[userId,hashedRefreshToken,refreshTokenExpiresIn,jti])
 
     return {refreshToken, hashedRefreshToken}
 }
@@ -24,17 +31,26 @@ export async function rotateRefreshToken(curRefreshToken: string) {
         const secretKey = JWT_SECRET;
         const payload = jwt.verify(curRefreshToken, secretKey) as TokenPayload;
 
-        const row = (await pool.query('select * from refresh_tokens where user_id=$1', [payload.userId])).rows;
+        const row = (await pool.query('select * from refresh_tokens where user_id=$1 and jti=$2', [payload.userId,payload.jti])).rows;
         if(row.length === 0) return null;
 
-        const isValid = await bcrypt.compare(curRefreshToken, row[0].token_hash);
+        const isValid = crypto.createHash('sha256').update(curRefreshToken).digest('hex') === row[0].token_hash;
         if(!isValid) throw new AppError('Invalid refresh token', 401);
 
-        await pool.query('delete from refresh_tokens where id=$1 and user_id = $2',[row[0].id,row[0].user_id])
+        await pool.query('delete from refresh_tokens where user_id=$1 and jti=$2',[row[0].user_id,row[0].jti])
 
-        const {refreshToken} = await generateRefreshToken(payload, secretKey)
+        const refreshTokenPayload = {
+            ...payload,
+            jti: payload.jti,
+        }
+
+        const {refreshToken} = await generateRefreshToken(refreshTokenPayload, secretKey)
         const timeForAccessToken = {expiresIn: '15m' as const};
-        const accessToken = jwt.sign(payload,secretKey,timeForAccessToken)
+        const newPayload = {
+            userId: payload.userId,
+            email: payload.email,
+        }
+        const accessToken = jwt.sign(newPayload,secretKey,timeForAccessToken)
 
         return {refreshToken, accessToken}
     } catch (e){
@@ -42,24 +58,24 @@ export async function rotateRefreshToken(curRefreshToken: string) {
     }
 }
 
-export async function registerUser(email: string, password: string,name: string) {
+export async function registerUser(email: string, password: string) {
     const emailExists = await pool.query('select * from users where email=$1',[email]);
     if(emailExists.rows.length > 0) throw new AppError('Email already exists', 409);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const result = await pool.query('insert into users (email,hashed_password,name) values($1,$2,$3) returning id,email,created_at',[email,hashedPassword,name]);
+    const result = await pool.query('insert into users (email,hashed_password) values($1,$2) returning id,email,created_at',[email,hashedPassword]);
 
     const payload : TokenPayload = {
         userId: result.rows[0].id,
         email: email,
-        name:name
     }
 
     const secretKey = JWT_SECRET;
-    const timeForAccessToken = {expiresIn: '1h' as const}
+    const timeForAccessToken = {expiresIn: '15m' as const}
+
     const accessToken = jwt.sign(payload, secretKey, timeForAccessToken);
 
-    const {refreshToken, hashedRefreshToken} = await generateRefreshToken(payload, secretKey);
+    const {refreshToken} = await generateRefreshToken(payload, secretKey);
 
     return {
         user: result.rows[0],
@@ -84,16 +100,14 @@ export async function loginUser(email: string, password: string) {
         email: email,
     }
 
-    const accessToken = jwt.sign(payload, secretKey, {expiresIn: '1h' as const});
-    const {refreshToken, hashedRefreshToken} = await generateRefreshToken(payload, secretKey);
+    const accessToken = jwt.sign(payload, secretKey, {expiresIn: '15m' as const});
+    const {refreshToken} = await generateRefreshToken(payload, secretKey);
 
     return {
         user: userWithoutPassword,
         accessToken:accessToken,
         refreshToken:refreshToken,
     }
-
-
 }
 
 
