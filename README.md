@@ -10,7 +10,8 @@ Fullstack: Next.js (App Router) + Express.js + PostgreSQL.
 | Backend | Express.js 5, TypeScript, raw SQL (pg) |
 | Frontend | Next.js (App Router), TypeScript, Tailwind / CSS Modules |
 | База | PostgreSQL 17 |
-| Тесты | Jest + Supertest |
+| Тесты | Jest + Supertest (58 тестов) |
+| Rate Limit | express-rate-limit |
 | Инфра | Docker Compose |
 
 ## Быстрый старт
@@ -33,7 +34,7 @@ mini-crm/
   client/              # Frontend (Next.js)
   server/              # Backend (Express.js)
     controllers/       # Обработчики запросов
-    middleware/         # auth (JWT), rateLimit, errorHandler
+    middleware/         # auth (JWT), errorHandler
     routes/            # auth, contacts, tasks, notes, users
     services/          # Бизнес-логика + SQL
     types/             # TypeScript интерфейсы
@@ -43,20 +44,23 @@ mini-crm/
   db/
     init.sql           # Схема БД
   tests/
-    auth.test.ts       # Интеграционные тесты (9/9)
+    auth.test.ts       # Базовые тесты auth (9)
+    endpoints.test.ts  # Полные тесты всех эндпоинтов (49)
 ```
 
 ## API Endpoints
 
-Все эндпоинты защищены `verificationAccessToken`, кроме регистрации, логина и рефреша.
+Все эндпоинты защищены `verificationAccessToken`, кроме регистрации, логина, рефреша и логаута.  
+На `/auth/register` и `/auth/login` установлен `authLimiter` (5 запросов за 15 минут).
 
 ### Auth
 
 | Метод | Путь | Тело | Описание |
 |-------|------|------|----------|
-| POST | `/auth/register` | `{ email, password, name }` | Регистрация |
-| POST | `/auth/login` | `{ email, password }` | Вход |
+| POST | `/auth/register` | `{ email, password, name }` | Регистрация (authLimiter) |
+| POST | `/auth/login` | `{ email, password }` | Вход (authLimiter) |
 | POST | `/auth/refresh` | Cookie: `token` | Ротация токенов |
+| POST | `/auth/logout` | Cookie: `token` | Выход |
 
 ### Contacts
 
@@ -94,6 +98,7 @@ mini-crm/
 |-------|------|----------|
 | GET | `/users` | Все пользователи |
 | GET | `/users/:id` | Пользователь по ID |
+| POST | `/users` | `{ email, password, name }` | Создать пользователя |
 | DELETE | `/users/:id` | Удалить |
 
 ## Аутентификация
