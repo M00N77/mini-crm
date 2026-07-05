@@ -1,24 +1,47 @@
 import * as serviceAuth from '../services/auth'
 import {Request,Response,NextFunction} from "express";
 
+const refreshCookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict' as const,
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+}
 export async function registerUser(req: Request, res: Response)  {
     const {email,password,name} = req.body;
     const result = await serviceAuth.registerUser(email,password,name);
 
-    res.status(201).send(result)
+    const {refreshToken,...resultWithoutRefresh} = result
+    res.cookie('token', refreshToken, refreshCookieOptions);
+    res.status(201).send(resultWithoutRefresh)
 }
 
 export async function loginUser(req: Request, res: Response)  {
     const {email,password} = req.body;
     const result = await serviceAuth.loginUser(email,password);
 
-    return res.status(200).send(result)
+    const {refreshToken,...resultWithoutRefresh} = result
+    res.cookie('token', refreshToken, refreshCookieOptions);
+
+    return res.status(200).send(resultWithoutRefresh)
 }
 
 export async function refreshUser(req: Request, res: Response,next: NextFunction)   {
-    const { token } = req.cookies;
-    const result = await serviceAuth.rotateRefreshToken(token);
+    const oldRefresh = req.cookies.token;
+    const result = await serviceAuth.rotateRefreshToken(oldRefresh);
     if(!result) return res.status(401).send('Invalid refresh token');
 
-    res.status(200).send(result);
+    const {refreshToken,...resultWithoutRefresh} = result
+    res.cookie('token',refreshToken,refreshCookieOptions);
+
+    res.status(200).send(resultWithoutRefresh);
+}
+
+export async function logoutUser(req: Request, res: Response)  {
+    const {refreshToken} = req.cookies;
+    await serviceAuth.logoutUser(refreshToken);
+
+    res.clearCookie('token',refreshToken);
+    res.status(200).send('User logged out');
 }

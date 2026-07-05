@@ -37,7 +37,7 @@ export async function rotateRefreshToken(curRefreshToken: string) {
         const isValid = crypto.createHash('sha256').update(curRefreshToken).digest('hex') === row[0].token_hash;
         if(!isValid) throw new AppError('Invalid refresh token', 401);
 
-        await pool.query('delete from refresh_tokens where user_id=$1 and jti=$2',[row[0].user_id,row[0].jti])
+        await pool.query('delete from refresh_tokens where user_id=$1 and jti=$2 returning *',[row[0].user_id,row[0].jti])
 
         const {refreshToken} = await generateRefreshToken(payload, secretKey)
         const timeForAccessToken = {expiresIn: '15m' as const};
@@ -79,7 +79,7 @@ export async function registerUser(email: string, password: string,name:string) 
         return {
             user: result.rows[0],
             accessToken : accessToken,
-            refreshToken : refreshToken,
+            refreshToken: refreshToken,
         }
     } catch (err : any  ) {
 
@@ -111,5 +111,17 @@ export async function loginUser(email: string, password: string) {
         user: userWithoutPassword,
         accessToken:accessToken,
         refreshToken:refreshToken,
+    }
+}
+
+export async function logoutUser(refreshToken:string) {
+    if (!refreshToken) return;
+    try {
+        const secretKey = JWT_SECRET
+        const payload = jwt.verify(refreshToken, secretKey,{ ignoreExpiration: true }) as TokenPayload;
+        const{jti,userId} = payload;
+        
+        await pool.query('delete from refresh_tokens where user_id=$1 and jti=$2 returning *',[userId,jti]);
+    } catch (e){
     }
 }
