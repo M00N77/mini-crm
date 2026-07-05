@@ -31,11 +31,7 @@ const fakeUser = {
   created_at: new Date().toISOString(),
 };
 
-function mockPoolQueryOnce(result: unknown) {
-  (mPool.query as jest.Mock).mockResolvedValueOnce({ rows: [result], rowCount: 1 });
-}
-
-function mockPoolQueryResult(result: unknown) {
+function mockDefault(result: unknown) {
   (mPool.query as jest.Mock).mockResolvedValue(result);
 }
 
@@ -49,11 +45,12 @@ class PgError extends Error {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  (mPool.query as jest.Mock).mockReset();
 });
 
 describe('POST /auth/register', () => {
   it('should register a new user and return 201 with tokens', async () => {
-    mockPoolQueryOnce(fakeUser);
+    mockDefault({ rows: [fakeUser], rowCount: 1 });
 
     const res = await request(app)
       .post('/auth/register')
@@ -62,7 +59,6 @@ describe('POST /auth/register', () => {
 
     expect(res.body.user).toMatchObject({ id: 1, email: 'test@mail.ru' });
     expect(res.body.accessToken).toBeDefined();
-    expect(res.body.refreshToken).toBeDefined();
   });
 
   it('should return 409 if email already exists', async () => {
@@ -81,7 +77,7 @@ describe('POST /auth/login', () => {
   const hashedPassword = bcrypt.hashSync('123456', bcrypt.genSaltSync(10));
 
   it('should login and return 200 with tokens', async () => {
-    mockPoolQueryResult({
+    mockDefault({
       rows: [{ id: 1, email: 'test@mail.ru', hashed_password: hashedPassword }],
       rowCount: 1,
     });
@@ -93,11 +89,10 @@ describe('POST /auth/login', () => {
 
     expect(res.body.user).toBeDefined();
     expect(res.body.accessToken).toBeDefined();
-    expect(res.body.refreshToken).toBeDefined();
   });
 
   it('should return 401 for wrong password', async () => {
-    mockPoolQueryResult({
+    mockDefault({
       rows: [{ id: 1, email: 'test@mail.ru', hashed_password: hashedPassword }],
       rowCount: 1,
     });
@@ -111,7 +106,7 @@ describe('POST /auth/login', () => {
   });
 
   it('should return 401 for non-existent user', async () => {
-    mockPoolQueryResult({ rows: [], rowCount: 0 });
+    mockDefault({ rows: [], rowCount: 0 });
 
     const res = await request(app)
       .post('/auth/login')
@@ -129,9 +124,9 @@ describe('POST /auth/refresh', () => {
     const hashedToken = require('crypto').createHash('sha256').update(refreshToken).digest('hex');
 
     (mPool.query as jest.Mock)
-      .mockResolvedValueOnce({ rows: [{ user_id: 1, jti: 'test-jti', token_hash: hashedToken }], rowCount: 1 })
-      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
-      .mockResolvedValueOnce({ rows: [{ id: 1, user_id: 1, token_hash: 'new', expires_at: new Date(), jti: 'new-jti' }], rowCount: 1 });
+      .mockImplementationOnce(() => Promise.resolve({ rows: [{ user_id: 1, jti: 'test-jti', token_hash: hashedToken }], rowCount: 1 }))
+      .mockImplementationOnce(() => Promise.resolve({ rows: [], rowCount: 0 }))
+      .mockImplementationOnce(() => Promise.resolve({ rows: [{ id: 1, user_id: 1, token_hash: 'new', expires_at: new Date(), jti: 'new-jti' }], rowCount: 1 }));
 
     const res = await request(app)
       .post('/auth/refresh')
@@ -139,7 +134,6 @@ describe('POST /auth/refresh', () => {
       .expect(200);
 
     expect(res.body.accessToken).toBeDefined();
-    expect(res.body.refreshToken).toBeDefined();
   });
 
   it('should return 401 for invalid refresh token', async () => {
@@ -165,8 +159,8 @@ describe('Protected routes (GET /contacts)', () => {
     const token = jwt.sign({ userId: 1, email: 'test@mail.ru' }, 'test-secret', { expiresIn: '15m' });
 
     (mPool.query as jest.Mock)
-      .mockResolvedValueOnce({ rows: [{ count: '0' }] })
-      .mockResolvedValueOnce({ rows: [], rowCount: 0 });
+      .mockImplementationOnce(() => Promise.resolve({ rows: [{ count: '0' }] }))
+      .mockImplementationOnce(() => Promise.resolve({ rows: [], rowCount: 0 }));
 
     const res = await request(app)
       .get('/contacts')

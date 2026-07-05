@@ -2,6 +2,7 @@ import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import pool from './db';
+import { rateLimit } from 'express-rate-limit';
 import usersRouter from './routes/users';
 import tasksRouter from './routes/tasks';
 import contactsRouter from "./routes/contacts";
@@ -13,7 +14,18 @@ import './types/express';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Слишком много запросов. Пожалуйста, попробуйте позже.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
+
+
+app.set('trust proxy', 1);
+app.use(globalLimiter);
 app.use(express.json());
 app.use(cookieParser());
 
