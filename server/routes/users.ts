@@ -8,6 +8,7 @@ const router = Router();
 router.get('/', verificationAccessToken, asyncHandler(userController.getUsers));
 router.get('/:id', verificationAccessToken, asyncHandler(userController.getUser));
 router.delete('/:id', verificationAccessToken, asyncHandler(userController.deleteUser));
+router.post('/', verificationAccessToken, asyncHandler(userController.createUser));
 
 
 export default router;

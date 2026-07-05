@@ -16,6 +16,6 @@ const authLimiter = rateLimit({
 const router = Router();
 router.post('/register',authLimiter,asyncHandler(controllerAuth.registerUser))
 router.post('/login',authLimiter,asyncHandler(controllerAuth.loginUser))
-router.post('/refresh', verificationRefreshToken,middlewareAuth.verificationRefreshToken,asyncHandler(controllerAuth.refreshUser))
+router.post('/refresh', verificationRefreshToken,asyncHandler(controllerAuth.refreshUser))
 router.post('/logout',asyncHandler(controllerAuth.logoutUser))
 export default router;

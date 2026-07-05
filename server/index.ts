@@ -38,7 +38,7 @@ app.use('/notes',notesRouter)
 app.use(errorHandler);
 
 app.listen(PORT, async () => {
-  console.log("Server started on port 3000");
+  console.log(`Server started on port ${PORT}`);
   try {
     const result = await pool.query('SELECT NOW()');
     console.log("DB connected:", result.rows[0].now);
