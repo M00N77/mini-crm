@@ -1,6 +1,6 @@
 'use client'
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { TasksView } from '@/src/components/pages/TasksView'
+import { useState, useEffect, useCallback } from 'react'
+import { TaskBoard } from '@/app/components/TaskBoard'
 import { TaskFormModal } from '@/app/components/TaskFormModal'
 import { Button } from '@/src/components/atoms/Button'
 import { tasksApi, type TaskInput } from '@/src/features/tasks/api'
@@ -8,12 +8,6 @@ import type { Task, TaskStatus } from '@/src/types/domain'
 import { DEFAULT_PAGE_SIZE } from '@/src/lib/constants/pagination'
 
 type LoadStatus = 'idle' | 'loading' | 'success' | 'error'
-
-const COLUMNS: { id: string; status: TaskStatus; label: 'Todo' | 'In Progress' | 'Done'; variant: 'info' | 'warning' | 'success' }[] = [
-  { id: 'todo', status: 'pending', label: 'Todo', variant: 'info' },
-  { id: 'in-progress', status: 'in_progress', label: 'In Progress', variant: 'warning' },
-  { id: 'done', status: 'done', label: 'Done', variant: 'success' },
-]
 
 const centered: React.CSSProperties = {
   minHeight: 320, display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -43,18 +37,10 @@ export default function TasksPage() {
 
   useEffect(() => { load() }, [load])
 
-  const columns = useMemo(() => COLUMNS.map((col) => ({
-    id: col.id,
-    title: col.label,
-    tasks: tasks
-      .filter((t) => t.status === col.status)
-      .map((t) => ({ id: String(t.id), title: t.title, description: t.description, status: col.label })),
-  })), [tasks])
-
   const editingTask = editingId != null ? tasks.find((t) => t.id === editingId) ?? null : null
 
   const openCreate = useCallback(() => { setEditingId(null); setFormError(null); setFormOpen(true) }, [])
-  const openEdit = useCallback((id: string) => { setEditingId(Number(id)); setFormError(null); setFormOpen(true) }, [])
+  const openEdit = useCallback((id: number) => { setEditingId(id); setFormError(null); setFormOpen(true) }, [])
 
   const handleSubmit = useCallback(async (input: TaskInput) => {
     setSaving(true); setFormError(null)
@@ -78,13 +64,26 @@ export default function TasksPage() {
     } catch (e) { alert((e as Error).message || 'Не удалось удалить') }
   }, [editingId, load])
 
+  const handleTaskMove = useCallback(async (id: number, status: TaskStatus) => {
+    const task = tasks.find((t) => t.id === id)
+    if (!task || task.status === status) return
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)))
+    try {
+      await tasksApi.update(id, { title: task.title, description: task.description, status })
+    } catch (e) {
+      alert((e as Error).message || 'Не удалось переместить задачу')
+      await load()
+    }
+  }, [tasks, load])
+
   return (
     <>
-      {total > DEFAULT_PAGE_SIZE && (
-        <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-          Показаны первые {DEFAULT_PAGE_SIZE} из {total} задач.
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', gap: 12 }}>
+        <div style={{ color: 'var(--text-secondary, #8a8a8a)', fontSize: 14 }}>
+          {total > DEFAULT_PAGE_SIZE ? `Показаны первые ${DEFAULT_PAGE_SIZE} из ${total} задач.` : ''}
         </div>
-      )}
+        <Button variant="primary" onClick={openCreate}>New Task</Button>
+      </div>
 
       {loadStatus === 'loading' && tasks.length === 0 ? (
         <div style={centered}>Загрузка задач…</div>
@@ -94,7 +93,7 @@ export default function TasksPage() {
           <Button variant="secondary" onClick={() => load()}>Повторить</Button>
         </div>
       ) : (
-        <TasksView columns={columns} onNewTask={openCreate} onTaskClick={openEdit} />
+        <TaskBoard tasks={tasks} onTaskClick={openEdit} onTaskMove={handleTaskMove} />
       )}
 
       <TaskFormModal
