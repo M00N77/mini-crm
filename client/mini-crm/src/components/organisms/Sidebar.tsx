@@ -1,5 +1,5 @@
 'use client'
-import { FiUsers, FiCheckSquare, FiSettings, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiCheckSquare, FiSettings, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 import { NavItem } from '../molecules/NavItem';
 import { Avatar } from '../atoms/Avatar';
@@ -17,6 +17,7 @@ interface SidebarProps {
 }
 
 const navItems = [
+  { id: 'dashboard', icon: <FiGrid size={18} />, label: 'Dashboard' },
   { id: 'contacts', icon: <FiUsers size={18} />, label: 'Contacts' },
   { id: 'tasks', icon: <FiCheckSquare size={18} />, label: 'Tasks' },
   { id: 'settings', icon: <FiSettings size={18} />, label: 'Settings' },
