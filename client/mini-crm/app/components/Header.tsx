@@ -2,7 +2,7 @@ import {Typography} from "@/src/components/atoms/Typography";
 import {SearchInput} from "@/src/components/molecules/SearchInput";
 
 
-const Header = ({className} ) => {
+const Header = ({className}: {className?: string }) => {
     return (
         <div>
             <div className={className}>
