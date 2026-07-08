@@ -28,6 +28,7 @@ export interface NoteJoinedDto {
   content: string
   contact_id: number
   created_at: string
+  user_id: number
   name: string
   email: string
   phone: string
