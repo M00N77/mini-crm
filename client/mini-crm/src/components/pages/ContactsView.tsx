@@ -22,6 +22,7 @@ interface ContactsViewProps {
   onAddContact?: () => void;
   filterValue?: string;
   onFilterChange?: (v: string) => void;
+  onSelectContact?: (contact: ContactItem) => void;
 }
 
 const defaultContacts: ContactItem[] = [
@@ -38,6 +39,7 @@ export function ContactsView({
   onAddContact,
   filterValue = '',
   onFilterChange,
+  onSelectContact,
 }: ContactsViewProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
@@ -83,7 +85,12 @@ export function ContactsView({
         }}
       >
         {contacts.map((contact) => (
-          <div key={contact.id} className="contact-card">
+          <div
+            key={contact.id}
+            className="contact-card"
+            onClick={() => onSelectContact?.(contact)}
+            style={{ cursor: onSelectContact ? 'pointer' : undefined }}
+          >
             <Card.Root>
               <Card.Header>
                 <div
