@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FiUser, FiLock, FiBell, FiLogOut } from 'react-icons/fi';
 import { Card } from '@/src/components/molecules/Card';
 import { Typography } from '@/src/components/atoms/Typography';
@@ -9,6 +10,7 @@ import { Input } from '@/src/components/atoms/Input';
 import { Button } from '@/src/components/atoms/Button';
 import { Toggle } from '@/src/components/atoms/Toggle';
 import { MOCK_USER, MOCK_USER_EMAIL } from '@/src/lib/mock';
+import { useAuth } from '@/src/context/AuthProvider';
 
 const sections: { id: string; label: string; icon: React.ReactNode }[] = [
   { id: 'profile', label: 'Profile', icon: <FiUser size={16} /> },
@@ -17,6 +19,8 @@ const sections: { id: string; label: string; icon: React.ReactNode }[] = [
 ];
 
 export function SettingsView() {
+  const { logout } = useAuth();
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState('profile');
   const [passwordData, setPasswordData] = useState({ current: '', newPwd: '', confirm: '' });
   const [emailNotif, setEmailNotif] = useState(true);
@@ -146,7 +150,7 @@ export function SettingsView() {
                 <Typography as="p">Sign out</Typography>
                 <Typography as="caption">End your current session on this device</Typography>
               </div>
-              <Button variant="danger" size="sm" iconLeft={<FiLogOut size={14} />}>
+              <Button variant="danger" size="sm" iconLeft={<FiLogOut size={14} />} onClick={async () => { await logout(); router.replace('/login'); }}>
                 Sign out
               </Button>
             </div>
