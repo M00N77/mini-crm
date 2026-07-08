@@ -23,6 +23,7 @@ interface Column {
 interface TasksViewProps {
   columns?: Column[];
   onNewTask?: () => void;
+  onTaskClick?: (id: string) => void;
 }
 
 const defaultColumns: Column[] = [
@@ -58,7 +59,7 @@ const statusVariantMap: Record<TaskStatus, 'info' | 'warning' | 'success'> = {
   Done: 'success',
 };
 
-export function TasksView({ columns = defaultColumns, onNewTask }: TasksViewProps) {
+export function TasksView({ columns = defaultColumns, onNewTask, onTaskClick }: TasksViewProps) {
   const totalTasks = columns.reduce((sum, col) => sum + col.tasks.length, 0);
 
   return (
@@ -99,7 +100,8 @@ export function TasksView({ columns = defaultColumns, onNewTask }: TasksViewProp
             variant={statusVariantMap[col.title]}
           >
             {col.tasks.map((task) => (
-              <Card.Root key={task.id}>
+              <div key={task.id} onClick={() => onTaskClick?.(task.id)} style={{ cursor: 'pointer' }}>
+              <Card.Root>
                 <Card.Content>
                   <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
                     <FiMoreVertical
@@ -143,6 +145,7 @@ export function TasksView({ columns = defaultColumns, onNewTask }: TasksViewProp
                   </div>
                 </Card.Content>
               </Card.Root>
+              </div>
             ))}
           </KanbanColumn>
         ))}
