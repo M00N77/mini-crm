@@ -16,6 +16,8 @@ interface ContactDrawerProps {
   email: string;
   phone: string;
   notes: NotePreview[];
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function ContactDrawer({
@@ -25,6 +27,8 @@ export function ContactDrawer({
   email,
   phone,
   notes,
+onEdit,
+  onDelete,
 }: ContactDrawerProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
@@ -57,10 +61,10 @@ export function ContactDrawer({
 
       {/* Action buttons */}
       <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-        <Button variant="secondary" size="sm" iconLeft={<FiEdit2 size={14} />}>
+        <Button variant="secondary" size="sm" iconLeft={<FiEdit2 size={14} />} onClick={onEdit}>
           Edit
         </Button>
-        <Button variant="danger" size="sm" iconLeft={<FiTrash2 size={14} />}>
+        <Button variant="danger" size="sm" iconLeft={<FiTrash2 size={14} />} onClick={onDelete}>
           Delete
         </Button>
       </div>
