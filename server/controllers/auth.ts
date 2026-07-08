@@ -43,5 +43,5 @@ export async function logoutUser(req: Request, res: Response)  {
     await serviceAuth.logoutUser(refreshToken);
 
     res.clearCookie('token',refreshToken);
-    res.status(200).send('User logged out');
+    res.status(200).json({ message: 'User logged out' });
 }
