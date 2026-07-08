@@ -5,6 +5,10 @@ import type { Note } from '@/src/types/domain'
 import { mapNote } from './mapper'
 
 export const notesApi = {
+  async listAll(): Promise<Note[]> {
+    const res = await api.get<Paginated<NoteJoinedDto>>(`/notes?page=1&limit=${DEFAULT_PAGE_SIZE}`)
+    return res.data.map(mapNote)
+  },
   // Бэкенд не умеет фильтровать /notes по контакту → тянем все и фильтруем на клиенте
   async listByContact(contactId: number): Promise<Note[]> {
     const res = await api.get<Paginated<NoteJoinedDto>>(`/notes?page=1&limit=${DEFAULT_PAGE_SIZE}`)

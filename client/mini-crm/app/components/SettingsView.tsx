@@ -32,7 +32,7 @@ export function SettingsView() {
       {/* Side navigation */}
       <Card.Root style={{ width: 220, height: 'fit-content' }}>
         <Card.Content>
-          <nav className="flex flex-col gap-1">
+          <nav className="flex flex-col gap-1 ">
             {sections.map((s) => (
               <button
                 key={s.id}
