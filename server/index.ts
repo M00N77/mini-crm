@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import express from 'express';
+import cors from 'cors'
 import pool from './db';
 import { rateLimit } from 'express-rate-limit';
 import usersRouter from './routes/users';
@@ -28,6 +29,7 @@ app.set('trust proxy', 1);
 app.use(globalLimiter);
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({ origin: 'http://localhost:3001', credentials: true }))
 
 app.use('/auth',authRouter)
 app.use('/users', usersRouter);

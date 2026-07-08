@@ -25,6 +25,7 @@
     "body-parser": "^2.3.0",
     "chalk": "^4.1.2",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
     "crawlee": "^3.0.0",
     "date-fns": "^3.0.0",
     "dotenv": "^17.4.2",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.10.0",
     "@types/supertest": "^7.2.0",
