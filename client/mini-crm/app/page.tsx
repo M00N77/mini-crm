@@ -1,6 +1,5 @@
-import MainLayout from '../app/(main)/layout'
+import { redirect } from 'next/navigation';
 
-export default function DashboardPage() {
-
-  return <MainLayout/>
+export default function HomePage() {
+  redirect('/dashboard');
 }
