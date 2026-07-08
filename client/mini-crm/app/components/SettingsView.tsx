@@ -9,7 +9,6 @@ import { Divider } from '@/src/components/atoms/Divider';
 import { Input } from '@/src/components/atoms/Input';
 import { Button } from '@/src/components/atoms/Button';
 import { Toggle } from '@/src/components/atoms/Toggle';
-import { MOCK_USER, MOCK_USER_EMAIL } from '@/src/lib/mock';
 import { useAuth } from '@/src/context/AuthProvider';
 
 const sections: { id: string; label: string; icon: React.ReactNode }[] = [
@@ -19,7 +18,7 @@ const sections: { id: string; label: string; icon: React.ReactNode }[] = [
 ];
 
 export function SettingsView() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
   const [activeSection, setActiveSection] = useState('profile');
   const [passwordData, setPasswordData] = useState({ current: '', newPwd: '', confirm: '' });
@@ -62,8 +61,8 @@ export function SettingsView() {
             </Card.Header>
             <Card.Content>
               <div className="flex flex-col gap-4 max-w-md">
-                <Input label="Full name" value={MOCK_USER} disabled />
-                <Input label="Email" value={MOCK_USER_EMAIL} disabled />
+                <Input label="Full name" value={user?.name ?? ''} disabled />
+                <Input label="Email" value={user?.email ?? ''} disabled />
               </div>
             </Card.Content>
           </Card.Root>
