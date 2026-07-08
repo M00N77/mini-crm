@@ -61,11 +61,12 @@ const RegisterForm = () => {
                     placeholder='••••••••'
                 />
                 <Button
+                    type="submit"
                     className='mt-4'
                     variant='primary'
                     size='md'
                     loading={submitting}
-                    disabled={submitting}
+                    disabled={submitting || !name || !email || !password}
                 >
                     Create account
                 </Button>

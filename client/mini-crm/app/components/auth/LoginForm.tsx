@@ -54,11 +54,12 @@ const LoginForm = () => {
                     placeholder='••••••••'
                 />
                 <Button
+                    type="submit"
                     className='mt-4'
                     variant='primary'
                     size='md'
                     loading={submitting}
-                    disabled={submitting}
+                    disabled={submitting || !email || !password}
                 >
                     Sign In
                 </Button>
