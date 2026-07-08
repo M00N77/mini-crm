@@ -12,6 +12,7 @@ import { usePathname } from 'next/navigation'
 import { bootstrapSession } from '@/src/lib/auth/bootstrap'
 import { authEvents } from '@/src/lib/auth/events'
 import * as authApi from '@/src/features/auth/api'
+import { logout as logoutApi } from '@/src/features/auth/api'
 import type { User } from '@/src/types/domain'
 
 type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated'
@@ -43,13 +44,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let cancelled = false
     bootstrapSession()
-      .then((u) => {
+      .then(async (u) => {
         if (cancelled) return
-        setUser(u)
-        setStatus(u ? 'authenticated' : 'unauthenticated')
+        if (u) {
+          setUser(u)
+          setStatus('authenticated')
+        } else {
+          await logoutApi().catch(() => {})
+          setUser(null)
+          setStatus('unauthenticated')
+        }
       })
-      .catch(() => {
+      .catch(async () => {
         if (cancelled) return
+        await logoutApi().catch(() => {})
         setUser(null)
         setStatus('unauthenticated')
       })
@@ -60,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = authEvents.onLogout(() => {
+      void logoutApi().catch(() => {})
       setUser(null)
       setStatus('unauthenticated')
     })
