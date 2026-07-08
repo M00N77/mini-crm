@@ -24,7 +24,7 @@ export async function loginUser(req: Request, res: Response)  {
     const {refreshToken,...resultWithoutRefresh} = result
     res.cookie('token', refreshToken, refreshCookieOptions);
 
-    return res.status(200).send(resultWithoutRefresh)
+    res.status(200).send(resultWithoutRefresh)
 }
 
 export async function refreshUser(req: Request, res: Response,next: NextFunction)   {

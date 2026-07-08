@@ -37,7 +37,7 @@ create table if not exists notes (
 create table if not exists refresh_tokens (
     id serial primary key,
     user_id int references  users(id) on delete cascade,
-    jti varchar(255) not null,
+    jti varchar(255) not null unique,
     token_hash varchar(255),
     expires_at timestamp,
     created_at timestamp default now()
