@@ -1,4 +1,5 @@
-import { FiMail, FiPhone, FiHome, FiEdit2, FiTrash2, FiSend } from 'react-icons/fi';
+import { useState } from 'react';
+import { FiMail, FiPhone, FiHome, FiEdit2, FiTrash2, FiSend, FiX } from 'react-icons/fi';
 import { Avatar } from '@/src/components/atoms/Avatar';
 import { Typography } from '@/src/components/atoms/Typography';
 import { Divider } from '@/src/components/atoms/Divider';
@@ -7,7 +8,8 @@ import { Button } from '@/src/components/atoms/Button';
 import { Input } from '@/src/components/atoms/Input';
 import { IconButton } from '@/src/components/atoms/IconButton';
 import { TimelineItem } from '@/src/components/molecules/TimelineItem';
-import type { NotePreview } from '@/src/lib/mock';
+
+export interface DrawerNote { id: number; text: string; timeAgo: string }
 
 interface ContactDrawerProps {
   name: string;
@@ -15,9 +17,12 @@ interface ContactDrawerProps {
   company: string;
   email: string;
   phone: string;
-  notes: NotePreview[];
+  notes: DrawerNote[];
   onEdit?: () => void;
   onDelete?: () => void;
+  onSendNote?: (text: string) => void | Promise<void>;
+  onDeleteNote?: (id: number) => void | Promise<void>;
+  sendingNote?: boolean;
 }
 
 export function ContactDrawer({
@@ -27,9 +32,13 @@ export function ContactDrawer({
   email,
   phone,
   notes,
-onEdit,
+  onEdit,
   onDelete,
+  onSendNote,
+  onDeleteNote,
+  sendingNote,
 }: ContactDrawerProps) {
+  const [noteText, setNoteText] = useState('')
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
       {/* Avatar + Name / Role */}
@@ -81,9 +90,12 @@ onEdit,
         {notes.length === 0 ? (
           <Typography as="caption">No notes yet.</Typography>
         ) : (
-          notes.map((note, i) => (
-            <TimelineItem key={i} date={note.timeAgo}>
-              <Typography as="p">{note.text}</Typography>
+          notes.map((note) => (
+            <TimelineItem key={note.id} date={note.timeAgo}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <Typography as="p">{note.text}</Typography>
+                <IconButton icon={<FiX size={12} />} label="Delete note" onClick={() => onDeleteNote?.(note.id)} style={{ flexShrink: 0 }} />
+              </div>
             </TimelineItem>
           ))
         )}
@@ -91,8 +103,8 @@ onEdit,
 
       {/* Note input */}
       <div style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'auto' }}>
-        <Input placeholder="Write a note…" />
-        <IconButton icon={<FiSend size={18} />} label="Send note" />
+        <Input placeholder="Write a note…" value={noteText} onChange={(e) => setNoteText(e.target.value)} disabled={sendingNote} />
+        <IconButton icon={<FiSend size={18} />} label="Send note" disabled={!noteText.trim() || sendingNote} onClick={async () => { if (!noteText.trim() || sendingNote) return; await onSendNote?.(noteText.trim()); setNoteText('') }} />
       </div>
     </div>
   );

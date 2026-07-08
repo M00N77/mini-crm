@@ -9,9 +9,9 @@ const meta: Meta<typeof ContactDrawer> = {
 export default meta;
 type Story = StoryObj<typeof ContactDrawer>;
 
-const mockNotes = [
-  { text: 'Initial outreach completed, positive response — wants to see a demo', timeAgo: '2 days ago' },
-  { text: 'Follow-up call scheduled for next Thursday', timeAgo: '1 hour ago' },
+const mockNotes: import('../../app/components/ContactDrawer').DrawerNote[] = [
+  { id: 1, text: 'Initial outreach completed, positive response — wants to see a demo', timeAgo: '2 days ago' },
+  { id: 2, text: 'Follow-up call scheduled for next Thursday', timeAgo: '1 hour ago' },
 ];
 
 export const WithNotes: Story = {
