@@ -11,5 +11,19 @@
   "mode": {},
   "plugin": [],
   "command": {},
-  "skills": {}
+  "skills": {},
+  "provider": {
+    "nvidia-glm": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "NVIDIA Build (GLM-5.2)",
+      "options": {
+        "baseURL": "https://integrate.api.nvidia.com/v1"
+      },
+      "models": {
+        "z-ai/glm-5.2": {
+          "name": "GLM-5.2"
+        }
+      }
+    }
+  }
 }
