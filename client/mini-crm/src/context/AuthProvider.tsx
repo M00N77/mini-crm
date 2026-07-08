@@ -8,6 +8,7 @@ import {
   useCallback,
   type ReactNode,
 } from 'react'
+import { usePathname } from 'next/navigation'
 import { bootstrapSession } from '@/src/lib/auth/bootstrap'
 import { authEvents } from '@/src/lib/auth/events'
 import * as authApi from '@/src/features/auth/api'
@@ -26,10 +27,20 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
   const [status, setStatus] = useState<AuthStatus>('loading')
   const [user, setUser] = useState<User | null>(null)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
+    const isPublic =
+      (pathname?.startsWith('/login') ?? false) ||
+      (pathname?.startsWith('/register') ?? false)
+    if (isPublic) {
+      setStatus('unauthenticated')
+      return
+    }
+
     let cancelled = false
     bootstrapSession()
       .then((u) => {
