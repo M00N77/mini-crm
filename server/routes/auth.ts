@@ -4,6 +4,12 @@ import * as controllerAuth from "../controllers/auth";
 import { asyncHandler } from "../utils/asyncHandler";
 import * as middlewareAuth from "../middleware/auth";
 import { verificationRefreshToken } from "../middleware/auth";
+import { validate } from "../middleware/validate";
+import {
+  registerSchema,
+  loginSchema,
+  changePassSchema,
+} from "../schemas/auth.schema";
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -14,20 +20,30 @@ const authLimiter = rateLimit({
 });
 
 const router = Router();
+
 router.post(
   "/register",
+  validate(registerSchema),
   authLimiter,
   asyncHandler(controllerAuth.registerUser),
 );
-router.post("/login", authLimiter, asyncHandler(controllerAuth.loginUser));
+router.post(
+  "/login",
+  validate(loginSchema),
+  authLimiter,
+  asyncHandler(controllerAuth.loginUser),
+);
+
 router.post(
   "/refresh",
   verificationRefreshToken,
   asyncHandler(controllerAuth.refreshUser),
 );
 router.post("/logout", authLimiter, asyncHandler(controllerAuth.logoutUser));
+
 router.post(
   "/changepass",
+  validate(changePassSchema),
   middlewareAuth.verificationAccessToken,
   authLimiter,
   middlewareAuth.checkNewPasswordDiffers,
