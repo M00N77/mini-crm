@@ -5,11 +5,12 @@
 ## 🔙 Backend (Express + PostgreSQL)
 
 ### Auth
+
 - [x] POST /api/auth/register — создание пользователя + httpOnly refresh-cookie
 - [x] POST /api/auth/login — JWT access + httpOnly refresh-cookie
 - [x] POST /api/auth/logout — очистка refresh-куки
 - [x] POST /api/auth/refresh — продление access через httpOnly refresh-cookie
-- [x] Rate limit: global (100/15m) + auth (10/15m)
+- [x] Rate limit: auth (5/15m) на register/login/logout/changepass
 - [x] Фикс SQL-инъекции в logout (параметризованный запрос)
 - [x] POST /auth/changepass — смена пароля (oldPassword + newPassword), проверка совпадения старого пароля и различия нового от старого
 - [ ] /me — получение профиля по токену
@@ -17,13 +18,24 @@
 - [ ] Валидация входных данных через zod — начать с auth-роутов (register, login, changepass), затем contacts/tasks/notes
 
 ### Contacts
-- [ ] CRUD endpoint'ы
+
+- [x] CRUD endpoint'ы (GET list с пагинацией, GET by id, POST, PUT, DELETE)
 
 ### Tasks
-- [ ] CRUD endpoint'ы
+
+- [x] CRUD endpoint'ы (GET list с пагинацией, GET by id, POST, PUT, DELETE)
 
 ### Notes
-- [ ] CRUD endpoint'ы
+
+- [x] CRUD endpoint'ы (GET list с пагинацией, GET by id, POST, PUT, DELETE, привязка к contact)
+
+### 🐛 Известные баги / долг
+
+- [ ] SQL-инъекция в `utils/paginate.ts` — `fromClause` интерполируется напрямую в `count(*)`, сейчас источники контролируемые, но риск при расширении
+- [x] `types/types.ts`: `Notes.contentId` → `contactId` (исправлено)
+- [ ] Inconsistent error handling — часть сервисов кидает `AppError`, часть возвращает `null` без проверки в контроллере (например `getContactById`, `getTaskByIdAndUserId` могут отдать 200 с пустым телом вместо 404)
+- [x] `controllers/auth.ts` → `logoutUser`: `res.clearCookie("token", refreshToken)` — пофикшено, второй аргумент — объект опций
+- [ ] Проект не собирается — нет `node_modules`, кривые пути в `tsconfig.json` (`rootDir` и `include` дублируют `server/`), `zod` не добавлен в `package.json`
 
 ---
 
@@ -40,11 +52,13 @@
 ## 🔗 Frontend Integration
 
 ### Этап 0 — фундамент
+
 - [ ] Решение по cross-origin cookie (Next rewrites-прокси vs CORS+credentials)
 - [ ] `lib/api.ts` — обёртка над fetch (baseURL, credentials, JSON, нормализация ошибок)
 - [ ] Стратегия хранения access-токена (in-memory)
 
 ### Этап 1 — Auth
+
 - [ ] AuthContext (user, accessToken, login/register/logout, isLoading)
 - [ ] Login/Register end-to-end + ошибки бэка
 - [ ] Authorization: Bearer во все защищённые запросы
@@ -53,14 +67,18 @@
 - [ ] Logout
 
 ### Этап 2 — Contacts end-to-end (шаблон)
+
 - [ ] GET list, Create (Modal), Edit, Delete, Notes timeline
 - [ ] Решение по data-layer (useEffect vs react-query/SWR)
 
 ### Этап 3 — тиражирование
+
 - [ ] Tasks, Dashboard (агрегаты), Settings (profile/password/logout)
 
 ### Этап 4 — качество
+
 - [ ] loading/error/empty состояния, zod-валидация, оптимистичные апдейты
 
 ### 🎯 Текущий фокус
-**Этап 0 + Login/Register end-to-end (без refresh-флоу)**
+
+**Zod-валидация auth-роутов (register/login/changepass) → затем Этап 0 фронт-интеграции**
