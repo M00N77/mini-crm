@@ -18,7 +18,7 @@ export interface Contact {
 export interface Notes {
     id: number;
     content: string;
-    contentId: number;
+    contactId: number;
     createdAt: Date;
 }
 
