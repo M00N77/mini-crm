@@ -15,7 +15,7 @@
 - [x] POST /auth/changepass — смена пароля (oldPassword + newPassword), проверка совпадения старого пароля и различия нового от старого
 - [ ] /me — получение профиля по токену
 - [ ] POST /auth/forgot-password + /auth/reset-password — сброс пароля без логина через одноразовый токен на email (требует SMTP-сервис, пока не настроен — отложено)
-- [ ] Валидация входных данных через zod — начать с auth-роутов (register, login, changepass), затем contacts/tasks/notes
+- [x] Валидация входных данных через zod — auth-роуты, contacts/tasks/notes
 
 ### Contacts
 
@@ -31,6 +31,7 @@
 
 ### 🐛 Известные баги / долг
 
+- [x] Нет валидации входа — ни на одном роуте, ни zod, ни ручной проверки
 - [ ] SQL-инъекция в `utils/paginate.ts` — `fromClause` интерполируется напрямую в `count(*)`, сейчас источники контролируемые, но риск при расширении
 - [x] `types/types.ts`: `Notes.contentId` → `contactId` (исправлено)
 - [ ] Inconsistent error handling — часть сервисов кидает `AppError`, часть возвращает `null` без проверки в контроллере (например `getContactById`, `getTaskByIdAndUserId` могут отдать 200 с пустым телом вместо 404)
