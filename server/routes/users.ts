@@ -1,14 +1,30 @@
-import { Router } from 'express';
-import * as userController from '../controllers/users';
-import { verificationAccessToken } from '../middleware/auth';
-import { asyncHandler } from '../utils/asyncHandler';
+import { Router } from "express";
+import * as userController from "../controllers/users";
+import { verificationAccessToken } from "../middleware/auth";
+import { asyncHandler } from "../utils/asyncHandler";
 
 const router = Router();
 
-router.get('/', verificationAccessToken, asyncHandler(userController.getUsers));
-router.get('/:id', verificationAccessToken, asyncHandler(userController.getUser));
-router.delete('/:id', verificationAccessToken, asyncHandler(userController.deleteUser));
-router.post('/', verificationAccessToken, asyncHandler(userController.createUser));
-
+router.get("/", verificationAccessToken, asyncHandler(userController.getUsers));
+router.get(
+  "/:id",
+  verificationAccessToken,
+  asyncHandler(userController.getUser),
+);
+router.get(
+  "/me",
+  verificationAccessToken,
+  asyncHandler(userController.getUserInfo),
+);
+router.delete(
+  "/:id",
+  verificationAccessToken,
+  asyncHandler(userController.deleteUser),
+);
+router.post(
+  "/",
+  verificationAccessToken,
+  asyncHandler(userController.createUser),
+);
 
 export default router;

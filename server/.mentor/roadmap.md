@@ -13,7 +13,7 @@
 - [x] Rate limit: auth (5/15m) на register/login/logout/changepass
 - [x] Фикс SQL-инъекции в logout (параметризованный запрос)
 - [x] POST /auth/changepass — смена пароля (oldPassword + newPassword), проверка совпадения старого пароля и различия нового от старого
-- [ ] /me — получение профиля по токену
+- [x] /me — получение профиля по токену
 - [ ] POST /auth/forgot-password + /auth/reset-password — сброс пароля без логина через одноразовый токен на email (требует SMTP-сервис, пока не настроен — отложено)
 - [x] Валидация входных данных через zod — auth-роуты, contacts/tasks/notes
 
@@ -36,7 +36,7 @@
 - [x] `types/types.ts`: `Notes.contentId` → `contactId` (исправлено)
 - [ ] Inconsistent error handling — часть сервисов кидает `AppError`, часть возвращает `null` без проверки в контроллере (например `getContactById`, `getTaskByIdAndUserId` могут отдать 200 с пустым телом вместо 404)
 - [x] `controllers/auth.ts` → `logoutUser`: `res.clearCookie("token", refreshToken)` — пофикшено, второй аргумент — объект опций
-- [ ] Проект не собирается — нет `node_modules`, кривые пути в `tsconfig.json` (`rootDir` и `include` дублируют `server/`), `zod` не добавлен в `package.json`
+- [x] Проект не собирается — нет `node_modules`, кривые пути в `tsconfig.json` (`rootDir` и `include` дублируют `server/`), `zod` не добавлен в `package.json`
 
 ---
 
