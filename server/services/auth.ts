@@ -48,7 +48,15 @@ export async function rotateRefreshToken(curRefreshToken: string) {
         [payload.userId, payload.jti],
       )
     ).rows;
-    if (row.length === 0) return null;
+    if (row.length === 0) {
+      await pool.query("delete from refresh_tokens where user_id=$1", [
+        payload.userId,
+      ]);
+      throw new AppError(
+        "Token reuse detected — all sessions revoked. Please log in again.",
+        401,
+      );
+    }
 
     const isValid =
       crypto.createHash("sha256").update(curRefreshToken).digest("hex") ===
@@ -70,6 +78,7 @@ export async function rotateRefreshToken(curRefreshToken: string) {
 
     return { refreshToken, accessToken };
   } catch (err: any) {
+    if (err instanceof AppError) throw err;
     if (err.name === "TokenExpiredError") {
       throw new AppError("Token Expired", 403);
     } else if (err.name === "JsonWebTokenError") {
