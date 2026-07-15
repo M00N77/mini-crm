@@ -6,16 +6,19 @@ import { asyncHandler } from "../utils/asyncHandler";
 const router = Router();
 
 router.get("/", verificationAccessToken, asyncHandler(userController.getUsers));
-router.get(
-  "/:id",
-  verificationAccessToken,
-  asyncHandler(userController.getUser),
-);
+
 router.get(
   "/me",
   verificationAccessToken,
   asyncHandler(userController.getUserInfo),
 );
+
+router.get(
+  "/:id",
+  verificationAccessToken,
+  asyncHandler(userController.getUser),
+);
+
 router.delete(
   "/:id",
   verificationAccessToken,
