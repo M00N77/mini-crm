@@ -57,6 +57,7 @@
 - [ ] **Проекция SQL**: Tasks — явный SELECT с camelCase-алиасами; Notes — `select *` с JOIN (возвращает лишние поля contacts). Явная проекция везде
 - [ ] **Дублирование валидации**: `checkNewPasswordDiffers` в `middleware/auth.ts` дублирует zod-схему (`changePassSchema` уже проверяет old/newPassword)
 - [ ] **Язык сообщений**: часть ошибок на русском (`middleware/auth.ts`), часть на английском. Выбрать один язык
+- [ ] **Поле порядка задач**: в таблице `tasks` нет поля `position`/`sort_order` — DnD персистит только смену статуса, порядок внутри колонки не сохраняется
 - [ ] **`paginate()` возвращает `offset`**: деталь реализации, не нужна клиенту
 - [ ] **`getUserById` не возвращает `name`**: SELECT только `id,email,created_at`, без `name`
 - [ ] **`req.user` boilerplate**: каждый контроллер проверяет `if (!req.user) throw...`. Вынести в middleware
