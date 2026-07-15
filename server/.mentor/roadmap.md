@@ -35,18 +35,41 @@
 - [ ] SQL-инъекция в `utils/paginate.ts` — `fromClause` интерполируется напрямую в `count(*)`, сейчас источники контролируемые, но риск при расширении
 - [x] `types/types.ts`: `Notes.contentId` → `contactId` (исправлено)
 - [ ] Inconsistent error handling — часть сервисов кидает `AppError`, часть возвращает `null` без проверки в контроллере (например `getContactById`, `getTaskByIdAndUserId` могут отдать 200 с пустым телом вместо 404)
+- [ ] **`controllers/auth.ts`** — отсутствует импорт `AppError` в `changePassword` (упадёт в рантайме)
+- [ ] **`controllers/auth.ts`** — файл повреждён null-байтами в конце
+- [ ] **`routes/users.ts`** — `/me` зарегистрирован после `/:id`, запрос `GET /me` уходит в `getUser` с `id="me"` (никогда не достигает `getUserInfo`)
+- [ ] **`controllers/users.ts:37`** — `getUserInfo` оборачивает ответ в `{ message: result }` вместо прямой отправки `result`
 - [x] `controllers/auth.ts` → `logoutUser`: `res.clearCookie("token", refreshToken)` — пофикшено, второй аргумент — объект опций
 - [x] Проект не собирается — нет `node_modules`, кривые пути в `tsconfig.json` (`rootDir` и `include` дублируют `server/`), `zod` не добавлен в `package.json`
+
+### 🔄 Unification — привести к единому виду
+
+- [ ] **Case в API ответах**: Tasks — `camelCase` (через SQL алиасы), Contacts/Notes/Users — `snake_case`. Выбрать один стандарт (рекомендуется `camelCase`)
+- [ ] **404 на not found**: `users` controller проверяет `null` → 404; `contacts/tasks/notes` контроллеры шлют 200 с пустым телом. Привести к единому: `null` → 404
+- [ ] **HTTP статус update (PUT)**: `contacts:43` / `tasks:38` возвращают 201 Created; REST-конвенция — 200 OK
+- [ ] **res.send vs return res.send**: Contacts/Notes — `res.status().send()`, Tasks — `return res.status().send()`. Единый паттерн
+- [ ] **Нейминг services**: `getContacts`, `getContactById` vs `getAllTasksByUserId`, `getTaskByIdAndUserId` vs `getAllNotesById`, `getNoteById`. Привести к единому шаблону
+- [ ] **Нейминг controllers**: `getContactById` vs `getAllNotes` vs `getNote` vs `getNoteById`. Привести к единому шаблону
+- [ ] **Валидация `/:id`**: ни один роут не проверяет, что id — положительное число. Добавить везде
+- [ ] **Валидация `POST /users`**: нет `validate()`- middleware (в отличие от всех остальных POST/PUT)
+- [ ] **Pagination у users**: `getAllUsers()` не использует `req.query.page/limit`, пагинация с дефолтами
+- [ ] **Сигнатуры update**: `updateContact`/`updateTask` принимают `fields: {...}`, `updateNote` — просто `content: string`. Единообразие
+- [ ] **Проекция SQL**: Tasks — явный SELECT с camelCase-алиасами; Notes — `select *` с JOIN (возвращает лишние поля contacts). Явная проекция везде
+- [ ] **Дублирование валидации**: `checkNewPasswordDiffers` в `middleware/auth.ts` дублирует zod-схему (`changePassSchema` уже проверяет old/newPassword)
+- [ ] **Язык сообщений**: часть ошибок на русском (`middleware/auth.ts`), часть на английском. Выбрать один язык
+- [ ] **`paginate()` возвращает `offset`**: деталь реализации, не нужна клиенту
+- [ ] **`getUserById` не возвращает `name`**: SELECT только `id,email,created_at`, без `name`
+- [ ] **`req.user` boilerplate**: каждый контроллер проверяет `if (!req.user) throw...`. Вынести в middleware
 
 ---
 
 ## 🎨 Frontend (Next.js 16 + React 19 + TS + Tailwind v4)
 
-- [x] Атомы: Button, Input, Badge, Avatar, IconButton, Divider, Typography, Spinner, **Toggle**
-- [x] Молекулы: Card, FormField, NavItem, SearchInput, Tabs, TimelineItem, StatCard
-- [x] Организмы: Header, Sidebar, Modal, Drawer, KanbanColumn
-- [x] Layouts: AppShell
-- [x] Views: DashboardView, ContactsView, TasksView
+- [] Атомы: Button, Input, Badge, Avatar, IconButton, Divider, Typography, Spinner, **Toggle**
+- [] Молекулы: Card, FormField, NavItem, SearchInput, Tabs, TimelineItem, StatCard
+- [] Организмы: Header, Sidebar, Modal, Drawer, KanbanColumn
+- [] Layouts: AppShell
+- [] Views: DashboardView, ContactsView, TasksView
 
 ---
 
@@ -79,7 +102,3 @@
 ### Этап 4 — качество
 
 - [ ] loading/error/empty состояния, zod-валидация, оптимистичные апдейты
-
-### 🎯 Текущий фокус
-
-**Zod-валидация auth-роутов (register/login/changepass) → затем Этап 0 фронт-интеграции**
