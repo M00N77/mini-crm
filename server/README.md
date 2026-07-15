@@ -166,9 +166,10 @@ PORT=3000
 | POST | `/auth/login` | `{ email, password }` | пользователь + access-токен (refresh в cookie) |
 | POST | `/auth/refresh` | — (refresh-cookie) | `{ accessToken }` |
 | POST | `/auth/logout` | — | JSON-подтверждение |
+| GET | `/users/me` | — (access-токен) | пользователь по токену (bootstrap сессии) |
 | GET | `/users/:id` | — | пользователь (используется при bootstrap для получения `name`) |
 
-> **Rate limit:** `/auth/login` и `/auth/register` — 5 запросов за 15 минут. Отдельного `/auth/me` нет.
+> **Rate limit:** `/auth/login` и `/auth/register` — 5 запросов за 15 минут.
 > 
 
 ### Contacts
