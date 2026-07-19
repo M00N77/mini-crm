@@ -1,5 +1,5 @@
-import pool from "../db";
 import bcrypt from "bcrypt";
+import pool from "../db";
 import { AppError } from "../utils/AppError";
 import { paginate } from "../utils/paginate";
 
@@ -7,7 +7,7 @@ export async function getAllUsers() {
   const paginateData = await paginate("users");
   const { offset, limit } = paginateData;
   const result = await pool.query(
-    "SELECT id, email, name, created_at FROM users  offset $1 limit $2 ORDER BY id",
+    "SELECT id, email, name, created_at FROM users ORDER BY id offset $1 limit $2 ",
     [offset, limit],
   );
   return {
@@ -18,7 +18,7 @@ export async function getAllUsers() {
 
 export async function getUserById(id: number) {
   const result = await pool.query(
-    "select id,email,created_at from users where id=$1",
+    "select id,email,name,created_at from users where id=$1",
     [id],
   );
   return result.rows[0] || null;
