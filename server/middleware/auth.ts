@@ -15,13 +15,15 @@ export async function verificationAccessToken(
 
   try {
     const token = authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ error: "No token provided" });
+    if (!token) return res.status(401).json({message:'Invalid session'});
     const secretKey = JWT_SECRET;
     const decode = jwt.verify(token, secretKey) as TokenPayload;
     req.user = decode;
     next();
-  } catch {
-    res.status(401).json({ error: "Invalid or expired token" });
+  } catch(e : any) {
+      if(e instanceof Error && e.name==='TokenExpiredError') return next(new AppError('Token Expired',403));
+      if(e instanceof Error && e.name==='JsonWebTokenError') return next(new AppError('Invalid token',401));
+      return next(new AppError("Authentication failed", 500));
   }
 }
 
@@ -32,13 +34,15 @@ export async function verificationRefreshToken(
 ) {
   try {
     const { token } = req.cookies;
-    if (!token) return res.status(401).json({ error: "No token provided" });
+    if (!token) return
 
     const decode = jwt.verify(token, JWT_SECRET) as TokenPayload;
     req.user = decode;
     next();
-  } catch {
-    res.status(401).json({ error: "Invalid or expired token" });
+  } catch (e){
+    if(e instanceof Error && e.name === 'TokenExpiredError') return next(new AppError('Token Expired',403));
+    if(e instanceof Error && e.name==='JsonWebTokenError') return next(new AppError('Invalid token',401));
+    return next(new AppError("Authentication failed", 500));
   }
 }
 
