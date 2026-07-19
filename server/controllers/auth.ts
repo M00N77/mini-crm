@@ -45,8 +45,7 @@ export async function refreshUser(
 }
 
 export async function logoutUser(req: Request, res: Response) {
-  const { refreshToken } = req.cookies;
-  await service.logoutUser(refreshToken);
+  await service.logoutUser(req.cookies.token);
 
   res.clearCookie("token", { path: "/" });
   res.status(200).json({ message: "User logged out" });
