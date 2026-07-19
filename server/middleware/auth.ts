@@ -34,8 +34,7 @@ export async function verificationRefreshToken(
 ) {
   try {
     const { token } = req.cookies;
-    if (!token) return
-
+    if (!token) return next(new AppError('Token undefiend',401))
     const decode = jwt.verify(token, JWT_SECRET) as TokenPayload;
     req.user = decode;
     next();
