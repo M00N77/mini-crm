@@ -1,6 +1,5 @@
 import * as service from "../services/auth";
-import * as middleware from "../middleware/auth";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { AppError } from "../utils/AppError";
 
 const refreshCookieOptions = {
@@ -29,14 +28,10 @@ export async function loginUser(req: Request, res: Response) {
   res.status(200).send(resultWithoutRefresh);
 }
 
-export async function refreshUser(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export async function refreshUser(req: Request, res: Response) {
   const oldRefresh = req.cookies.token;
   const result = await service.rotateRefreshToken(oldRefresh);
-  if (!result) return res.status(401).send("Invalid refresh token");
+  if (!result) throw new AppError("Invalid refresh token", 401);
 
   const { refreshToken, ...resultWithoutRefresh } = result;
   res.cookie("token", refreshToken, refreshCookieOptions);

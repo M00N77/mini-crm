@@ -13,8 +13,6 @@ export async function getContacts(req: Request, res: Response) {
     const limit = Number(req.query.limit) || 10;
     const result = await contactsService.getContacts(userId, page, limit)
 
-    if(result.pagination.total===0) res.status(404).json({message:'Users is empty'})
-
     res.status(200).send(result);
 }
 
