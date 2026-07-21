@@ -15,6 +15,7 @@ export async function getUser(req: Request, res: Response) {
 }
 
 export async function createUser(req: Request, res: Response) {
+  if (!req.user) throw new AppError("You are not logged in", 401);
   const { email, password, name } = req.body;
   const user = await userService.createUser(email, password, name);
   return res.status(201).json(user);
