@@ -5,14 +5,14 @@ import { paginate } from "../utils/paginate";
 
 export async function getUsers() {
   const paginateData = await paginate("users");
-  const { offset, limit } = paginateData;
+  const { offset, limit, ...pagination } = paginateData;
   const result = await pool.query(
     "SELECT id, email, name, createdAt FROM users ORDER BY id offset $1 limit $2 ",
     [offset, limit],
   );
   return {
     data: result.rows,
-    pagination: { ...paginateData },
+    pagination,
   };
 }
 

@@ -4,12 +4,12 @@ import { AppError } from "../utils/AppError";
 
 export async function getNotes(userId:number,pageInput:number,limitInput:number) {
     const paginateData = await paginate('notes join contacts on contacts.id = notes.contactId',userId,'contacts.userId',pageInput,limitInput);
-    const {offset,limit} = paginateData
+    const {offset, limit, ...pagination} = paginateData
     const result = await pool.query('select notes.* from notes join contacts on contacts.id = notes.contactId where contacts.userId = $1 offset $2 limit $3 ',[userId,offset,limit]);
 
     return {
         "data":result.rows,
-        "pagination": {...paginateData}
+        "pagination": pagination
     }
 }
 
