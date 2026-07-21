@@ -21,7 +21,9 @@ export async function getUserById(id: number) {
     "select id,email,name,created_at from users where id=$1",
     [id],
   );
-  return result.rows[0] || null;
+  const row = result.rows[0];
+  if (!row) throw new AppError("User not found", 404);
+  return row;
 }
 
 export async function createUser(
@@ -44,7 +46,9 @@ export async function deleteUserById(id: number) {
     "DELETE FROM users WHERE id=$1 returning id",
     [id],
   );
-  return result.rows[0] || null;
+  const row = result.rows[0];
+  if (!row) throw new AppError("User not found", 404);
+  return row;
 }
 
 export async function getUserInfo(userId: number) {
