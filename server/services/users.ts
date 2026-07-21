@@ -7,7 +7,7 @@ export async function getAllUsers() {
   const paginateData = await paginate("users");
   const { offset, limit } = paginateData;
   const result = await pool.query(
-    "SELECT id, email, name, created_at FROM users ORDER BY id offset $1 limit $2 ",
+    "SELECT id, email, name, createdAt FROM users ORDER BY id offset $1 limit $2 ",
     [offset, limit],
   );
   return {
@@ -18,7 +18,7 @@ export async function getAllUsers() {
 
 export async function getUserById(id: number) {
   const result = await pool.query(
-    "select id,email,name,created_at from users where id=$1",
+    "select id,email,name,createdAt from users where id=$1",
     [id],
   );
   const row = result.rows[0];
@@ -35,7 +35,7 @@ export async function createUser(
   const hash = await bcrypt.hash(password, salt);
 
   const result = await pool.query(
-    "INSERT INTO USERS (email,hashed_password,name) VALUES ($1,$2,$3) RETURNING id,email,created_at",
+    "INSERT INTO USERS (email,hashedPassword,name) VALUES ($1,$2,$3) RETURNING id,email,createdAt",
     [email, hash, name],
   );
   return result.rows[0];
@@ -53,7 +53,7 @@ export async function deleteUserById(id: number) {
 
 export async function getUserInfo(userId: number) {
   const data = await pool.query(
-    "select id,name,email,created_at from users where id = $1",
+    "select id,name,email,createdAt from users where id = $1",
     [userId],
   );
   if (data.rows.length === 0) throw new AppError("User not found", 404);

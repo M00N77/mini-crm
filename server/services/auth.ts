@@ -32,7 +32,7 @@ async function generateRefreshToken(payload: TokenPayload, secretKey: string,exe
     .digest("hex");
 
   await executor.query(
-    "insert into refresh_tokens (user_id,token_hash,expires_at,jti) values ($1,$2,$3,$4) returning *",
+    "insert into refresh_tokens (userId,tokenHash,expiresAt,jti) values ($1,$2,$3,$4) returning *",
     [userId, hashedRefreshToken, refreshTokenExpiresIn, jti],
   );
 
@@ -63,12 +63,12 @@ export async function rotateRefreshToken(curRefreshToken: string) {
     await client.query('begin');
     const row = (
       await client.query(
-        "select * from refresh_tokens where user_id=$1 and jti=$2",
+        "select * from refresh_tokens where userId=$1 and jti=$2",
         [payload.userId, payload.jti],
       )
     ).rows;
     if (row.length === 0) {
-      await client.query("delete from refresh_tokens where user_id=$1", [
+      await client.query("delete from refresh_tokens where userId=$1", [
         payload.userId,
       ]);
       throw new AppError(
@@ -78,11 +78,11 @@ export async function rotateRefreshToken(curRefreshToken: string) {
     }
     const isValid =
       crypto.createHash("sha256").update(curRefreshToken).digest("hex") ===
-      row[0].token_hash;
+      row[0].tokenHash;
     if (!isValid) throw new AppError("Invalid refresh token", 401);
     await client.query(
-      "delete from refresh_tokens where user_id=$1 and jti=$2 returning *",
-      [row[0].user_id, row[0].jti],
+      "delete from refresh_tokens where userId=$1 and jti=$2 returning *",
+      [row[0].userId, row[0].jti],
     );
 
     const { refreshToken } = await generateRefreshToken(payload, secretKey, client);
@@ -116,7 +116,7 @@ export async function registerUser(
     const hashedPassword = await bcrypt.hash(password, salt);
     await client.query('begin');
     const result = await client.query(
-      "insert into users (email,hashed_password,name) values($1,$2,$3) returning id,email,name,created_at",
+      "insert into users (email,hashedPassword,name) values($1,$2,$3) returning id,email,name,createdAt",
       [email, hashedPassword, name],
     );
     const payload: TokenPayload = {
@@ -152,10 +152,10 @@ export async function loginUser(email: string, password: string) {
     throw new AppError("Invalid email or password", 401);
   const isValidPassword = await bcrypt.compare(
     password,
-    user.rows[0].hashed_password,
+    user.rows[0].hashedPassword,
   );
   if (!isValidPassword) throw new AppError("Invalid email or password", 401);
-  const { hashed_password, ...userWithoutPassword } = user.rows[0];
+  const { hashedPassword, ...userWithoutPassword } = user.rows[0];
 
   const secretKey = JWT_SECRET;
 
@@ -186,7 +186,7 @@ export async function logoutUser(refreshToken: string) {
     const { jti, userId } = payload;
 
     await pool.query(
-      "delete from refresh_tokens where user_id=$1 and jti=$2 returning *",
+      "delete from refresh_tokens where userId=$1 and jti=$2 returning *",
       [userId, jti],
     );
   } catch (e) {}
@@ -195,7 +195,7 @@ export async function changePassword(userId: number, password: string) {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
   const result = await pool.query(
-    "update users set hashed_password = $1 where id = $2 returning id",
+    "update users set hashedPassword = $1 where id = $2 returning id",
     [hashedPassword, userId],
   );
   if (result.rows.length === 0) throw new AppError("Password not changed", 500);

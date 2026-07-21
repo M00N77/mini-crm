@@ -69,14 +69,14 @@ export async function verifyOldPassword(
     const { oldPassword } = req.body;
 
     const result = await pool.query(
-      "select hashed_password from users where id = $1",
+      "select hashedPassword from users where id = $1",
       [req.user.userId],
     );
     if (result.rows.length === 0) throw new AppError("User not found", 404);
 
     const isValid = await bcrypt.compare(
       oldPassword,
-      result.rows[0].hashed_password,
+      result.rows[0].hashedPassword,
     );
     if (!isValid) throw new AppError("Invalid old password", 401);
     next();
