@@ -47,9 +47,9 @@
 - [ ] **Case в API ответах**: Tasks — `camelCase` (через SQL алиасы), Contacts/Notes/Users — `snake_case`. Выбрать один стандарт (рекомендуется `camelCase`)
 - [x] **404 на not found**: сервисы кидают `AppError(404)`, контроллеры не проверяют `null`
 - [x] **HTTP статус update (PUT)**: уже 200 OK
-- [ ] **res.send vs return res.send**: Contacts/Notes — `res.status().send()`, Tasks — `return res.status().send()`. Единый паттерн
-- [ ] **Нейминг services**: `getContacts`, `getContactById` vs `getAllTasksByUserId`, `getTaskByIdAndUserId` vs `getAllNotesById`, `getNoteById`. Привести к единому шаблону
-- [ ] **Нейминг controllers**: `getContactById` vs `getAllNotes` vs `getNote` vs `getNoteById`. Привести к единому шаблону
+- [x] **res.send vs return res.send**: единый паттерн `return res.status().send()`
+- [x] **Нейминг services**: единый шаблон `getXxx`, `getXxxById`, `createXxx`, `updateXxx`, `deleteXxx`
+- [x] **Нейминг controllers**: единый шаблон — совпадает с сервисами
 - [ ] **Валидация `/:id`**: ни один роут не проверяет, что id — положительное число. Добавить везде
 - [ ] **Валидация `POST /users`**: нет `validate()`- middleware (в отличие от всех остальных POST/PUT)
 - [ ] **Pagination у users**: `getAllUsers()` не использует `req.query.page/limit`, пагинация с дефолтами

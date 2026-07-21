@@ -7,16 +7,16 @@ export async function getTasks(req: Request, res: Response) {
     const userId  = Number(req.user.userId);
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-    const result = await tasksService.getAllTasksByUserId(userId, page, limit);
+    const result = await tasksService.getTasks(userId, page, limit);
 
     return res.status(200).send(result);
 }
 
-export async function getTaskByIdAndUserId(req: Request, res: Response) {
+export async function getTaskById(req: Request, res: Response) {
     if (!req.user) throw new AppError('You are not logged in', 401);
     const id = req.params.id;
     const userId = req.user.userId;
-    const result = await tasksService.getTaskByIdAndUserId(Number(id),Number(userId));
+    const result = await tasksService.getTaskById(Number(id),Number(userId));
 
     return res.status(200).send(result);
 }

@@ -3,7 +3,7 @@ import {paginate} from "../utils/paginate";
 import { AppError } from "../utils/AppError";
 
 
-export async function getAllTasksByUserId(userId:number,pageInput:number,limitInput:number){
+export async function getTasks(userId:number,pageInput:number,limitInput:number){
     const paginationData = await paginate('tasks',userId,'userId',pageInput,limitInput,)
     const {offset,limit} = paginationData
     const result = await pool.query("SELECT id, title, description, userId, status, createdAt FROM tasks where userId = $1 offset $2 limit $3",[userId,offset,limit]);
@@ -13,7 +13,7 @@ export async function getAllTasksByUserId(userId:number,pageInput:number,limitIn
     }
 }
 
-export async function getTaskByIdAndUserId(id:number,userId:number){
+export async function getTaskById(id:number,userId:number){
     const result = await pool.query('select id, title, description, userId, status, createdAt from tasks where id = $1 and userId = $2', [id,userId]);
     const row = result.rows[0];
     if (!row) throw new AppError("Task not found", 404);

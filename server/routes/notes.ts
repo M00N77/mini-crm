@@ -7,8 +7,8 @@ import { createNoteSchema, updateNoteSchema } from "../schemas/notes.schema";
 
 const router = Router();
 
-router.get('/', verificationAccessToken, asyncHandler(controllerNotes.getAllNotes))
-router.get('/:id', verificationAccessToken, asyncHandler(controllerNotes.getNote))
+router.get('/', verificationAccessToken, asyncHandler(controllerNotes.getNotes))
+router.get('/:id', verificationAccessToken, asyncHandler(controllerNotes.getNoteById))
 router.post('/', verificationAccessToken, validate(createNoteSchema), asyncHandler(controllerNotes.createNote))
 router.put('/:id', verificationAccessToken, validate(updateNoteSchema), asyncHandler(controllerNotes.updateNote))
 router.delete('/:id', verificationAccessToken, asyncHandler(controllerNotes.deleteNote))

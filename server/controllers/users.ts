@@ -3,7 +3,7 @@ import * as userService from "../services/users";
 import { AppError } from "../utils/AppError";
 
 export async function getUsers(req: Request, res: Response) {
-  const users = await userService.getAllUsers();
+  const users = await userService.getUsers();
   return res.json(users);
 }
 
@@ -22,7 +22,7 @@ export async function createUser(req: Request, res: Response) {
 
 export async function deleteUser(req: Request, res: Response) {
   const id = req.params.id;
-  await userService.deleteUserById(Number(id));
+  await userService.deleteUser(Number(id));
 
   return res.status(200).json({ message: "deleted successfully." });
 }

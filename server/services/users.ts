@@ -3,7 +3,7 @@ import pool from "../db";
 import { AppError } from "../utils/AppError";
 import { paginate } from "../utils/paginate";
 
-export async function getAllUsers() {
+export async function getUsers() {
   const paginateData = await paginate("users");
   const { offset, limit } = paginateData;
   const result = await pool.query(
@@ -41,7 +41,7 @@ export async function createUser(
   return result.rows[0];
 }
 
-export async function deleteUserById(id: number) {
+export async function deleteUser(id: number) {
   const result = await pool.query(
     "DELETE FROM users WHERE id=$1 returning id",
     [id],
