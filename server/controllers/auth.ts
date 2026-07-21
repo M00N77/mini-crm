@@ -15,7 +15,7 @@ export async function registerUser(req: Request, res: Response) {
 
   const { refreshToken, ...resultWithoutRefresh } = result;
   res.cookie("token", refreshToken, refreshCookieOptions);
-  res.status(201).send(resultWithoutRefresh);
+  return res.status(201).send(resultWithoutRefresh);
 }
 
 export async function loginUser(req: Request, res: Response) {
@@ -25,7 +25,7 @@ export async function loginUser(req: Request, res: Response) {
   const { refreshToken, ...resultWithoutRefresh } = result;
   res.cookie("token", refreshToken, refreshCookieOptions);
 
-  res.status(200).send(resultWithoutRefresh);
+  return res.status(200).send(resultWithoutRefresh);
 }
 
 export async function refreshUser(req: Request, res: Response) {
@@ -36,14 +36,14 @@ export async function refreshUser(req: Request, res: Response) {
   const { refreshToken, ...resultWithoutRefresh } = result;
   res.cookie("token", refreshToken, refreshCookieOptions);
 
-  res.status(200).send(resultWithoutRefresh);
+  return res.status(200).send(resultWithoutRefresh);
 }
 
 export async function logoutUser(req: Request, res: Response) {
   await service.logoutUser(req.cookies.token);
 
   res.clearCookie("token", { path: "/" });
-  res.status(200).json({ message: "User logged out" });
+  return res.status(200).json({ message: "User logged out" });
 }
 
 export async function changePassword(req: Request, res: Response) {
@@ -52,5 +52,5 @@ export async function changePassword(req: Request, res: Response) {
   const password = req.body.newPassword;
   await service.changePassword(userId, password);
 
-  res.status(200).json({ message: "Password changed successfully" });
+  return res.status(200).json({ message: "Password changed successfully" });
 }

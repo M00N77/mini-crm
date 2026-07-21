@@ -9,7 +9,7 @@ export async function getAllNotes(req:Request, res:Response){
     const limit = Number(req.query.limit) || 10;
     const result = await serviceNotes.getAllNotesById(userId, page, limit)
 
-    res.status(200).send(result)
+    return res.status(200).send(result)
 }
 
 export async function getNote(req:Request, res:Response){
@@ -18,7 +18,7 @@ export async function getNote(req:Request, res:Response){
     const userId = Number(req.user.userId);
     const result = await serviceNotes.getNoteById(userId, noteId);
 
-    res.status(200).send(result)
+    return res.status(200).send(result)
 }
 
 export async function createNote(req:Request, res:Response){
@@ -27,7 +27,7 @@ export async function createNote(req:Request, res:Response){
     const {contactId, content } = req.body;
     const result = await serviceNotes.createNote(userId, contactId, content);
 
-    res.status(201).send(result)
+    return res.status(201).send(result)
 }
 
 export async function updateNote(req:Request, res:Response){
@@ -37,7 +37,7 @@ export async function updateNote(req:Request, res:Response){
     const content = String(req.body.content);
     const result = await serviceNotes.updateNote(userId, noteId, content);
 
-    res.status(200).send(result)
+    return res.status(200).send(result)
 }
 
 export async function deleteNote(req:Request, res:Response){
@@ -46,5 +46,5 @@ export async function deleteNote(req:Request, res:Response){
     const userId = Number(req.user.userId);
 
     const result = await serviceNotes.deleteNote(userId, noteId);
-    res.status(200).send(result)
+    return res.status(200).send(result)
 }
