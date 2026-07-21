@@ -31,7 +31,6 @@ export async function paginate(fromClause:string,userId?: number,userIdColumn?:s
     return {
             "page":page,
             "limit":limit,
-            "offset":offset,
             "total":totalElements,
             "totalPages":totalPages,
             "hasMore":hasMore
