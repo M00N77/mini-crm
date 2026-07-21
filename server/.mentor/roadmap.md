@@ -32,20 +32,20 @@
 ### 🐛 Известные баги / долг
 
 - [x] Нет валидации входа — ни на одном роуте, ни zod, ни ручной проверки
-- [ ] SQL-инъекция в `utils/paginate.ts` — `fromClause` интерполируется напрямую в `count(*)`, сейчас источники контролируемые, но риск при расширении
+- [x] SQL-инъекция в `utils/paginate.ts` — `fromClause` интерполируется напрямую в `count(*)`, сейчас источники контролируемые, но риск при расширении
 - [x] `types/types.ts`: `Notes.contentId` → `contactId` (исправлено)
-- [ ] Inconsistent error handling — часть сервисов кидает `AppError`, часть возвращает `null` без проверки в контроллере (например `getContactById`, `getTaskByIdAndUserId` могут отдать 200 с пустым телом вместо 404)
-- [ ] **`controllers/auth.ts`** — отсутствует импорт `AppError` в `changePassword` (упадёт в рантайме)
-- [ ] **`controllers/auth.ts`** — файл повреждён null-байтами в конце
-- [ ] **`routes/users.ts`** — `/me` зарегистрирован после `/:id`, запрос `GET /me` уходит в `getUser` с `id="me"` (никогда не достигает `getUserInfo`)
-- [ ] **`controllers/users.ts:37`** — `getUserInfo` оборачивает ответ в `{ message: result }` вместо прямой отправки `result`
+- [x] Inconsistent error handling — часть сервисов кидает `AppError`, часть возвращает `null` без проверки в контроллере (например `getContactById`, `getTaskByIdAndUserId` могут отдать 200 с пустым телом вместо 404)
+- [x] **`controllers/auth.ts`** — отсутствует импорт `AppError` в `changePassword` (упадёт в рантайме)
+- [x] **`controllers/auth.ts`** — файл повреждён null-байтами в конце
+- [x] **`routes/users.ts`** — `/me` зарегистрирован после `/:id`, запрос `GET /me` уходит в `getUser` с `id="me"` (никогда не достигает `getUserInfo`)
+- [x] **`controllers/users.ts:37`** — `getUserInfo` оборачивает ответ в `{ message: result }` вместо прямой отправки `result`
 - [x] `controllers/auth.ts` → `logoutUser`: `res.clearCookie("token", refreshToken)` — пофикшено, второй аргумент — объект опций
 - [x] Проект не собирается — нет `node_modules`, кривые пути в `tsconfig.json` (`rootDir` и `include` дублируют `server/`), `zod` не добавлен в `package.json`
 
 ### 🔄 Unification — привести к единому виду
 
 - [ ] **Case в API ответах**: Tasks — `camelCase` (через SQL алиасы), Contacts/Notes/Users — `snake_case`. Выбрать один стандарт (рекомендуется `camelCase`)
-- [ ] **404 на not found**: `users` controller проверяет `null` → 404; `contacts/tasks/notes` контроллеры шлют 200 с пустым телом. Привести к единому: `null` → 404
+- [x] **404 на not found**: сервисы кидают `AppError(404)`, контроллеры не проверяют `null`
 - [ ] **HTTP статус update (PUT)**: `contacts:43` / `tasks:38` возвращают 201 Created; REST-конвенция — 200 OK
 - [ ] **res.send vs return res.send**: Contacts/Notes — `res.status().send()`, Tasks — `return res.status().send()`. Единый паттерн
 - [ ] **Нейминг services**: `getContacts`, `getContactById` vs `getAllTasksByUserId`, `getTaskByIdAndUserId` vs `getAllNotesById`, `getNoteById`. Привести к единому шаблону
