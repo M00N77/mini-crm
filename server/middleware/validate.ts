@@ -11,7 +11,7 @@ export function validate(schema: ZodSchema) {
         .join("; ");
       return next(new AppError(message, 400));
     }
-    req.body = result.data; // подменяем на провалидированные (и приведённые) данные
+    req.body = result.data; 
     next();
   };
 }

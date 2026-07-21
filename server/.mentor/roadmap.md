@@ -50,8 +50,8 @@
 - [x] **res.send vs return res.send**: единый паттерн `return res.status().send()`
 - [x] **Нейминг services**: единый шаблон `getXxx`, `getXxxById`, `createXxx`, `updateXxx`, `deleteXxx`
 - [x] **Нейминг controllers**: единый шаблон — совпадает с сервисами
-- [ ] **Валидация `/:id`**: ни один роут не проверяет, что id — положительное число. Добавить везде
-- [ ] **Валидация `POST /users`**: нет `validate()`- middleware (в отличие от всех остальных POST/PUT)
+- [x] **Валидация `/:id`**: middleware `validateId` на всех `/:id` роутах
+- [x] **Валидация `POST /users`**: добавлен `validate(createUserSchema)`
 - [ ] **Pagination у users**: `getAllUsers()` не использует `req.query.page/limit`, пагинация с дефолтами
 - [ ] **Сигнатуры update**: `updateContact`/`updateTask` принимают `fields: {...}`, `updateNote` — просто `content: string`. Единообразие
 - [ ] **Проекция SQL**: Tasks — явный SELECT с camelCase-алиасами; Notes — `select *` с JOIN (возвращает лишние поля contacts). Явная проекция везде
