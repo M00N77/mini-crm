@@ -46,7 +46,7 @@
 
 - [ ] **Case в API ответах**: Tasks — `camelCase` (через SQL алиасы), Contacts/Notes/Users — `snake_case`. Выбрать один стандарт (рекомендуется `camelCase`)
 - [x] **404 на not found**: сервисы кидают `AppError(404)`, контроллеры не проверяют `null`
-- [ ] **HTTP статус update (PUT)**: `contacts:43` / `tasks:38` возвращают 201 Created; REST-конвенция — 200 OK
+- [x] **HTTP статус update (PUT)**: уже 200 OK
 - [ ] **res.send vs return res.send**: Contacts/Notes — `res.status().send()`, Tasks — `return res.status().send()`. Единый паттерн
 - [ ] **Нейминг services**: `getContacts`, `getContactById` vs `getAllTasksByUserId`, `getTaskByIdAndUserId` vs `getAllNotesById`, `getNoteById`. Привести к единому шаблону
 - [ ] **Нейминг controllers**: `getContactById` vs `getAllNotes` vs `getNote` vs `getNoteById`. Привести к единому шаблону

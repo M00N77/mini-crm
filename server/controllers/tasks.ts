@@ -35,7 +35,7 @@ export async function updateTask(req: Request, res: Response) {
     const {title,description, status} = req.body;
     const result = await tasksService.updateTask(Number(id),Number(req.user.userId),{title:title,description:description,status:status});
 
-    return res.status(201).json(result);
+    return res.status(200).json(result);
 }
 
 export async function deleteTask(req: Request, res: Response) {

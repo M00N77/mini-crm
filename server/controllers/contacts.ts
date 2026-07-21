@@ -40,7 +40,7 @@ export async function updateContact(req: Request, res: Response) {
     const id = Number(req.params.id);
     const { name,email, phone } = req.body;
     const result = await contactsService.updateContact(userId,id,{name,email,phone});
-    res.status(201).send(result);
+    res.status(200).send(result);
 }
 export async function deleteContact (req: Request, res: Response) {
     if (!req.user) throw new AppError('You are not logged in', 401);
