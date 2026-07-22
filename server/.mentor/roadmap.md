@@ -44,7 +44,7 @@
 
 ### 🔄 Unification — привести к единому виду
 
-- [ ] **Case в API ответах**: Tasks — `camelCase` (через SQL алиасы), Contacts/Notes/Users — `snake_case`. Выбрать один стандарт (рекомендуется `camelCase`)
+- [x] **Case в API ответах**: camelCase через переименование колонок в БД
 - [x] **404 на not found**: сервисы кидают `AppError(404)`, контроллеры не проверяют `null`
 - [x] **HTTP статус update (PUT)**: уже 200 OK
 - [x] **res.send vs return res.send**: единый паттерн `return res.status().send()`
