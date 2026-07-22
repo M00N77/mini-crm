@@ -3,11 +3,11 @@ import pool from "../db";
 import { AppError } from "../utils/AppError";
 import { paginate } from "../utils/paginate";
 
-export async function getUsers() {
-  const paginateData = await paginate("users");
+export async function getUsers(pageInput:number,limitInput:number,) {
+  const paginateData = await paginate('users',pageInput,limitInput);
   const { offset, limit, ...pagination } = paginateData;
   const result = await pool.query(
-    "SELECT id, email, name, createdAt FROM users ORDER BY id offset $1 limit $2 ",
+    'SELECT id, email, name, createdAt FROM users ORDER BY id offset $1 limit $2',
     [offset, limit],
   );
   return {

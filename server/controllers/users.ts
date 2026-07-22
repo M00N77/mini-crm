@@ -2,8 +2,13 @@ import { Request, Response } from "express";
 import * as userService from "../services/users";
 import { AppError } from "../utils/AppError";
 
+
 export async function getUsers(req: Request, res: Response) {
-  const users = await userService.getUsers();
+  if(!req.user) throw new AppError('Invalid session',401)
+  const pageInput = Number(req.query.page)
+  const limitInput = Number(req.query.limit)
+
+  const users = await userService.getUsers(pageInput,limitInput,);
   return res.json(users);
 }
 

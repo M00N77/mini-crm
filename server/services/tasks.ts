@@ -4,7 +4,7 @@ import { AppError } from "../utils/AppError";
 
 
 export async function getTasks(userId:number,pageInput:number,limitInput:number){
-    const paginationData = await paginate('tasks',userId,'userId',pageInput,limitInput,)
+    const paginationData = await paginate('tasks',pageInput,limitInput,'userId',userId)
     const {offset, limit, ...pagination} = paginationData
     const result = await pool.query("SELECT id, title, description, userId, status, createdAt FROM tasks where userId = $1 offset $2 limit $3",[userId,offset,limit]);
     return {

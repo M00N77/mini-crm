@@ -4,7 +4,7 @@ import { AppError } from "../utils/AppError";
 
 export async function getContacts(userId: number,pageInput: number, limitInput: number) {
 
-    const paginationData = await paginate('contacts',userId,'userId',pageInput,limitInput)
+    const paginationData = await paginate('contacts',pageInput,limitInput,'userId',userId)
     const {offset, limit, ...pagination} = paginationData
     const result = await pool.query(`select * from contacts where userId=$1 ORDER BY id asc offset $2 limit $3`,[userId,offset,limit])
 
