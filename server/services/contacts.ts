@@ -20,20 +20,20 @@ export async function getContactById(userId:number,id: number) {
     if (!row) throw new AppError("Contact not found", 404);
     return row;
 }
-export async function createContact(userId : number,name:string,email:string,phone:string) {
-    const result = await pool.query('insert into contacts (userId, name,email,phone) values ($1,$2,$3,$4) returning id,userId,name,email,phone',[userId, name,email,phone]);
+export async function createContact(userId : number,name:string,email:string,company:string,jobPosition:string,phone:string) {
+    const result = await pool.query('insert into contacts (userId, name,email,company,jobPosition,phone) values ($1,$2,$3,$4,$5,$6) returning id,userId,name,email,company,jobPosition,phone',[userId, name,email,company,jobPosition,phone]);
     return result.rows[0];
 }
 
-export async function updateContact(userId:number,id:number,fields:{name:string,email:string,phone:string}) {
-    const result = await pool.query('update contacts set name = $1,email = $2,phone=$3 where userId = $4 and id = $5 returning id,userId,name,email,phone',[fields.name,fields.email,fields.phone,userId,id,]);
+export async function updateContact(userId:number,id:number,fields:{name:string,email:string,company:string,jobPosition:string,phone:string}) {
+    const result = await pool.query('update contacts set name = $1,email = $2,company = $3,jobPosition = $4,phone=$5 where userId = $6 and id = $7 returning id,userId,name,email,company,jobPosition,phone',[fields.name,fields.email,fields.company,fields.jobPosition,fields.phone,userId,id]);
     const row = result.rows[0];
     if (!row) throw new AppError("Contact not found", 404);
     return row;
 }
 
 export async function deleteContact(userId:number,id:number) {
-    const result = await pool.query('delete from contacts where id=$1 and userId=$2 returning id,userId,name,email,phone',[id,userId]);
+    const result = await pool.query('delete from contacts where id=$1 and userId=$2 returning id,userId,name,email,company,jobPosition,phone',[id,userId]);
     const row = result.rows[0];
     if (!row) throw new AppError("Contact not found", 404);
     return row;

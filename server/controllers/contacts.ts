@@ -25,17 +25,17 @@ export async function getContactById(req: Request, res: Response) {
 
 export async function createContact(req: Request, res: Response) {
     const userId = Number(req.user.userId);
-    const { name,email, phone} = req.body;
+    const { name,email, company,jobPosition,phone} = req.body;
 
-    const result = await contactsService.createContact(userId,name,email,phone);
+    const result = await contactsService.createContact(userId,name,email,company,jobPosition,phone);
     return res.status(201).send(result);
 }
 
 export async function updateContact(req: Request, res: Response) {
     const userId = Number(req.user.userId);
     const id = Number(req.params.id);
-    const { name,email, phone } = req.body;
-    const result = await contactsService.updateContact(userId,id,{name,email,phone});
+    const { name,email, company,jobPosition,phone } = req.body;
+    const result = await contactsService.updateContact(userId,id,{name,email, company,jobPosition,phone});
     return res.status(200).send(result);
 }
 export async function deleteContact (req: Request, res: Response) {

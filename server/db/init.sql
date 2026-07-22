@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS contacts (
     name varchar(255) not null,
     email varchar(255),
     phone varchar(255),
+    company varchar(255),
+    jobPosition varchar(255),
     userId int references users(id) on DELETE cascade not null,
     createdAt timestamp default now() not null
 );
