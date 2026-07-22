@@ -52,7 +52,7 @@
 - [x] **Нейминг controllers**: единый шаблон — совпадает с сервисами
 - [x] **Валидация `/:id`**: middleware `validateId` на всех `/:id` роутах
 - [x] **Валидация `POST /users`**: добавлен `validate(createUserSchema)`
-- [ ] **Pagination у users**: `getAllUsers()` не использует `req.query.page/limit`, пагинация с дефолтами
+- [x] **Pagination у users**: добавлены `page`/`limit` из `req.query`
 - [ ] **Сигнатуры update**: `updateContact`/`updateTask` принимают `fields: {...}`, `updateNote` — просто `content: string`. Единообразие
 - [ ] **Проекция SQL**: Tasks — явный SELECT с camelCase-алиасами; Notes — `select *` с JOIN (возвращает лишние поля contacts). Явная проекция везде
 - [ ] **Дублирование валидации**: `checkNewPasswordDiffers` в `middleware/auth.ts` дублирует zod-схему (`changePassSchema` уже проверяет old/newPassword)
