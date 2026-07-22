@@ -47,7 +47,6 @@ export async function logoutUser(req: Request, res: Response) {
 }
 
 export async function changePassword(req: Request, res: Response) {
-  if (!req.user) throw new AppError("You are not logged in", 401);
   const { userId } = req.user;
   const password = req.body.newPassword;
   await service.changePassword(userId, password);

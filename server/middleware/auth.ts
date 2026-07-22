@@ -65,7 +65,6 @@ export async function verifyOldPassword(
   next: NextFunction,
 ) {
   try {
-    if (!req.user) throw new AppError("You are not login in", 401);
     const { oldPassword } = req.body;
 
     const result = await pool.query(
@@ -83,4 +82,10 @@ export async function verifyOldPassword(
   } catch (e) {
     next(e);
   }
+};
+
+export async function validateUser(req:Request,res:Response,next:NextFunction) {
+  if(!req.user){ throw new AppError('Invalid session',401)}
+  if(req.user.userId < 0) throw new AppError('invalid userId',401)
+  next()
 }

@@ -3,6 +3,7 @@ import { rateLimit } from "express-rate-limit";
 import * as controllerAuth from "../controllers/auth";
 import { asyncHandler } from "../utils/asyncHandler";
 import * as middlewareAuth from "../middleware/auth";
+import { validateUser } from "../middleware/validateUser";
 import { verificationRefreshToken } from "../middleware/auth";
 import { validate } from "../middleware/validate";
 import {
@@ -45,6 +46,7 @@ router.post(
   "/changepass",
   validate(changePassSchema),
   middlewareAuth.verificationAccessToken,
+  validateUser,
   authLimiter,
   middlewareAuth.checkNewPasswordDiffers,
   middlewareAuth.verifyOldPassword,
