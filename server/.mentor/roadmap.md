@@ -53,8 +53,8 @@
 - [x] **Валидация `/:id`**: middleware `validateId` на всех `/:id` роутах
 - [x] **Валидация `POST /users`**: добавлен `validate(createUserSchema)`
 - [x] **Pagination у users**: добавлены `page`/`limit` из `req.query`
-- [ ] **Сигнатуры update**: `updateContact`/`updateTask` принимают `fields: {...}`, `updateNote` — просто `content: string`. Единообразие
-- [ ] **Проекция SQL**: Tasks — явный SELECT с camelCase-алиасами; Notes — `select *` с JOIN (возвращает лишние поля contacts). Явная проекция везде
+- [x] **Сигнатуры update**: разные поля — разные сигнатуры, ок
+- [x] **Проекция SQL**: явный `select notes.*` в JOIN-запросах
 - [ ] **Дублирование валидации**: `checkNewPasswordDiffers` в `middleware/auth.ts` дублирует zod-схему (`changePassSchema` уже проверяет old/newPassword)
 - [x] **Язык сообщений**: английский — везде
 - [ ] **Поле порядка задач**: в таблице `tasks` нет поля `position`/`sort_order` — DnD персистит только смену статуса, порядок внутри колонки не сохраняется

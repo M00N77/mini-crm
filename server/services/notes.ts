@@ -4,9 +4,8 @@ import { AppError } from "../utils/AppError";
 
 export async function getNotes(userId:number,pageInput:number,limitInput:number) {
     const paginateData = await paginate('notes join contacts on contacts.id = notes.contactId',pageInput,limitInput,'contacts.userId',userId);
-    const {offset, limit, ...pagination} = paginateData
-    const result = await pool.query('select notes.* from notes join contacts on contacts.id = notes.contactId where contacts.userId = $1 offset $2 limit $3 ',[userId,offset,limit]);
-
+    const {offset, ...pagination} = paginateData
+    const result = await pool.query('select notes.* from notes join contacts on contacts.id = notes.contactId where contacts.userId = $1 offset $2 limit $3 ',[userId,offset,paginateData.limit]);
     return {
         "data":result.rows,
         "pagination": pagination
@@ -34,7 +33,7 @@ export async function createNote(userId:number,contactId:number,content:string){
 
 export async function updateNote(userId:number,noteId:number,content:string){
 
-    const isOwner = await pool.query('select * from notes join contacts on contacts.id = notes.contactId where userId=$1 and notes.id = $2', [userId,noteId]);
+    const isOwner = await pool.query('select notes.* from notes join contacts on contacts.id = notes.contactId where userId=$1 and notes.id = $2', [userId,noteId]);
 
     if(isOwner.rows.length > 0) {
         const result = await pool.query('UPDATE notes set content = ($1) where id = $2 returning notes.*',[content,noteId])
