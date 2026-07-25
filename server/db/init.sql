@@ -9,7 +9,8 @@ create table if not exists users (
 CREATE TABLE IF NOT EXISTS tasks (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    description TEXT,
+    position INTEGER not null,
+    description TEXT  ,
     userId INTEGER REFERENCES users(id) ON DELETE CASCADE not null,
     status VARCHAR(20) DEFAULT 'pending',
     createdAt TIMESTAMP DEFAULT NOW()
