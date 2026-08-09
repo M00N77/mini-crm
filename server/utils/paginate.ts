@@ -7,7 +7,7 @@ const allowedFromClauses = new Set([
   "users",
   "tasks",
   "contacts",
-  "notes join contacts on contacts.id = notes.contactId",
+  "notes join contacts on contacts.id = notes.contact_id",
 ]);
 
 export async function paginate(fromClause:string,pageInput:number,limitInput:number,userIdColumn?:string,userId?: number,) {
