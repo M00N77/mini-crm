@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, beforeEach, afterAll } from "@jest/globals";
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
 import request from "supertest";
 import app from "../../app";
 import pool, { ensureSchema, truncateAll } from "./helpers/db";

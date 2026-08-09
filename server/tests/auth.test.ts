@@ -1,38 +1,46 @@
-process.env.JWT_SECRET = 'test-secret';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import request from "supertest";
+import cookieParser from "cookie-parser";
+import express from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
-jest.mock('pg', () => {
-  const mPool = { query: jest.fn() };
-  return { Pool: jest.fn(() => mPool) };
+import authRouter from "../server/routes/auth";
+import contactsRouter from "../server/routes/contacts";
+import { errorHandler } from "../server/middleware/errorHandler";
+
+const { mPool, PoolMock } = vi.hoisted(() => {
+  const mPool: any = { query: vi.fn(), connect: vi.fn(), release: vi.fn() };
+  mPool.connect.mockImplementation(function () {
+    return mPool;
+  });
+  return {
+    mPool,
+    PoolMock: vi.fn(function () {
+      return mPool;
+    }),
+  };
 });
 
-import request from 'supertest';
-import cookieParser from 'cookie-parser';
-import express from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-
-import authRouter from '../server/routes/auth';
-import contactsRouter from '../server/routes/contacts';
-import { errorHandler } from '../server/middleware/errorHandler';
+vi.mock("pg", () => ({ Pool: PoolMock }));
 
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
-app.use('/auth', authRouter);
-app.use('/contacts', contactsRouter);
+app.use("/auth", authRouter);
+app.use("/contacts", contactsRouter);
 app.use(errorHandler);
-
-const mPool = new (jest.requireMock('pg').Pool)();
 
 const fakeUser = {
   id: 1,
-  email: 'test@mail.ru',
-  name: 'Test User',
+  email: "test@mail.ru",
+  name: "Test User",
   created_at: new Date().toISOString(),
 };
 
 function mockDefault(result: unknown) {
-  (mPool.query as jest.Mock).mockResolvedValue(result);
+  vi.mocked(mPool.query).mockResolvedValue(result as never);
 }
 
 class PgError extends Error {
@@ -44,127 +52,163 @@ class PgError extends Error {
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
-  (mPool.query as jest.Mock).mockReset();
+  vi.clearAllMocks();
+  vi.mocked(mPool.query).mockReset();
+  vi.mocked(mPool.connect).mockImplementation(() => mPool);
 });
 
-describe('POST /auth/register', () => {
-  it('should register a new user and return 201 with tokens', async () => {
+describe("POST /auth/register", () => {
+  it("should register a new user and return 201 with tokens", async () => {
     mockDefault({ rows: [fakeUser], rowCount: 1 });
 
     const res = await request(app)
-      .post('/auth/register')
-      .send({ email: 'test@mail.ru', password: '123456', name: 'Test User' })
+      .post("/auth/register")
+      .send({ email: "test@mail.ru", password: "123456", name: "Test User" })
       .expect(201);
 
-    expect(res.body.user).toMatchObject({ id: 1, email: 'test@mail.ru' });
+    expect(res.body.user).toMatchObject({ id: 1, email: "test@mail.ru" });
     expect(res.body.accessToken).toBeDefined();
   });
 
-  it('should return 409 if email already exists', async () => {
-    (mPool.query as jest.Mock).mockRejectedValue(new PgError('23505', 'duplicate key'));
+  it("should return 409 if email already exists", async () => {
+    vi.mocked(mPool.query)
+      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
+      .mockRejectedValueOnce(new PgError("23505", "duplicate key"))
+      .mockResolvedValueOnce({ rows: [], rowCount: 0 });
 
     const res = await request(app)
-      .post('/auth/register')
-      .send({ email: 'test@mail.ru', password: '123456', name: 'Test' })
+      .post("/auth/register")
+      .send({ email: "test@mail.ru", password: "123456", name: "Test" })
       .expect(409);
 
     expect(res.body.error).toBeDefined();
   });
 });
 
-describe('POST /auth/login', () => {
-  const hashedPassword = bcrypt.hashSync('123456', bcrypt.genSaltSync(10));
+describe("POST /auth/login", () => {
+  const hashedPassword = bcrypt.hashSync("123456", bcrypt.genSaltSync(10));
 
-  it('should login and return 200 with tokens', async () => {
+  it("should login and return 200 with tokens", async () => {
     mockDefault({
-      rows: [{ id: 1, email: 'test@mail.ru', hashed_password: hashedPassword }],
+      rows: [{ id: 1, email: "test@mail.ru", hashed_password: hashedPassword }],
       rowCount: 1,
     });
 
     const res = await request(app)
-      .post('/auth/login')
-      .send({ email: 'test@mail.ru', password: '123456' })
+      .post("/auth/login")
+      .send({ email: "test@mail.ru", password: "123456" })
       .expect(200);
 
     expect(res.body.user).toBeDefined();
     expect(res.body.accessToken).toBeDefined();
   });
 
-  it('should return 401 for wrong password', async () => {
+  it("should return 401 for wrong password", async () => {
     mockDefault({
-      rows: [{ id: 1, email: 'test@mail.ru', hashed_password: hashedPassword }],
+      rows: [{ id: 1, email: "test@mail.ru", hashed_password: hashedPassword }],
       rowCount: 1,
     });
 
     const res = await request(app)
-      .post('/auth/login')
-      .send({ email: 'test@mail.ru', password: 'wrong' })
+      .post("/auth/login")
+      .send({ email: "test@mail.ru", password: "wrong1" })
       .expect(401);
 
     expect(res.body.error).toBeDefined();
   });
 
-  it('should return 401 for non-existent user', async () => {
+  it("should return 401 for non-existent user", async () => {
     mockDefault({ rows: [], rowCount: 0 });
 
     const res = await request(app)
-      .post('/auth/login')
-      .send({ email: 'noone@mail.ru', password: '123456' })
+      .post("/auth/login")
+      .send({ email: "noone@mail.ru", password: "123456" })
       .expect(401);
 
     expect(res.body.error).toBeDefined();
   });
 });
 
-describe('POST /auth/refresh', () => {
-  it('should rotate tokens and return 200', async () => {
-    const payload = { userId: 1, email: 'test@mail.ru' };
-    const refreshToken = jwt.sign({ ...payload, jti: 'test-jti' }, 'test-secret', { expiresIn: '7d' });
-    const hashedToken = require('crypto').createHash('sha256').update(refreshToken).digest('hex');
+describe("POST /auth/refresh", () => {
+  it("should rotate tokens and return 200", async () => {
+    const payload = { userId: 1, email: "test@mail.ru" };
+    const refreshToken = jwt.sign(
+      { ...payload, jti: "test-jti" },
+      "test-secret",
+      { expiresIn: "7d" },
+    );
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
 
-    (mPool.query as jest.Mock)
-      .mockImplementationOnce(() => Promise.resolve({ rows: [{ user_id: 1, jti: 'test-jti', token_hash: hashedToken }], rowCount: 1 }))
-      .mockImplementationOnce(() => Promise.resolve({ rows: [], rowCount: 0 }))
-      .mockImplementationOnce(() => Promise.resolve({ rows: [{ id: 1, user_id: 1, token_hash: 'new', expires_at: new Date(), jti: 'new-jti' }], rowCount: 1 }));
+    mockSequence(
+      { rows: [], rowCount: 0 }, // begin
+      {
+        rows: [
+          {
+            user_id: 1,
+            jti: "test-jti",
+            token_hash: hashedToken,
+            revoked_at: null,
+          },
+        ],
+        rowCount: 1,
+      }, // findRefresh
+      { rows: [], rowCount: 0 }, // revoke old token
+      {
+        rows: [{ id: 1, user_id: 1, expires_at: new Date(), jti: "new-jti" }],
+        rowCount: 1,
+      }, // insert new token
+    );
 
     const res = await request(app)
-      .post('/auth/refresh')
-      .set('Cookie', 'token=' + refreshToken)
+      .post("/auth/refresh")
+      .set("Cookie", "token=" + refreshToken)
       .expect(200);
 
     expect(res.body.accessToken).toBeDefined();
   });
 
-  it('should return 401 for invalid refresh token', async () => {
+  it("should return 401 for invalid refresh token", async () => {
     const res = await request(app)
-      .post('/auth/refresh')
-      .set('Cookie', 'token=invalid-token')
+      .post("/auth/refresh")
+      .set("Cookie", "token=invalid-token")
       .expect(401);
 
     expect(res.body.error).toBeDefined();
   });
 });
 
-describe('Protected routes (GET /contacts)', () => {
-  it('should return 401 without token', async () => {
-    const res = await request(app)
-      .get('/contacts')
-      .expect(401);
+function mockSequence(...results: unknown[]) {
+  let i = 0;
+  vi.mocked(mPool.query).mockImplementation(() =>
+    Promise.resolve(results[i++] as never),
+  );
+}
 
-    expect(res.body.error).toBe('No token provided');
+describe("Protected routes (GET /contacts)", () => {
+  it("should return 401 without token", async () => {
+    const res = await request(app).get("/contacts").expect(401);
+
+    expect(res.body.message).toBe("Invalid session");
   });
 
-  it('should return 200 with valid token', async () => {
-    const token = jwt.sign({ userId: 1, email: 'test@mail.ru' }, 'test-secret', { expiresIn: '15m' });
+  it("should return 200 with valid token", async () => {
+    const token = jwt.sign(
+      { userId: 1, email: "test@mail.ru" },
+      "test-secret",
+      { expiresIn: "15m" },
+    );
 
-    (mPool.query as jest.Mock)
-      .mockImplementationOnce(() => Promise.resolve({ rows: [{ count: '0' }] }))
-      .mockImplementationOnce(() => Promise.resolve({ rows: [], rowCount: 0 }));
+    mockSequence(
+      { rows: [{ count: "0" }] },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
-      .get('/contacts')
-      .set('Authorization', `Bearer ${token}`)
+      .get("/contacts")
+      .set("Authorization", `Bearer ${token}`)
       .expect(200);
 
     expect(res.body).toBeDefined();
