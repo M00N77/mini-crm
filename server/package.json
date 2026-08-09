@@ -9,8 +9,10 @@
     "hh": "ts-node server/index.ts --source=hh",
     "tg": "ts-node server/index.ts --source=tg",
     "watch": "ts-node server/index.ts --watch",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "test": "NODE_ENV=test jest tests/integration --runInBand",
+    "test:unit": "jest --testPathIgnorePatterns integration",
+    "test:all": "NODE_ENV=test jest --runInBand",
+    "test:watch": "NODE_ENV=test jest tests/integration --runInBand --watch"
   },
   "keywords": [],
   "author": "",
