@@ -657,15 +657,15 @@ describe("GET /users/:id", () => {
     expect(res.body).toMatchObject({ id: 1, email: "test@mail.ru" });
   });
 
-  it("should return 404 for non-existent user", async () => {
+  it("should return 403 for another user's id", async () => {
     mockDefault({ rows: [], rowCount: 0 });
 
     const res = await request(app)
       .get("/users/999")
       .set("Authorization", `Bearer ${validToken}`)
-      .expect(404);
+      .expect(403);
 
-    expect(res.body.error).toContain("User not found");
+    expect(res.body.error).toContain("Forbidden");
   });
 });
 
@@ -681,14 +681,14 @@ describe("DELETE /users/:id", () => {
     expect(res.body.message).toBe("deleted successfully.");
   });
 
-  it("should return 404 for non-existent user", async () => {
+  it("should return 403 for another user's id", async () => {
     mockDefault({ rows: [], rowCount: 0 });
 
     const res = await request(app)
       .delete("/users/999")
       .set("Authorization", `Bearer ${validToken}`)
-      .expect(404);
+      .expect(403);
 
-    expect(res.body.error).toContain("User not found");
+    expect(res.body.error).toContain("Forbidden");
   });
 });

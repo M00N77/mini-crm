@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as userService from "../services/users";
+import { AppError } from "../utils/AppError";
 
 
 export async function getUsers(req: Request, res: Response) {
@@ -11,8 +12,10 @@ export async function getUsers(req: Request, res: Response) {
 }
 
 export async function getUser(req: Request, res: Response) {
-  const id = req.params.id;
-  const user = await userService.getUserById(Number(id));
+  const id = Number(req.params.id);
+  if (req.user.userId !== id) throw new AppError("Forbidden", 403);
+
+  const user = await userService.getUserById(id);
 
   return res.status(200).json(user);
 }
@@ -24,8 +27,10 @@ export async function createUser(req: Request, res: Response) {
 }
 
 export async function deleteUser(req: Request, res: Response) {
-  const id = req.params.id;
-  await userService.deleteUser(Number(id));
+  const id = Number(req.params.id);
+  if (req.user.userId !== id) throw new AppError("Forbidden", 403);
+
+  await userService.deleteUser(id);
 
   return res.status(200).json({ message: "deleted successfully." });
 }

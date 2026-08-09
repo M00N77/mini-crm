@@ -9,6 +9,7 @@ import { createUserSchema } from "../schemas/users.schema";
 
 const router = Router();
 
+// TODO(review): нужен полноценный admin/role-контроль перед тем как этот роут пойдёт в прод
 router.get("/", verificationAccessToken, validateUser, asyncHandler(userController.getUsers));
 
 router.get(
@@ -33,6 +34,7 @@ router.delete(
   validateId,
   asyncHandler(userController.deleteUser),
 );
+// TODO(review): POST /users дублирует registerUser (без выдачи токенов); нужен admin-контроль или удалить
 router.post(
   "/",
   verificationAccessToken,
