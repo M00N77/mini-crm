@@ -45,20 +45,6 @@ export async function verificationRefreshToken(
   }
 }
 
-export async function checkNewPasswordDiffers(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  const { oldPassword, newPassword } = req.body;
-
-  if (!oldPassword) throw new AppError("Old password is require", 400);
-  if (!newPassword) throw new AppError("New password is require", 400);
-  if (oldPassword === newPassword)
-    throw new AppError("New password must be different from old password", 400);
-  next();
-}
-
 export async function verifyOldPassword(
   req: Request,
   res: Response,

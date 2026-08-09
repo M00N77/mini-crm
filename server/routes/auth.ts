@@ -51,7 +51,6 @@ router.post(
   middlewareAuth.verificationAccessToken,
   validateUser,
   authLimiter,
-  middlewareAuth.checkNewPasswordDiffers,
   middlewareAuth.verifyOldPassword,
   asyncHandler(controllerAuth.changePassword),
 );
