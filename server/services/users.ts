@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import pool from "../db";
 import { AppError } from "../utils/AppError";
 import { paginate } from "../utils/paginate";
+import { UserDto } from "../mappers/auth.mapper";
 
 export async function getUsers(pageInput:number,limitInput:number,) {
   const paginateData = await paginate('users',pageInput,limitInput);
@@ -11,7 +12,7 @@ export async function getUsers(pageInput:number,limitInput:number,) {
     [offset, limit],
   );
   return {
-    data: result.rows,
+    data: result.rows.map((row) => new UserDto(row)),
     pagination,
   };
 }
@@ -23,7 +24,7 @@ export async function getUserById(id: number) {
   );
   const row = result.rows[0];
   if (!row) throw new AppError("User not found", 404);
-  return row;
+  return new UserDto(row);
 }
 
 export async function createUser(
@@ -38,7 +39,7 @@ export async function createUser(
     "INSERT INTO USERS (email,hashed_password,name) VALUES ($1,$2,$3) RETURNING id,email,created_at",
     [email, hash, name],
   );
-  return result.rows[0];
+  return new UserDto(result.rows[0]);
 }
 
 export async function deleteUser(id: number) {
@@ -58,5 +59,5 @@ export async function getUserInfo(userId: number) {
   );
   if (data.rows.length === 0) throw new AppError("User not found", 404);
 
-  return data.rows[0];
+  return new UserDto(data.rows[0]);
 }
