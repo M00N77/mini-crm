@@ -9,7 +9,11 @@ import * as authRepository from "../repositories/auth.repository";
 import { UserDto } from "../mappers/auth.mapper";
 import { TokenService } from "../utils/generateTokenPair";
 
-var JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-in-prod";
+const JWT_SECRET: string = (() => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET is not set");
+  return secret;
+})();
 
 export async function rotateRefreshToken(curRefreshToken: string) {
   const secretKey = JWT_SECRET;
