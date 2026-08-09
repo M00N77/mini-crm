@@ -107,11 +107,12 @@ export async function registerUser(
   password: string,
   name: string,
 ) {
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
   const client = await pool.connect();
   let committed = false;
   try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
     await client.query("begin");
     const result = await client.query(
       "insert into users (email,hashed_password,name) values($1,$2,$3) returning id,email,name,created_at",
