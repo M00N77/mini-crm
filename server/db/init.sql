@@ -2,20 +2,20 @@ create table if not exists users (
     id serial primary key,
     name varchar(255) not null,
     email varchar(255) unique not null,
-    hashedPassword varchar(255) not null,
-    createdAt timestamp default now() not null
+    hashed_password varchar(255) not null,
+    created_at timestamp default now() not null
 );
 
 CREATE TABLE IF NOT EXISTS tasks (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     position INTEGER not null,
-    description TEXT  ,
-    userId INTEGER REFERENCES users(id) ON DELETE CASCADE not null,
+    description TEXT,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE not null,
     status VARCHAR(20) DEFAULT 'pending',
-    createdAt TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW()
 );
-CREATE INDEX IF NOT EXISTS idx_tasks_userid on tasks(userId);
+CREATE INDEX IF NOT EXISTS idx_tasks_user_id on tasks(user_id);
 
 CREATE TABLE IF NOT EXISTS contacts (
     id serial primary key,
@@ -23,26 +23,27 @@ CREATE TABLE IF NOT EXISTS contacts (
     email varchar(255),
     phone varchar(255),
     company varchar(255),
-    jobPosition varchar(255),
-    userId int references users(id) on DELETE cascade not null,
-    createdAt timestamp default now() not null
+    job_position varchar(255),
+    user_id int references users(id) on DELETE cascade not null,
+    created_at timestamp default now() not null
 );
-CREATE INDEX IF NOT EXISTS idx_contacts_userid ON contacts(userId);
+CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id);
 
 create table if not exists notes (
     id serial primary key,
     content text not null,
-    contactId int references contacts(id) on delete cascade not null,
-    createdAt timestamp default now()
+    contact_id int references contacts(id) on delete cascade not null,
+    created_at timestamp default now() not null
 );
-CREATE INDEX IF NOT EXISTS  idx_notes_contactid on notes(contactId);
+CREATE INDEX IF NOT EXISTS idx_notes_contact_id on notes(contact_id);
 
 create table if not exists refresh_tokens (
     id serial primary key,
-    userId int references users(id) on delete cascade not null,
+    user_id int references users(id) on delete cascade not null,
     jti varchar(255) not null unique,
-    tokenHash varchar(255) not null,
-    expiresAt timestamp not null,
-    createdAt timestamp default now() not null
+    token_hash varchar(255) not null,
+    expires_at timestamp not null,
+    revoked_at timestamp null,
+    created_at timestamp default now() not null
 );
-create INDEX if not exists idx_refreshes_userid on refresh_tokens(userId);
+create INDEX if not exists idx_refresh_tokens_user_id on refresh_tokens(user_id);
