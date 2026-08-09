@@ -3,3 +3,5 @@ node_modules/
 dist/
 *.env
 .mentor/
+AGENTS.md
+RULES.md
