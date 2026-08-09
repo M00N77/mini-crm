@@ -20,8 +20,8 @@ export async function getTaskById(req: Request, res: Response) {
 }
 
 export async function createTask(req: Request, res: Response) {
-    const {title, description, status} = req.body;
-    const result = await tasksService.createTask(title, description, Number(req.user.userId),status);
+    const {title, description, status, position} = req.body;
+    const result = await tasksService.createTask(title, description, Number(req.user.userId),status, position);
 
     return res.status(201).json(result);
 }
