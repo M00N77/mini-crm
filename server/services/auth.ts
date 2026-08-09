@@ -212,11 +212,30 @@ export async function logoutUser(refreshToken: string) {
 export async function changePassword(userId: number, password: string) {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-  const result = await pool.query(
-    "update users set hashed_password = $1 where id = $2 returning id",
-    [hashedPassword, userId],
-  );
-  if (result.rows.length === 0) throw new AppError("Password not changed", 500);
 
-  return result.rows[0];
+  const client = await pool.connect();
+  let committed = false;
+  try {
+    await client.query("begin");
+    const result = await client.query(
+      "update users set hashed_password = $1 where id = $2 returning id",
+      [hashedPassword, userId],
+    );
+    if (result.rows.length === 0) {
+      throw new AppError("Password not changed", 500);
+    }
+    await client.query("delete from refresh_tokens where user_id = $1", [
+      userId,
+    ]);
+    await client.query("commit");
+    committed = true;
+
+    return result.rows[0];
+  } catch (err: any) {
+    if (!committed) await client.query("rollback");
+    if (err instanceof AppError) throw err;
+    throw new AppError("Internal Server Error", 500);
+  } finally {
+    client.release();
+  }
 }
