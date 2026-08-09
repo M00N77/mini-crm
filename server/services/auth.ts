@@ -200,6 +200,7 @@ export async function logoutUser(refreshToken: string) {
     const secretKey = JWT_SECRET;
     const payload = jwt.verify(refreshToken, secretKey, {
       ignoreExpiration: true,
+      algorithms: ["HS256"],
     }) as TokenPayload;
     const { jti, userId } = payload;
 
