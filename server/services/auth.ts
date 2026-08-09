@@ -15,7 +15,9 @@ export async function rotateRefreshToken(curRefreshToken: string) {
   const secretKey = JWT_SECRET;
   let payload: TokenPayload;
   try {
-    payload = jwt.verify(curRefreshToken, secretKey) as TokenPayload;
+    payload = jwt.verify(curRefreshToken, secretKey, {
+      algorithms: ["HS256"],
+    }) as TokenPayload;
   } catch (err: any) {
     if (err.name === "TokenExpiredError") {
       throw new AppError("Token Expired", 403);
@@ -25,17 +27,34 @@ export async function rotateRefreshToken(curRefreshToken: string) {
     throw new AppError("Failed refresh", 500);
   }
   if (!payload.jti) throw new AppError("Invalid token", 401);
+
   const client = await pool.connect();
   let committed = false;
   try {
     await client.query("begin");
-    const row = await authRepository.findRefresh(
-      client,
-      payload.userId,
-      payload.jti,
+
+    const revokeResult = await client.query(
+      `update refresh_tokens
+         set revoked_at = now()
+       where user_id = $1 and jti = $2 and revoked_at is null
+       returning *`,
+      [payload.userId, payload.jti],
     );
 
-    if (!row) {
+    if (!revokeResult.rowCount) {
+      const existing = await authRepository.findRefresh(
+        client,
+        payload.userId,
+        payload.jti,
+      );
+
+      if (existing && existing.revoked_at) {
+        const diffTime = Date.now() - new Date(existing.revoked_at).getTime();
+        if (diffTime < 15000) {
+          throw new AppError("Concurrent refresh request", 409);
+        }
+      }
+
       await client.query("delete from refresh_tokens where user_id = $1", [
         payload.userId,
       ]);
@@ -43,33 +62,20 @@ export async function rotateRefreshToken(curRefreshToken: string) {
       committed = true;
       throw new AppError("Token reuse detected", 401);
     }
-    if (row.revoked_at !== null) {
-      const diffTime = Date.now() - new Date(row.revoked_at).getTime();
 
-      if (diffTime < 15000) {
-        throw new AppError("Concurrent refresh request", 409);
-      } else {
-        await client.query("delete from refresh_tokens where user_id = $1", [
-          payload.userId,
-        ]);
-        await client.query("commit");
-        committed = true;
-        throw new AppError("Token reuse detected", 401);
-      }
-    }
-    const isValid = crypto.timingSafeEqual(
-      Buffer.from(
-        crypto.createHash("sha256").update(curRefreshToken).digest("hex"),
-      ),
-      Buffer.from(row.token_hash),
+    const row = revokeResult.rows[0];
+
+    const providedHashBuf = Buffer.from(
+      crypto.createHash("sha256").update(curRefreshToken).digest("hex"),
     );
+    const storedHashBuf = Buffer.from(row.token_hash);
+
+    const isValid =
+      providedHashBuf.length === storedHashBuf.length &&
+      crypto.timingSafeEqual(providedHashBuf, storedHashBuf);
 
     if (!isValid) throw new AppError("Invalid refresh token", 401);
 
-    await client.query(
-      "update refresh_tokens set revoked_at = now() where user_id=$1 and jti=$2 returning *",
-      [row.user_id, row.jti],
-    );
     const { accessToken, refreshToken, hashedRefreshToken, expiresAt, jti } =
       TokenService.generatePair(
         { userId: payload.userId, email: payload.email },
