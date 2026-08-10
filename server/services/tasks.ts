@@ -28,7 +28,7 @@ export async function createTask(title:string,description:string,userId:number,s
 }
 
 export async function updateTask(id:number,userId:number,fields:{title:string,description:string,status:string,position?:number}){
-    const result = await pool.query('UPDATE tasks SET title=$1, status=$2 ,description=$3, position=$4  WHERE id=$5 AND user_id=$6 RETURNING id, title, description, user_id, status, position, created_at', [fields.title, fields.status,fields.description, fields.position ?? 0, id, userId]);
+    const result = await pool.query('UPDATE tasks SET title=$1, status=$2 ,description=$3, position=COALESCE($4, position)  WHERE id=$5 AND user_id=$6 RETURNING id, title, description, user_id, status, position, created_at', [fields.title, fields.status,fields.description, fields.position ?? null, id, userId]);
 
     const row = result.rows[0];
     if (!row) throw new AppError("Task not found", 404);

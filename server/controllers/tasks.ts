@@ -28,8 +28,8 @@ export async function createTask(req: Request, res: Response) {
 
 export async function updateTask(req: Request, res: Response) {
     const id = Number(req.params.id);
-    const {title,description, status} = req.body;
-    const result = await tasksService.updateTask(Number(id),Number(req.user.userId),{title:title,description:description,status:status});
+    const {title,description, status, position} = req.body;
+    const result = await tasksService.updateTask(Number(id),Number(req.user.userId),{title:title,description:description,status:status,position:position});
 
     return res.status(200).json(result);
 }
