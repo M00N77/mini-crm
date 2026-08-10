@@ -6,8 +6,9 @@ import { AppError } from "../utils/AppError";
 export async function getUsers(req: Request, res: Response) {
   const pageInput = Number(req.query.page)
   const limitInput = Number(req.query.limit)
+  const { userId } = req.user;
 
-  const users = await userService.getUsers(pageInput,limitInput,);
+  const users = await userService.getUsers(userId,pageInput,limitInput,);
   return res.json(users);
 }
 
@@ -18,12 +19,6 @@ export async function getUser(req: Request, res: Response) {
   const user = await userService.getUserById(id);
 
   return res.status(200).json(user);
-}
-
-export async function createUser(req: Request, res: Response) {
-  const { email, password, name } = req.body;
-  const user = await userService.createUser(email, password, name);
-  return res.status(201).json(user);
 }
 
 export async function deleteUser(req: Request, res: Response) {

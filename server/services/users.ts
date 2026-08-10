@@ -1,15 +1,14 @@
-import bcrypt from "bcrypt";
 import pool from "../db";
 import { AppError } from "../utils/AppError";
 import { paginate } from "../utils/paginate";
 import { UserDto } from "../mappers/auth.mapper";
 
-export async function getUsers(pageInput:number,limitInput:number,) {
-  const paginateData = await paginate('users',pageInput,limitInput);
+export async function getUsers(userId: number, pageInput:number,limitInput:number,) {
+  const paginateData = await paginate('users',pageInput,limitInput,'id',userId);
   const { offset, limit, ...pagination } = paginateData;
   const result = await pool.query(
-    'SELECT id, email, name, created_at FROM users ORDER BY id offset $1 limit $2',
-    [offset, limit],
+    'SELECT id, email, name, created_at FROM users WHERE id = $3 ORDER BY id offset $1 limit $2',
+    [offset, limit, userId],
   );
   return {
     data: result.rows.map((row) => new UserDto(row)),
@@ -25,21 +24,6 @@ export async function getUserById(id: number) {
   const row = result.rows[0];
   if (!row) throw new AppError("User not found", 404);
   return new UserDto(row);
-}
-
-export async function createUser(
-  email: string,
-  password: string,
-  name: string,
-) {
-  const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash(password, salt);
-
-  const result = await pool.query(
-    "INSERT INTO USERS (email,hashed_password,name) VALUES ($1,$2,$3) RETURNING id,email,created_at",
-    [email, hash, name],
-  );
-  return new UserDto(result.rows[0]);
 }
 
 export async function deleteUser(id: number) {
