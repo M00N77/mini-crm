@@ -12,10 +12,20 @@ CREATE TABLE IF NOT EXISTS tasks (
     position INTEGER not null,
     description TEXT,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE not null,
-    status VARCHAR(20) DEFAULT 'pending',
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_tasks_user_id on tasks(user_id);
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'chk_tasks_status'
+    ) THEN
+        ALTER TABLE tasks ADD CONSTRAINT chk_tasks_status
+            CHECK (status IN ('pending', 'in_progress', 'done'));
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS contacts (
     id serial primary key,

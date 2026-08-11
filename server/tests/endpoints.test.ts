@@ -436,15 +436,12 @@ describe("POST /notes", () => {
   });
 });
 
-describe("PUT /notes/:id", () => {
+describe("PATCH /notes/:id", () => {
   it("should update a note and return 200", async () => {
-    mockSequence(
-      { rows: [{ id: 1, user_id: 1 }], rowCount: 1 },
-      { rows: [{ id: 1, content: "Updated content" }], rowCount: 1 },
-    );
+    mockDefault({ rows: [{ id: 1, content: "Updated content" }], rowCount: 1 });
 
     const res = await request(app)
-      .put("/notes/1")
+      .patch("/notes/1")
       .set("Authorization", `Bearer ${validToken}`)
       .send({ content: "Updated content" })
       .expect(200);
@@ -456,7 +453,7 @@ describe("PUT /notes/:id", () => {
     mockDefault({ rows: [], rowCount: 0 });
 
     const res = await request(app)
-      .put("/notes/999")
+      .patch("/notes/999")
       .set("Authorization", `Bearer ${validToken}`)
       .send({ content: "Hacked content" })
       .expect(404);
@@ -570,7 +567,7 @@ describe("PUT /tasks/:id", () => {
     const res = await request(app)
       .put("/tasks/1")
       .set("Authorization", `Bearer ${validToken}`)
-      .send({ title: "Updated", description: "Updated desc", status: "done" })
+      .send({ title: "Updated", description: "Updated desc", status: "done", position: 1 })
       .expect(200);
 
     expect(res.body.title).toBe("Updated");
@@ -582,7 +579,51 @@ describe("PUT /tasks/:id", () => {
     const res = await request(app)
       .put("/tasks/999")
       .set("Authorization", `Bearer ${validToken}`)
-      .send({ title: "Ghost", description: "", status: "pending" })
+      .send({ title: "Ghost", description: "", status: "pending", position: 0 })
+      .expect(404);
+
+    expect(res.body.error).toContain("Task not found");
+  });
+});
+
+describe("PATCH /tasks/:id", () => {
+  it("should partially update a task and return 200", async () => {
+    mockDefault({ rows: [{ ...fakeTask, status: "in_progress" }], rowCount: 1 });
+
+    const res = await request(app)
+      .patch("/tasks/1")
+      .set("Authorization", `Bearer ${validToken}`)
+      .send({ status: "in_progress" })
+      .expect(200);
+
+    expect(res.body.status).toBe("in_progress");
+  });
+
+  it("should return 400 for invalid status", async () => {
+    const res = await request(app)
+      .patch("/tasks/1")
+      .set("Authorization", `Bearer ${validToken}`)
+      .send({ status: "DROP TABLE users" })
+      .expect(400);
+
+    expect(res.body.error).toBeDefined();
+  });
+
+  it("should return 400 for empty body", async () => {
+    const res = await request(app)
+      .patch("/tasks/1")
+      .set("Authorization", `Bearer ${validToken}`)
+      .send({})
+      .expect(400);
+  });
+
+  it("should return 404 for non-existent task", async () => {
+    mockDefault({ rows: [], rowCount: 0 });
+
+    const res = await request(app)
+      .patch("/tasks/999")
+      .set("Authorization", `Bearer ${validToken}`)
+      .send({ status: "done" })
       .expect(404);
 
     expect(res.body.error).toContain("Task not found");

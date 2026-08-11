@@ -33,14 +33,14 @@ export async function createNote(userId:number,contactId:number,content:string){
 }
 
 export async function updateNote(userId:number,noteId:number,content:string){
+    const result = await pool.query(
+        'update notes set content = $1 from contacts where notes.id = $2 and notes.contact_id = contacts.id and contacts.user_id = $3 returning notes.*',
+        [content, noteId, userId],
+    );
 
-    const isOwner = await pool.query('select notes.* from notes join contacts on contacts.id = notes.contact_id where contacts.user_id=$1 and notes.id = $2', [userId,noteId]);
-
-    if(isOwner.rows.length > 0) {
-        const result = await pool.query('UPDATE notes set content = ($1) where id = $2 returning notes.*',[content,noteId])
-        return new NoteDto(result.rows[0]);
-    }
-    throw new AppError("Note not found", 404);
+    const row = result.rows[0];
+    if (!row) throw new AppError("Note not found", 404);
+    return new NoteDto(row);
 }
 
 export async function deleteNote(userId:number,noteId:number){

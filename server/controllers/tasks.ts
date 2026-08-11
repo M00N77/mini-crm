@@ -34,6 +34,14 @@ export async function updateTask(req: Request, res: Response) {
     return res.status(200).json(result);
 }
 
+export async function patchTask(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const { title, description, status, position } = req.body;
+    const result = await tasksService.patchTask(Number(id),Number(req.user.userId),{title,description,status,position});
+
+    return res.status(200).json(result);
+}
+
 export async function deleteTask(req: Request, res: Response) {
     const id = Number(req.params.id);
     const userId = Number(req.user.userId);

@@ -5,7 +5,7 @@ import { validateUser } from '../middleware/validateUser';
 import { asyncHandler } from '../utils/asyncHandler';
 import { validate } from "../middleware/validate";
 import { validateId } from "../middleware/validateId";
-import { createTaskSchema, updateTaskSchema } from "../schemas/tasks.schema";
+import { createTaskSchema, updateTaskSchema, patchTaskSchema } from "../schemas/tasks.schema";
 
 const router = Router();
 
@@ -13,6 +13,7 @@ router.get('/', verificationAccessToken, validateUser, asyncHandler(tasksControl
 router.get('/:id', verificationAccessToken, validateUser, validateId, asyncHandler(tasksController.getTaskById))
 router.post('/', verificationAccessToken, validateUser, validate(createTaskSchema), asyncHandler(tasksController.createTask));
 router.put('/:id', verificationAccessToken, validateUser, validateId, validate(updateTaskSchema), asyncHandler(tasksController.updateTask));
+router.patch('/:id', verificationAccessToken, validateUser, validateId, validate(patchTaskSchema), asyncHandler(tasksController.patchTask));
 router.delete('/:id', verificationAccessToken, validateUser, validateId, asyncHandler(tasksController.deleteTask));
 
 export default router;
