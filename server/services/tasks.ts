@@ -7,7 +7,7 @@ import { TaskDto } from "../mappers/task.mapper";
 export async function getTasks(userId:number,pageInput:number,limitInput:number){
     const paginationData = await paginate('tasks',pageInput,limitInput,'user_id',userId)
     const {offset, limit, ...pagination} = paginationData
-    const result = await pool.query("SELECT id, title, description, user_id, status, position, created_at FROM tasks where user_id = $1 offset $2 limit $3",[userId,offset,limit]);
+    const result = await pool.query("SELECT id, title, description, user_id, status, position, created_at FROM tasks where user_id = $1 order by id offset $2 limit $3",[userId,offset,limit]);
     return {
         "data": result.rows.map((row) => new TaskDto(row)),
         "pagination": pagination
