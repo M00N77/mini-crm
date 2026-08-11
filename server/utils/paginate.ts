@@ -30,8 +30,8 @@ export interface PaginationMeta {
 interface PaginateParams {
   fromClause: string;
   columns: string;
-  userIdColumn?: string;
-  userId?: number;
+  userIdColumn: string;
+  userId: number;
   orderBy?: string;
   orderDir?: "ASC" | "DESC";
   pageInput: number;
@@ -53,25 +53,22 @@ export async function paginate<T = any>(params: PaginateParams) {
   if (!allowedFromClauses.has(fromClause)) {
     throw new AppError("Invalid fromClause", 500);
   }
-  if (userIdColumn !== undefined && !allowedUserIdColumns.has(userIdColumn)) {
+  if (!allowedUserIdColumns.has(userIdColumn)) {
     throw new AppError("Invalid userIdColumn", 500);
   }
   if (!ORDER_RE.test(orderBy)) throw new AppError("Invalid orderBy", 500);
   if (!ORDER_DIRS.has(orderDir)) throw new AppError("Invalid orderDir", 500);
   if (!isSafeColumns(columns)) throw new AppError("Invalid columns", 500);
 
-  const hasUserFilter = userId !== undefined && userIdColumn !== undefined;
-
   const client = await pool.connect();
   let committed = false;
   try {
     await client.query("begin isolation level repeatable read");
 
-    const countQuery = hasUserFilter
-      ? `select count(*) from ${fromClause} where ${userIdColumn}=$1`
-      : `select count(*) from ${fromClause}`;
-    const countValues = hasUserFilter ? [userId] : [];
-    const countResult = await client.query(countQuery, countValues);
+    const countResult = await client.query(
+      `select count(*) from ${fromClause} where ${userIdColumn}=$1`,
+      [userId],
+    );
     const total = Number(countResult.rows[0].count);
 
     const page = Math.max(1, Number(pageInput) || 1);
@@ -80,11 +77,10 @@ export async function paginate<T = any>(params: PaginateParams) {
     const offset = (page - 1) * limit;
     const hasMore = page < totalPages;
 
-    const selectQuery = hasUserFilter
-      ? `select ${columns} from ${fromClause} where ${userIdColumn}=$1 order by ${orderBy} ${orderDir} offset $2 limit $3`
-      : `select ${columns} from ${fromClause} order by ${orderBy} ${orderDir} offset $1 limit $2`;
-    const selectValues = hasUserFilter ? [userId, offset, limit] : [offset, limit];
-    const dataResult = await client.query(selectQuery, selectValues);
+    const dataResult = await client.query(
+      `select ${columns} from ${fromClause} where ${userIdColumn}=$1 order by ${orderBy} ${orderDir} offset $2 limit $3`,
+      [userId, offset, limit],
+    );
 
     await client.query("commit");
     committed = true;
