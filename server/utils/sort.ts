@@ -1,4 +1,4 @@
-const DIRS = new Set(["ASC", "DESC"]);
+export const ORDER_DIRS = new Set(["ASC", "DESC"]);
 
 export function resolveSort(
   sortBy: unknown,
@@ -14,7 +14,7 @@ export function resolveSort(
   let orderDir: "ASC" | "DESC" = defaults.orderDir;
   if (typeof order === "string") {
     const dir = order.toUpperCase();
-    if (DIRS.has(dir)) orderDir = dir as "ASC" | "DESC";
+    if (ORDER_DIRS.has(dir)) orderDir = dir as "ASC" | "DESC";
   }
 
   return { orderBy, orderDir };

@@ -1,5 +1,6 @@
 import pool from "../db";
 import { AppError } from "../utils/AppError";
+import { ORDER_DIRS } from "./sort";
 
 const allowedFromClauses = new Set([
   "users",
@@ -9,8 +10,6 @@ const allowedFromClauses = new Set([
 ]);
 
 const allowedUserIdColumns = new Set(["user_id", "id", "contacts.user_id"]);
-
-const ORDER_DIRS = new Set(["ASC", "DESC"]);
 
 const ORDER_RE = /^[a-z_][a-z_0-9]*(\.[a-z_][a-z_0-9]*)?$/;
 const IDENT_RE = /^(\*|[a-z_][a-z_0-9]*(\.[a-z_*][a-z_0-9*]*)?)$/;
