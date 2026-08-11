@@ -52,13 +52,22 @@ export async function rotateRefreshToken(curRefreshToken: string) {
         payload.jti,
       );
 
-      if (existing && existing.revoked_at) {
-        const diffTime = Date.now() - new Date(existing.revoked_at).getTime();
-        if (diffTime < 15000) {
-          throw new AppError("Concurrent refresh request", 409);
+      if (existing) {
+        if (existing.revoked_at) {
+          // Токен уже отозван ротацией — возможна гонка параллельных запросов
+          const diffTime = Date.now() - new Date(existing.revoked_at).getTime();
+          if (diffTime < 15000) {
+            throw new AppError("Concurrent refresh request", 409);
+          }
+          // Старый отозванный токен — просто отказ, сессии не трогаем
+          throw new AppError("Invalid refresh token", 401);
         }
+        // Активный токен есть в БД, но revoke не сработал — не должно происходить
+        throw new AppError("Invalid refresh token", 401);
       }
 
+      // Валидный по подписи JWT с jti, которого нет в БД, — токен вне нашей
+      // выдачи (подделан/утёк до первого использования) → гасим все сессии
       await client.query("delete from refresh_tokens where user_id = $1", [
         payload.userId,
       ]);
