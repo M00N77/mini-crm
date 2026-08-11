@@ -412,7 +412,7 @@ describe("GET /notes/:id", () => {
 
 describe("POST /notes", () => {
   it("should create a note and return 201", async () => {
-    mockSequence({ rows: [fakeContact], rowCount: 1 }, { rows: [fakeNote], rowCount: 1 });
+    mockDefault({ rows: [fakeNote], rowCount: 1 });
 
     const res = await request(app)
       .post("/notes")

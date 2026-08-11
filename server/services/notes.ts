@@ -22,14 +22,14 @@ export async function getNoteById(userId:number,noteId: number){
 }
 
 export async function createNote(userId:number,contactId:number,content:string){
-    const isHavingContact = await pool.query('select * from contacts where user_id=$1 and contacts.id=$2', [userId,contactId]);
-    if(isHavingContact.rows.length > 0) {
-        const result = await pool.query('insert into notes (contact_id,content) values ($1,$2) returning notes.*',[contactId,content])
+    const result = await pool.query(
+        'insert into notes (contact_id,content) select $1, $2 where exists (select 1 from contacts where contacts.id = $1 and contacts.user_id = $3) returning notes.*',
+        [contactId, content, userId],
+    );
 
-        return new NoteDto(result.rows[0]);
-    }
-
-    throw new AppError("Contact not found", 404);
+    const row = result.rows[0];
+    if (!row) throw new AppError("Contact not found", 404);
+    return new NoteDto(row);
 }
 
 export async function updateNote(userId:number,noteId:number,content:string){
