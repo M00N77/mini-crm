@@ -21,7 +21,7 @@ export async function getNotes(userId:number,pageInput:number,limitInput:number,
         pageInput,
         limitInput,
     });
-    const { offset, ...pagination } = paginationData
+    const { offset, limit, ...pagination } = paginationData
     return {
         "data": rows.map((row) => new NoteDto(row)),
         "pagination": pagination

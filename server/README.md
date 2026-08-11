@@ -43,13 +43,17 @@ server/
 ├── mappers/                # DTO: нормализация snake_case → camelCase
 ├── middleware/             # auth (JWT), validateUser, validate, validateId, errorHandler
 ├── schemas/                # zod-схемы тел запросов
-├── utils/                  # paginate, generateTokenPair, AppError, asyncHandler
+├── utils/                  # paginate (транзакционный), sort (whitelist-маппер), generateTokenPair, AppError, asyncHandler
 ├── types/                  # TokenPayload и др.
 ├── db/init.sql             # схема БД: users, contacts, tasks, notes, refresh_tokens
 ├── tests/
-│   ├── auth.test.ts        # unit: POST /auth/*
+│   ├── auth.test.ts        # unit: POST /auth/* (мок `pg`)
 │   ├── endpoints.test.ts   # unit: контакты/задачи/заметки/пользователи (мок `pg`)
-│   └── integration/auth.test.ts  # e2e против реальной Postgres
+│   ├── sort.test.ts        # unit: resolveSort (whitelist-маппер сортировки)
+│   └── integration/        # e2e против реальной Postgres
+│       ├── auth.test.ts    #   auth: register / login / refresh
+│       ├── resources.test.ts  #   contacts / tasks / notes (CRUD, изоляция владельцев)
+│       └── helpers/db.ts   #   ensureSchema (drop + init.sql), truncateAll
 ├── vitest.config.ts
 ├── .env.test               # окружение для тестов (закоммичен)
 └── README.md
@@ -65,9 +69,9 @@ server/
 Бэкенд не создаёт таблицы автоматически — схему применяем вручную:
 
 ```bash
-# создать БД и применить схему (пример)
-createdb mini_crm
-psql -d mini_crm -f server/db/init.sql
+# создать БД и применить схему (пример, имена/порты из server/.env)
+createdb "mini-crm"
+psql -d "mini-crm" -f server/db/init.sql
 
 # запуск бэкенда на :3000
 cd server
@@ -76,7 +80,7 @@ npm install
 npm run dev
 ```
 
-> Запускать через `npm run dev` (nodemon) или `npm start` (ts-node). Проверьте, что CORS разрешает origin фронтенда — по умолчанию это `http://localhost:3001` с `credentials: true`.
+> Запускать через `npm run dev` (nodemon) или `npm start` (ts-node). CORS-разрешённый origin фронтенда настраивается через `CORS_ORIGIN` (по умолчанию `http://localhost:3001`, `credentials: true`).
 
 ## Переменные окружения
 
@@ -94,6 +98,9 @@ DB_NAME=mini_crm
 
 # Обязательный секрет JWT — сервис падает при старте, если не задан
 JWT_SECRET=change_me
+
+# CORS-разрешённый origin фронтенда (credentials: true)
+CORS_ORIGIN=http://localhost:3001
 
 PORT=3000
 ```
@@ -113,31 +120,34 @@ JWT_SECRET=test-secret
 
 ## Тесты
 
-Два уровня: unit (моки `pg`, без БД) и интеграционные (реальная Postgres на `:5433`, тестовая БД `mini_crm_test` с применённой схемой).
+Два уровня: unit (моки `pg`, без БД) и интеграционные (реальная Postgres на `:5433`, тестовая БД `mini_crm_test`).
 
 ```bash
 cd server
-npm run test:unit    # unit-тесты: tests/auth.test.ts, tests/endpoints.test.ts
-npm test             # интеграционные: tests/integration
+npm run test:unit    # unit-тесты: tests/auth.test.ts, tests/endpoints.test.ts, tests/sort.test.ts
+npm test             # интеграционные: tests/integration (auth, contacts, tasks, notes)
 npm run test:all     # всё вместе
 ```
 
-> Интеграционные тесты требуют запущенного PostgreSQL на `DB_PORT=5433` (см. `.env.test`) с применённой `db/init.sql`.
+> Интеграционные тесты требуют запущенного PostgreSQL на `DB_PORT=5433` (см. `.env.test`). Схема тестовой БД пересоздаётся на каждый запуск из `db/init.sql` (`ensureSchema` дропает таблицы и применяет схему заново), поэтому всегда совпадает с текущим скриптом.
 
 ## API
 
-Базовый URL: `http://localhost:3000`. Все прикладные эндпоинты требуют заголовок `Authorization: Bearer <accessToken>` и запрос с `credentials: 'include'`. Данные изолированы по `userId` из JWT — чужой `id` в URL даёт `403`.
+Базовый URL: `http://localhost:3000`. Все прикладные эндпоинты требуют заголовок `Authorization: Bearer <accessToken>` и запрос с `credentials: 'include'`. Данные изолированы по `userId` из JWT: доступ к чужому ресурсу → `404`, чужая запись в `/users` → `403`.
 
 **Ответ списков** всегда:
 
 ```json
 {
   "data": [ /* ... */ ],
-  "pagination": { "page": 1, "limit": 10, "offset": 0, "total": 42, "totalPages": 5, "hasMore": true }
+  "pagination": { "page": 1, "total": 42, "totalPages": 5, "hasMore": true }
 }
 ```
 
-Параметры: `?page=1&limit=10` (limit до 100). Все списки сортируются по `id`.
+Параметры списков:
+
+- `?page=1&limit=10` — пагинация (`limit` до 100). `count(*)` и выборка данных выполняются в одной транзакции — снапшот консистентен.
+- `?sortBy=<ключ>&order=asc|desc` — сортировка. Ключи задаются **whitelist-маппером** на стороне сервиса (см. таблицы ниже); неизвестный `sortBy` или `order` тихо игнорируются → сортировка по умолчанию (`id asc`). В `ORDER BY` попадают только проверенные колонки, клиентский ввод в SQL не интерполируется.
 
 ### Auth
 
@@ -156,48 +166,53 @@ npm run test:all     # всё вместе
 
 | Метод | Путь | Ответ |
 | --- | --- | --- |
-| GET | `/users` | 200: `{ data, pagination }` — профиль текущего пользователя |
+| GET | `/users?page&limit&sortBy&order` | 200: `{ data, pagination }` — профиль текущего пользователя |
 | GET | `/users/me` | 200: текущий пользователь (bootstrap сессии) |
 | GET | `/users/:id` | 200 / `403` (не свой id) / `404` |
 | DELETE | `/users/:id` | 200 / `403` / `404` |
 
-> `POST /users` отсутствует намеренно — регистрация только через `/auth/register`. Список `/users` возвращает только профиль владельца токена.
+> `POST /users` отсутствует намеренно — регистрация только через `/auth/register`. Список `/users` возвращает только профиль владельца токена. `sortBy` для списка: `email`, `name`, `createdAt`.
 
 ### Contacts
 
 | Метод | Путь | Тело | Ответ |
 | --- | --- | --- | --- |
-| GET | `/contacts?page&limit` | — | `{ data, pagination }` |
+| GET | `/contacts?page&limit&sortBy&order` | — | `{ data, pagination }` |
 | GET | `/contacts/:id` | — | 200 / `404` |
 | POST | `/contacts` | `{ name, email, phone, company?, jobPosition? }` | 201 |
 | PUT | `/contacts/:id` | `{ name, email, phone, company?, jobPosition? }` | 200, полная замена |
 | DELETE | `/contacts/:id` | — | 200 / `404` |
 
-> Валидируются обязательные `name`/`email`/`phone`; `company` и `jobPosition` — опционально.
+> Валидируются обязательные `name`/`email`/`phone`; `company` и `jobPosition` — опционально. `sortBy` для списка: `name`, `email`, `phone`, `company`, `jobPosition`, `createdAt`.
 
 ### Notes
 
 | Метод | Путь | Тело | Ответ |
 | --- | --- | --- | --- |
-| GET | `/notes?page&limit` | — | `{ data, pagination }` (JOIN notes + contacts, только свои) |
+| GET | `/notes?page&limit&sortBy&order` | — | `{ data, pagination }` (JOIN notes + contacts, только свои) |
 | GET | `/notes/:id` | — | 200 / `404` |
 | POST | `/notes` | `{ contactId, content }` | 201 / `404` (чужой или несуществующий контакт) |
-| PUT | `/notes/:id` | `{ content }` | 200 / `404` |
+| PATCH | `/notes/:id` | `{ content }` | 200 / `404` |
 | DELETE | `/notes/:id` | — | 200 / `404` |
 
-> `POST /notes` атомарен: проверка владения контактом и вставка — одним запросом, без гонки.
+> `POST /notes` атомарен: проверка владения контактом и вставка — одним запросом, без гонки. `PATCH /notes/:id` также атомарен (`UPDATE ... FROM`): проверка владения и изменение не разделяются на два запроса. `sortBy` для списка: `content`, `createdAt`.
 
 ### Tasks
 
 | Метод | Путь | Тело | Ответ |
 | --- | --- | --- | --- |
-| GET | `/tasks?page&limit` | — | `{ data, pagination }` |
+| GET | `/tasks?page&limit&sortBy&order` | — | `{ data, pagination }` |
 | GET | `/tasks/:id` | — | 200 / `404` |
 | POST | `/tasks` | `{ title, description?, status, position? }` | 201 |
-| PUT | `/tasks/:id` | `{ title, description?, status, position? }` | 200, полная замена |
+| PUT | `/tasks/:id` | `{ title, description?, status, position }` | 200, полная замена |
+| PATCH | `/tasks/:id` | любое подмножество полей (минимум одно) | 200, частичное обновление |
 | DELETE | `/tasks/:id` | — | 200 / `404` |
 
-> `status` — обычный VARCHAR без валидации на бэке; фронт использует `pending` / `in_progress` / `done`. `position` (целое число) при обновлении сохраняет текущее значение, если не передан. `PUT` перезаписывает переданные поля — отправляйте целиком.
+> **`status` строго валидируется на двух уровнях:** zod-схема (`z.enum`) → `400` на невалидное значение, и CHECK-constraint `chk_tasks_status` в PostgreSQL (код ошибки `23514`) — защита на случай вставки мимо API. Допустимые значения: `pending`, `in_progress`, `done`.
+>
+> **Семантика методов:** `PUT` — идемпотентная полная замена (все поля обязательны, включая `position`). `PATCH` — частичное обновление (например, только `{ status }` для канбан-колонок); пустое тело → `400`.
+>
+> `sortBy` для списка: `title`, `status`, `position`, `createdAt`.
 
 ## Авторизация: как работает
 
@@ -214,7 +229,7 @@ npm run test:all     # всё вместе
 - **Тела запросов** — camelCase (например, `POST /notes` → `{ contactId, content }`).
 - **Ошибки** — единый формат через `AppError` + `errorHandler`: `{ error: string }` со статусом 400/401/403/404/409/500.
 - **Валидация** — zod-схемы на входе роутов; `validateId` — на параметр `:id`.
-- **`paginate()`** — whitelist-таблица `fromClause` (только `users`, `tasks`, `contacts`, notes-JOIN), без интерполяции произвольных строк.
+- **`paginate()`** — count и выборка в одной транзакции (консистентный снапшот). `fromClause` и `userIdColumn` — только из whitelist-наборов; `columns`, `orderBy`, `orderDir` проходят identifier-гейты и whitelist направления. Клиентский ввод (`?sortBy`, `?order`) до SQL не доходит — его транслирует `resolveSort` через whitelist-маппер.
 - **Owner-проверки** — везде берутся из JWT (`req.user.userId`), параметрам/телу не доверяем.
 
 ## Скрипты
@@ -230,7 +245,7 @@ npm run test:watch   # watch-режим интеграционных
 
 ## Ограничения MVP
 
-- Пагинация — один запрос до 100 записей; полноценной серверной пагинации в UI пока нет.
-- `status` задач и позиция внутри колонки — без строгой валидации на бэке (значения задаёт фронт).
-- Интеграционные тесты покрывают только auth; контакты/задачи/заметки — unit-моками `pg`.
-- `PUT /tasks` — частичное обновление (переданные поля); `PUT /contacts` — полная замена.
+- Пагинация — до 100 записей на страницу; полноценной серверной пагинации в UI пока нет.
+- Сортировка — только по фиксированным whitelist-колонкам (без произвольных выражений, без сортировки по вложенным полям).
+- Нет полноценного admin/role-контроля: `GET/DELETE /users/:id` ограничены владельцем, но ролевой модели нет.
+- Rate limit — только на `/auth/*`; остальные эндпоинты без лимитов.
