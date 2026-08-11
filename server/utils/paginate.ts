@@ -66,7 +66,7 @@ export async function paginate<T = any>(params: PaginateParams) {
   const client = await pool.connect();
   let committed = false;
   try {
-    await client.query("begin");
+    await client.query("begin isolation level repeatable read");
 
     const countQuery = hasUserFilter
       ? `select count(*) from ${fromClause} where ${userIdColumn}=$1`
