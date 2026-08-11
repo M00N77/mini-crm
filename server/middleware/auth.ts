@@ -4,7 +4,11 @@ import { TokenPayload } from "../types/types";
 import { AppError } from "../utils/AppError";
 import bcrypt from "bcrypt";
 import pool from "../db";
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-in-prod";
+const JWT_SECRET: string = (() => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET is not set");
+  return secret;
+})();
 
 export async function verificationAccessToken(
   req: Request,
@@ -17,7 +21,9 @@ export async function verificationAccessToken(
     const token = authorization?.split(" ")[1];
     if (!token) return res.status(401).json({message:'Invalid session'});
     const secretKey = JWT_SECRET;
-    const decode = jwt.verify(token, secretKey) as TokenPayload;
+    const decode = jwt.verify(token, secretKey, {
+      algorithms: ["HS256"],
+    }) as TokenPayload;
     req.user = decode;
     next();
   } catch(e : any) {
@@ -35,7 +41,9 @@ export async function verificationRefreshToken(
   try {
     const { token } = req.cookies;
     if (!token) return next(new AppError('Token undefined',401))
-    const decode = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    const decode = jwt.verify(token, JWT_SECRET, {
+      algorithms: ["HS256"],
+    }) as TokenPayload;
     req.user = decode;
     next();
   } catch (e){
@@ -72,6 +80,5 @@ export async function verifyOldPassword(
 
 export async function validateUser(req:Request,res:Response,next:NextFunction) {
   if(!req.user){ throw new AppError('Invalid session',401)}
-  if(req.user.userId < 0) throw new AppError('invalid userId',401)
   next()
 }
