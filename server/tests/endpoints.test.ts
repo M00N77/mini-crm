@@ -224,7 +224,12 @@ describe("GET /contacts", () => {
   });
 
   it("should return paginated contacts with valid token", async () => {
-    mockSequence({ rows: [{ count: "1" }] }, { rows: [fakeContact], rowCount: 1 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "1" }] },
+      { rows: [fakeContact], rowCount: 1 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/contacts")
@@ -240,7 +245,12 @@ describe("GET /contacts", () => {
   });
 
   it("should respect page and limit query params", async () => {
-    mockSequence({ rows: [{ count: "0" }] }, { rows: [], rowCount: 0 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "0" }] },
+      { rows: [], rowCount: 0 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/contacts?page=2&limit=5")
@@ -249,7 +259,7 @@ describe("GET /contacts", () => {
 
     expect(res.body.pagination.page).toBe(2);
     expect(res.body.pagination.total).toBe(0);
-    expect(vi.mocked(mPool.query).mock.calls[1][1]).toEqual([1, 5, 5]);
+    expect(vi.mocked(mPool.query).mock.calls[2][1]).toEqual([1, 5, 5]);
   });
 });
 
@@ -362,7 +372,12 @@ describe("GET /notes", () => {
   });
 
   it("should return paginated notes", async () => {
-    mockSequence({ rows: [{ count: "1" }] }, { rows: [fakeNote], rowCount: 1 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "1" }] },
+      { rows: [fakeNote], rowCount: 1 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/notes")
@@ -375,7 +390,12 @@ describe("GET /notes", () => {
   });
 
   it("should return empty array if no notes", async () => {
-    mockSequence({ rows: [{ count: "0" }] }, { rows: [], rowCount: 0 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "0" }] },
+      { rows: [], rowCount: 0 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/notes")
@@ -495,7 +515,12 @@ describe("GET /tasks", () => {
   });
 
   it("should return paginated tasks", async () => {
-    mockSequence({ rows: [{ count: "1" }] }, { rows: [fakeTask], rowCount: 1 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "1" }] },
+      { rows: [fakeTask], rowCount: 1 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/tasks")
@@ -507,7 +532,12 @@ describe("GET /tasks", () => {
   });
 
   it("should return tasks with camelCase fields (userId, createdAt)", async () => {
-    mockSequence({ rows: [{ count: "1" }] }, { rows: [fakeTask], rowCount: 1 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "1" }] },
+      { rows: [fakeTask], rowCount: 1 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/tasks")
@@ -664,11 +694,13 @@ describe("GET /users", () => {
 
   it("should return paginated users", async () => {
     mockSequence(
+      { rows: [], rowCount: 0 },
       { rows: [{ count: "1" }] },
       {
         rows: [{ id: 1, email: "test@mail.ru", name: "Test", created_at: new Date().toISOString() }],
         rowCount: 1,
       },
+      { rows: [], rowCount: 0 },
     );
 
     const res = await request(app)

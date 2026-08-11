@@ -5,12 +5,19 @@ import { ContactDto } from "../mappers/contact.mapper";
 
 export async function getContacts(userId: number,pageInput: number, limitInput: number) {
 
-    const paginationData = await paginate('contacts',pageInput,limitInput,'user_id',userId)
-    const {offset, limit, ...pagination} = paginationData
-    const result = await pool.query(`select * from contacts where user_id=$1 ORDER BY id asc offset $2 limit $3`,[userId,offset,limit])
+    const { rows, pagination: paginationData } = await paginate({
+        fromClause: 'contacts',
+        columns: '*',
+        userIdColumn: 'user_id',
+        userId,
+        orderBy: 'id',
+        pageInput,
+        limitInput,
+    });
+    const { offset, limit, ...pagination } = paginationData
 
     return {
-        "data": result.rows.map((row) => new ContactDto(row)),
+        "data": rows.map((row) => new ContactDto(row)),
         "pagination": pagination
     };
 }

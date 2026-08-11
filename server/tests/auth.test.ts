@@ -202,7 +202,9 @@ describe("Protected routes (GET /contacts)", () => {
     );
 
     mockSequence(
+      { rows: [], rowCount: 0 },
       { rows: [{ count: "0" }] },
+      { rows: [], rowCount: 0 },
       { rows: [], rowCount: 0 },
     );
 

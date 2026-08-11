@@ -4,11 +4,18 @@ import { AppError } from "../utils/AppError";
 import { NoteDto } from "../mappers/note.mapper";
 
 export async function getNotes(userId:number,pageInput:number,limitInput:number) {
-    const paginateData = await paginate('notes join contacts on contacts.id = notes.contact_id',pageInput,limitInput,'contacts.user_id',userId);
-    const {offset, ...pagination} = paginateData
-    const result = await pool.query('select notes.* from notes join contacts on contacts.id = notes.contact_id where contacts.user_id = $1 order by notes.id offset $2 limit $3 ',[userId,offset,paginateData.limit]);
+    const { rows, pagination: paginationData } = await paginate({
+        fromClause: 'notes join contacts on contacts.id = notes.contact_id',
+        columns: 'notes.*',
+        userIdColumn: 'contacts.user_id',
+        userId,
+        orderBy: 'notes.id',
+        pageInput,
+        limitInput,
+    });
+    const { offset, ...pagination } = paginationData
     return {
-        "data": result.rows.map((row) => new NoteDto(row)),
+        "data": rows.map((row) => new NoteDto(row)),
         "pagination": pagination
     }
 }

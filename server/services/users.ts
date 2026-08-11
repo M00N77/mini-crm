@@ -4,14 +4,18 @@ import { paginate } from "../utils/paginate";
 import { UserDto } from "../mappers/auth.mapper";
 
 export async function getUsers(userId: number, pageInput:number,limitInput:number,) {
-  const paginateData = await paginate('users',pageInput,limitInput,'id',userId);
-  const { offset, limit, ...pagination } = paginateData;
-  const result = await pool.query(
-    'SELECT id, email, name, created_at FROM users WHERE id = $3 ORDER BY id offset $1 limit $2',
-    [offset, limit, userId],
-  );
+  const { rows, pagination: paginationData } = await paginate({
+    fromClause: 'users',
+    columns: 'id, email, name, created_at',
+    userIdColumn: 'id',
+    userId,
+    orderBy: 'id',
+    pageInput,
+    limitInput,
+  });
+  const { offset, limit, ...pagination } = paginationData;
   return {
-    data: result.rows.map((row) => new UserDto(row)),
+    data: rows.map((row) => new UserDto(row)),
     pagination,
   };
 }
