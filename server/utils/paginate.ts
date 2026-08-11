@@ -10,6 +10,8 @@ const allowedFromClauses = new Set([
 
 const allowedUserIdColumns = new Set(["user_id", "id", "contacts.user_id"]);
 
+const ORDER_DIRS = new Set(["ASC", "DESC"]);
+
 const ORDER_RE = /^[a-z_][a-z_0-9]*(\.[a-z_][a-z_0-9]*)?$/;
 const IDENT_RE = /^(\*|[a-z_][a-z_0-9]*(\.[a-z_*][a-z_0-9*]*)?)$/;
 
@@ -32,6 +34,7 @@ interface PaginateParams {
   userIdColumn?: string;
   userId?: number;
   orderBy?: string;
+  orderDir?: "ASC" | "DESC";
   pageInput: number;
   limitInput: number;
 }
@@ -43,6 +46,7 @@ export async function paginate<T = any>(params: PaginateParams) {
     userIdColumn,
     userId,
     orderBy = "id",
+    orderDir = "ASC",
     pageInput,
     limitInput,
   } = params;
@@ -54,6 +58,7 @@ export async function paginate<T = any>(params: PaginateParams) {
     throw new AppError("Invalid userIdColumn", 500);
   }
   if (!ORDER_RE.test(orderBy)) throw new AppError("Invalid orderBy", 500);
+  if (!ORDER_DIRS.has(orderDir)) throw new AppError("Invalid orderDir", 500);
   if (!isSafeColumns(columns)) throw new AppError("Invalid columns", 500);
 
   const hasUserFilter = userId !== undefined && userIdColumn !== undefined;
@@ -77,8 +82,8 @@ export async function paginate<T = any>(params: PaginateParams) {
     const hasMore = page < totalPages;
 
     const selectQuery = hasUserFilter
-      ? `select ${columns} from ${fromClause} where ${userIdColumn}=$1 order by ${orderBy} offset $2 limit $3`
-      : `select ${columns} from ${fromClause} order by ${orderBy} offset $1 limit $2`;
+      ? `select ${columns} from ${fromClause} where ${userIdColumn}=$1 order by ${orderBy} ${orderDir} offset $2 limit $3`
+      : `select ${columns} from ${fromClause} order by ${orderBy} ${orderDir} offset $1 limit $2`;
     const selectValues = hasUserFilter ? [userId, offset, limit] : [offset, limit];
     const dataResult = await client.query(selectQuery, selectValues);
 

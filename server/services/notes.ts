@@ -1,15 +1,23 @@
 import pool from "../db";
 import {paginate} from "../utils/paginate";
+import { resolveSort } from "../utils/sort";
 import { AppError } from "../utils/AppError";
 import { NoteDto } from "../mappers/note.mapper";
 
-export async function getNotes(userId:number,pageInput:number,limitInput:number) {
+const NOTE_SORT: Record<string, string> = {
+  content: "notes.content",
+  createdAt: "notes.created_at",
+};
+
+export async function getNotes(userId:number,pageInput:number,limitInput:number, sortBy?: string, order?: string) {
+    const { orderBy, orderDir } = resolveSort(sortBy, order, NOTE_SORT, { orderBy: "notes.id", orderDir: "ASC" });
     const { rows, pagination: paginationData } = await paginate({
         fromClause: 'notes join contacts on contacts.id = notes.contact_id',
         columns: 'notes.*',
         userIdColumn: 'contacts.user_id',
         userId,
-        orderBy: 'notes.id',
+        orderBy,
+        orderDir,
         pageInput,
         limitInput,
     });

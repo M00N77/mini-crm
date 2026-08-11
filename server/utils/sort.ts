@@ -1,0 +1,21 @@
+const DIRS = new Set(["ASC", "DESC"]);
+
+export function resolveSort(
+  sortBy: unknown,
+  order: unknown,
+  allowed: Record<string, string>,
+  defaults: { orderBy: string; orderDir: "ASC" | "DESC" },
+): { orderBy: string; orderDir: "ASC" | "DESC" } {
+  let orderBy = defaults.orderBy;
+  if (typeof sortBy === "string" && allowed[sortBy]) {
+    orderBy = allowed[sortBy];
+  }
+
+  let orderDir: "ASC" | "DESC" = defaults.orderDir;
+  if (typeof order === "string") {
+    const dir = order.toUpperCase();
+    if (DIRS.has(dir)) orderDir = dir as "ASC" | "DESC";
+  }
+
+  return { orderBy, orderDir };
+}

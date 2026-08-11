@@ -1,17 +1,26 @@
 import pool from "../db";
 import {paginate} from "../utils/paginate";
+import { resolveSort } from "../utils/sort";
 import { AppError } from "../utils/AppError";
 import { TaskDto } from "../mappers/task.mapper";
 import { TaskStatus } from "../schemas/tasks.schema";
 
+const TASK_SORT: Record<string, string> = {
+  title: "title",
+  status: "status",
+  position: "position",
+  createdAt: "created_at",
+};
 
-export async function getTasks(userId:number,pageInput:number,limitInput:number){
+export async function getTasks(userId:number,pageInput:number,limitInput:number,sortBy?:string,order?:string){
+    const { orderBy, orderDir } = resolveSort(sortBy, order, TASK_SORT, { orderBy: "id", orderDir: "ASC" });
     const { rows, pagination: paginationData } = await paginate({
         fromClause: 'tasks',
         columns: 'id, title, description, user_id, status, position, created_at',
         userIdColumn: 'user_id',
         userId,
-        orderBy: 'id',
+        orderBy,
+        orderDir,
         pageInput,
         limitInput,
     });

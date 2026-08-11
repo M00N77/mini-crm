@@ -1,16 +1,28 @@
 import pool from '../db'
 import {paginate} from "../utils/paginate";
+import { resolveSort } from "../utils/sort";
 import { AppError } from "../utils/AppError";
 import { ContactDto } from "../mappers/contact.mapper";
 
-export async function getContacts(userId: number,pageInput: number, limitInput: number) {
+const CONTACT_SORT: Record<string, string> = {
+  name: "name",
+  email: "email",
+  phone: "phone",
+  company: "company",
+  jobPosition: "job_position",
+  createdAt: "created_at",
+};
 
+export async function getContacts(userId: number,pageInput: number, limitInput: number, sortBy?: string, order?: string) {
+
+    const { orderBy, orderDir } = resolveSort(sortBy, order, CONTACT_SORT, { orderBy: "id", orderDir: "ASC" });
     const { rows, pagination: paginationData } = await paginate({
         fromClause: 'contacts',
         columns: '*',
         userIdColumn: 'user_id',
         userId,
-        orderBy: 'id',
+        orderBy,
+        orderDir,
         pageInput,
         limitInput,
     });

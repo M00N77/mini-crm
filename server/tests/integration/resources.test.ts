@@ -214,6 +214,53 @@ describe("TASKS", () => {
       .expect(400);
   });
 
+  it("sorts by whitelisted columns and falls back on unknown sortBy", async () => {
+    const { accessToken } = await registerUser("t5@example.com");
+    const auth = bearer(accessToken);
+
+    await request(app)
+      .post("/tasks")
+      .set(auth)
+      .send({ title: "Alpha", status: "pending", position: 3 })
+      .expect(201);
+    await request(app)
+      .post("/tasks")
+      .set(auth)
+      .send({ title: "Beta", status: "done", position: 1 })
+      .expect(201);
+    await request(app)
+      .post("/tasks")
+      .set(auth)
+      .send({ title: "Gamma", status: "in_progress", position: 2 })
+      .expect(201);
+
+    const sorted = await request(app)
+      .get("/tasks?sortBy=status&order=desc")
+      .set(auth)
+      .expect(200);
+    expect(sorted.body.data.map((t: any) => t.status)).toEqual([
+      "pending",
+      "in_progress",
+      "done",
+    ]);
+
+    const byPosition = await request(app)
+      .get("/tasks?sortBy=position&order=asc")
+      .set(auth)
+      .expect(200);
+    expect(byPosition.body.data.map((t: any) => t.position)).toEqual([1, 2, 3]);
+
+    const fallback = await request(app)
+      .get("/tasks?sortBy=unknownField")
+      .set(auth)
+      .expect(200);
+    expect(fallback.body.data.map((t: any) => t.title)).toEqual([
+      "Alpha",
+      "Beta",
+      "Gamma",
+    ]);
+  });
+
   it("does not expose another user's task and enforces DB CHECK constraint", async () => {
     const userA = await registerUser("t4a@example.com");
     const userB = await registerUser("t4b@example.com");

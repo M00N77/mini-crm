@@ -10,7 +10,7 @@ export async function getContacts(req: Request, res: Response) {
     const userId = Number(req.user.userId);
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-    const result = await contactsService.getContacts(userId, page, limit)
+    const result = await contactsService.getContacts(userId, page, limit, req.query.sortBy as string | undefined, req.query.order as string | undefined)
 
     return res.status(200).send(result);
 }

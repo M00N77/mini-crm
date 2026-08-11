@@ -1,15 +1,24 @@
 import pool from "../db";
 import { AppError } from "../utils/AppError";
 import { paginate } from "../utils/paginate";
+import { resolveSort } from "../utils/sort";
 import { UserDto } from "../mappers/auth.mapper";
 
-export async function getUsers(userId: number, pageInput:number,limitInput:number,) {
+const USER_SORT: Record<string, string> = {
+  email: "email",
+  name: "name",
+  createdAt: "created_at",
+};
+
+export async function getUsers(userId: number, pageInput:number,limitInput:number, sortBy?: string, order?: string) {
+  const { orderBy, orderDir } = resolveSort(sortBy, order, USER_SORT, { orderBy: "id", orderDir: "ASC" });
   const { rows, pagination: paginationData } = await paginate({
     fromClause: 'users',
     columns: 'id, email, name, created_at',
     userIdColumn: 'id',
     userId,
-    orderBy: 'id',
+    orderBy,
+    orderDir,
     pageInput,
     limitInput,
   });

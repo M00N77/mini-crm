@@ -8,7 +8,7 @@ export async function getUsers(req: Request, res: Response) {
   const limitInput = Number(req.query.limit)
   const { userId } = req.user;
 
-  const users = await userService.getUsers(userId,pageInput,limitInput,);
+  const users = await userService.getUsers(userId,pageInput,limitInput, req.query.sortBy as string | undefined, req.query.order as string | undefined);
   return res.json(users);
 }
 
