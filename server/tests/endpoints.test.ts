@@ -94,6 +94,11 @@ function mockDefault(result: unknown) {
   vi.mocked(mPool.query).mockResolvedValue(result as never);
 }
 
+function findQueryCall(predicate: (sql: string) => boolean) {
+  const calls = vi.mocked(mPool.query).mock.calls;
+  return calls.find(([sql]) => typeof sql === "string" && predicate(sql));
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(mPool.query).mockReset();
@@ -259,7 +264,10 @@ describe("GET /contacts", () => {
 
     expect(res.body.pagination.page).toBe(2);
     expect(res.body.pagination.total).toBe(0);
-    expect(vi.mocked(mPool.query).mock.calls[2][1]).toEqual([1, 5, 5]);
+
+    const selectCall = findQueryCall((sql) => sql.includes("offset $2 limit $3"));
+    expect(selectCall).toBeDefined();
+    expect(selectCall![1]).toEqual([1, 5, 5]);
   });
 });
 
