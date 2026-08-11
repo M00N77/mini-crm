@@ -146,7 +146,7 @@ npm run test:all     # всё вместе
 
 Параметры списков:
 
-- `?page=1&limit=10` — пагинация (`limit` до 100). `count(*)` и выборка данных выполняются в одной транзакции — снапшот консистентен.
+- `?page=1&limit=10` — пагинация (`limit` до 100). `count(*)` и выборка данных выполняются в одной транзакции с уровнем изоляции `REPEATABLE READ` — снапшот консистентен.
 - `?sortBy=<ключ>&order=asc|desc` — сортировка. Ключи задаются **whitelist-маппером** на стороне сервиса (см. таблицы ниже); неизвестный `sortBy` или `order` тихо игнорируются → сортировка по умолчанию (`id asc`). В `ORDER BY` попадают только проверенные колонки, клиентский ввод в SQL не интерполируется.
 
 ### Auth
@@ -229,7 +229,7 @@ npm run test:all     # всё вместе
 - **Тела запросов** — camelCase (например, `POST /notes` → `{ contactId, content }`).
 - **Ошибки** — единый формат через `AppError` + `errorHandler`: `{ error: string }` со статусом 400/401/403/404/409/500.
 - **Валидация** — zod-схемы на входе роутов; `validateId` — на параметр `:id`.
-- **`paginate()`** — count и выборка в одной транзакции (консистентный снапшот). `fromClause` и `userIdColumn` — только из whitelist-наборов; `columns`, `orderBy`, `orderDir` проходят identifier-гейты и whitelist направления. Клиентский ввод (`?sortBy`, `?order`) до SQL не доходит — его транслирует `resolveSort` через whitelist-маппер.
+- **`paginate()`** — count и выборка в одной транзакции с уровнем изоляции `REPEATABLE READ` (консистентный снапшот). `fromClause` и `userIdColumn` — только из whitelist-наборов; `columns`, `orderBy`, `orderDir` проходят identifier-гейты и whitelist направления. Клиентский ввод (`?sortBy`, `?order`) до SQL не доходит — его транслирует `resolveSort` через whitelist-маппер.
 - **Owner-проверки** — везде берутся из JWT (`req.user.userId`), параметрам/телу не доверяем.
 
 ## Скрипты
