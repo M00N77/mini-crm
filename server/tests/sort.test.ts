@@ -32,4 +32,14 @@ describe("resolveSort", () => {
     });
     expect(res.orderBy).not.toMatch(/drop|;| /);
   });
+
+  it("ignores prototype keys instead of crashing", () => {
+    for (const key of ["__proto__", "constructor", "hasOwnProperty"]) {
+      const res = resolveSort(key, "asc", ALLOWED, {
+        orderBy: "id",
+        orderDir: "ASC",
+      });
+      expect(res).toEqual({ orderBy: "id", orderDir: "ASC" });
+    }
+  });
 });

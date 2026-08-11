@@ -7,7 +7,7 @@ export function resolveSort(
   defaults: { orderBy: string; orderDir: "ASC" | "DESC" },
 ): { orderBy: string; orderDir: "ASC" | "DESC" } {
   let orderBy = defaults.orderBy;
-  if (typeof sortBy === "string" && allowed[sortBy]) {
+  if (typeof sortBy === "string" && Object.hasOwn(allowed, sortBy)) {
     orderBy = allowed[sortBy];
   }
 
