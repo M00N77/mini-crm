@@ -10,9 +10,18 @@ const allowedFromClauses = new Set([
   "notes join contacts on contacts.id = notes.contact_id",
 ]);
 
+const allowedUserIdColumns = new Set([
+  "user_id",
+  "id",
+  "contacts.user_id",
+]);
+
 export async function paginate(fromClause:string,pageInput:number,limitInput:number,userIdColumn?:string,userId?: number,) {
     if (!allowedFromClauses.has(fromClause)) {
       throw new AppError("Invalid fromClause", 500);
+    }
+    if (userIdColumn !== undefined && !allowedUserIdColumns.has(userIdColumn)) {
+      throw new AppError("Invalid userIdColumn", 500);
     }
     let totalElements
     if(userId && userIdColumn!=undefined){

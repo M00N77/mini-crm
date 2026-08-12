@@ -218,7 +218,9 @@ export async function logoutUser(refreshToken: string) {
       "delete from refresh_tokens where user_id=$1 and jti=$2 returning *",
       [userId, jti],
     );
-  } catch (e) {}
+  } catch (e) {
+    console.error("Logout cleanup failed:", e);
+  }
 }
 export async function changePassword(userId: number, password: string) {
   const salt = await bcrypt.genSalt(10);

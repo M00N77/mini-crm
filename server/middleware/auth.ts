@@ -21,7 +21,7 @@ export async function verificationAccessToken(
     req.user = decode;
     next();
   } catch(e : any) {
-      if(e instanceof Error && e.name==='TokenExpiredError') return next(new AppError('Token Expired',403));
+      if(e instanceof Error && e.name==='TokenExpiredError') return next(new AppError('Token Expired',401));
       if(e instanceof Error && e.name==='JsonWebTokenError') return next(new AppError('Invalid token',401));
       return next(new AppError("Authentication failed", 500));
   }
@@ -39,7 +39,7 @@ export async function verificationRefreshToken(
     req.user = decode;
     next();
   } catch (e){
-    if(e instanceof Error && e.name === 'TokenExpiredError') return next(new AppError('Token Expired',403));
+    if(e instanceof Error && e.name === 'TokenExpiredError') return next(new AppError('Token Expired',401));
     if(e instanceof Error && e.name==='JsonWebTokenError') return next(new AppError('Invalid token',401));
     return next(new AppError("Authentication failed", 500));
   }
@@ -70,8 +70,4 @@ export async function verifyOldPassword(
   }
 };
 
-export async function validateUser(req:Request,res:Response,next:NextFunction) {
-  if(!req.user){ throw new AppError('Invalid session',401)}
-  if(req.user.userId < 0) throw new AppError('invalid userId',401)
-  next()
-}
+
