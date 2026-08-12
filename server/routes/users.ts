@@ -7,6 +7,64 @@ import { asyncHandler } from "../utils/asyncHandler";
 
 const router = Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: Users management
+ */
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Retrieve a list of users
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: A list of users.
+ */
+
+/**
+ * @swagger
+ * /users/me:
+ *   get:
+ *     summary: Get current user info
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Current user information.
+ */
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Get a user by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: User found.
+ *   delete:
+ *     summary: Delete a user by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: User deleted successfully.
+ */
+
 // TODO(review): нужен полноценный admin/role-контроль перед тем как этот роут пойдёт в прод
 router.get("/", verificationAccessToken, validateUser, asyncHandler(userController.getUsers));
 

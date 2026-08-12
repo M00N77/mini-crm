@@ -25,6 +25,68 @@ const authLimiter =
 
 const router = Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentication and Authorization
+ */
+
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     responses:
+ *       201:
+ *         description: User registered successfully.
+ */
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Login successful.
+ */
+
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: Refresh tokens
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Tokens refreshed.
+ */
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Logout successful.
+ */
+
+/**
+ * @swagger
+ * /auth/changepass:
+ *   post:
+ *     summary: Change user password
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Password changed successfully.
+ */
+
 router.post(
   "/register",
   validate(registerSchema),

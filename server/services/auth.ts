@@ -24,7 +24,7 @@ export async function rotateRefreshToken(curRefreshToken: string) {
     }) as TokenPayload;
   } catch (err: any) {
     if (err.name === "TokenExpiredError") {
-      throw new AppError("Token Expired", 403);
+      throw new AppError("Token Expired", 401);
     } else if (err.name === "JsonWebTokenError") {
       throw new AppError("Invalid token", 401);
     }
@@ -213,7 +213,8 @@ export async function logoutUser(refreshToken: string) {
       ignoreExpiration: true,
       algorithms: ["HS256"],
     }) as TokenPayload;
-  } catch {
+  } catch (e) {
+    console.error("Logout cleanup failed:", e);
     return;
   }
   const { jti, userId } = payload;

@@ -8,6 +8,7 @@ import notesRouter from './routes/notes';
 import authRouter from './routes/auth';
 import {errorHandler} from "./middleware/errorHandler";
 import './types/express';
+import { setupSwagger } from './swagger';
 
 const app = express();
 
@@ -24,6 +25,8 @@ app.use('/users', usersRouter);
 app.use('/tasks', tasksRouter);
 app.use('/contacts', contactsRouter)
 app.use('/notes', notesRouter)
+
+setupSwagger(app);
 
 app.use(errorHandler);
 

@@ -30,8 +30,8 @@ export interface PaginationMeta {
 interface PaginateParams {
   fromClause: string;
   columns: string;
-  userIdColumn: string;
-  userId: number;
+  userIdColumn?: string;
+  userId?: number;
   orderBy?: string;
   orderDir?: "ASC" | "DESC";
   pageInput: number;
@@ -53,7 +53,7 @@ export async function paginate<T = any>(params: PaginateParams) {
   if (!allowedFromClauses.has(fromClause)) {
     throw new AppError("Invalid fromClause", 500);
   }
-  if (!allowedUserIdColumns.has(userIdColumn)) {
+  if (userIdColumn !== undefined && !allowedUserIdColumns.has(userIdColumn)) {
     throw new AppError("Invalid userIdColumn", 500);
   }
   if (!ORDER_RE.test(orderBy)) throw new AppError("Invalid orderBy", 500);
@@ -65,11 +65,19 @@ export async function paginate<T = any>(params: PaginateParams) {
   try {
     await client.query("begin isolation level repeatable read");
 
-    const countResult = await client.query(
-      `select count(*) from ${fromClause} where ${userIdColumn}=$1`,
-      [userId],
-    );
-    const total = Number(countResult.rows[0].count);
+    let total = 0;
+    if (userIdColumn && userId !== undefined) {
+      const countResult = await client.query(
+        `select count(*) from ${fromClause} where ${userIdColumn}=$1`,
+        [userId]
+      );
+      total = Number(countResult.rows[0].count);
+    } else {
+      const countResult = await client.query(
+        `select count(*) from ${fromClause}`
+      );
+      total = Number(countResult.rows[0].count);
+    }
 
     const page = Math.max(1, Number(pageInput) || 1);
     const limit = Math.min(100, Math.max(1, Number(limitInput) || 10));
@@ -77,10 +85,18 @@ export async function paginate<T = any>(params: PaginateParams) {
     const offset = (page - 1) * limit;
     const hasMore = page < totalPages;
 
-    const dataResult = await client.query(
-      `select ${columns} from ${fromClause} where ${userIdColumn}=$1 order by ${orderBy} ${orderDir} offset $2 limit $3`,
-      [userId, offset, limit],
-    );
+    let dataResult;
+    if (userIdColumn && userId !== undefined) {
+      dataResult = await client.query(
+        `select ${columns} from ${fromClause} where ${userIdColumn}=$1 order by ${orderBy} ${orderDir} offset $2 limit $3`,
+        [userId, offset, limit]
+      );
+    } else {
+      dataResult = await client.query(
+        `select ${columns} from ${fromClause} order by ${orderBy} ${orderDir} offset $1 limit $2`,
+        [offset, limit]
+      );
+    }
 
     await client.query("commit");
     committed = true;
