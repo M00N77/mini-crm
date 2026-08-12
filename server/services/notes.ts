@@ -1,52 +1,40 @@
-import pool from "../db";
 import {paginate} from "../utils/paginate";
 import { AppError } from "../utils/AppError";
 import { NoteDto } from "../mappers/note.mapper";
+import * as notesRepository from '../repositories/notes.repository';
 
 export async function getNotes(userId:number,pageInput:number,limitInput:number) {
     const paginateData = await paginate('notes join contacts on contacts.id = notes.contact_id',pageInput,limitInput,'contacts.user_id',userId);
     const {offset, ...pagination} = paginateData
-    const result = await pool.query('select notes.* from notes join contacts on contacts.id = notes.contact_id where contacts.user_id = $1 order by notes.id offset $2 limit $3 ',[userId,offset,paginateData.limit]);
+    const rows = await notesRepository.findNotes(userId, offset, paginateData.limit);
     return {
-        "data": result.rows.map((row) => new NoteDto(row)),
+        "data": rows.map((row: any) => new NoteDto(row)),
         "pagination": pagination
     }
 }
 
 export async function getNoteById(userId:number,noteId: number){
-    const result = await pool.query('select notes.* from notes join contacts on contacts.id = notes.contact_id where contacts.user_id = $1 and notes.id = $2', [userId,noteId]);
-
-    const row = result.rows[0];
+    const row = await notesRepository.findNoteById(userId, noteId);
     if (!row) throw new AppError("Note not found", 404);
     return new NoteDto(row);
 }
 
 export async function createNote(userId:number,contactId:number,content:string){
-    const result = await pool.query(
-        'insert into notes (contact_id,content) select $1, $2 where exists (select 1 from contacts where contacts.id = $1 and contacts.user_id = $3) returning notes.*',
-        [contactId, content, userId],
-    );
-
-    const row = result.rows[0];
+    const row = await notesRepository.createNote(userId, contactId, content);
     if (!row) throw new AppError("Contact not found", 404);
     return new NoteDto(row);
 }
 
 export async function updateNote(userId:number,noteId:number,content:string){
-
-    const isOwner = await pool.query('select notes.* from notes join contacts on contacts.id = notes.contact_id where contacts.user_id=$1 and notes.id = $2', [userId,noteId]);
-
-    if(isOwner.rows.length > 0) {
-        const result = await pool.query('UPDATE notes set content = ($1) where id = $2 returning notes.*',[content,noteId])
-        return new NoteDto(result.rows[0]);
+    const row = await notesRepository.updateNote(userId, noteId, content);
+    if(row) {
+        return new NoteDto(row);
     }
     throw new AppError("Note not found", 404);
 }
 
 export async function deleteNote(userId:number,noteId:number){
-    const result = await pool.query('delete from notes USING contacts where contacts.id = notes.contact_id and contacts.user_id=$1 and notes.id=$2 returning notes.*',[userId,noteId]);
-
-    const row = result.rows[0];
+    const row = await notesRepository.deleteNote(userId, noteId);
     if (!row) throw new AppError("Note not found", 404);
     return new NoteDto(row);
 }
