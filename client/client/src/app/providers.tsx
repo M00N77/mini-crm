@@ -1,14 +1,21 @@
 "use client";
 
-import type { ReactNode } from "react";
-
-// TODO: Add QueryClientProvider (TanStack Query)
-// TODO: Add AuthProvider context
+import { ReactNode, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface ProvidersProps {
   children: ReactNode;
 }
 
 export function Providers({ children }: ProvidersProps) {
-  return <>{children}</>;
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60,
+      },
+    },
+  }))
+  return <QueryClientProvider client={queryClient}>
+    {children}
+  </QueryClientProvider>
 }
