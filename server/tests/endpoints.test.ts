@@ -94,6 +94,11 @@ function mockDefault(result: unknown) {
   vi.mocked(mPool.query).mockResolvedValue(result as never);
 }
 
+function findQueryCall(predicate: (sql: string) => boolean) {
+  const calls = vi.mocked(mPool.query).mock.calls;
+  return calls.find(([sql]) => typeof sql === "string" && predicate(sql));
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(mPool.query).mockReset();
@@ -224,7 +229,12 @@ describe("GET /contacts", () => {
   });
 
   it("should return paginated contacts with valid token", async () => {
-    mockSequence({ rows: [{ count: "1" }] }, { rows: [fakeContact], rowCount: 1 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "1" }] },
+      { rows: [fakeContact], rowCount: 1 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/contacts")
@@ -240,7 +250,12 @@ describe("GET /contacts", () => {
   });
 
   it("should respect page and limit query params", async () => {
-    mockSequence({ rows: [{ count: "0" }] }, { rows: [], rowCount: 0 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "0" }] },
+      { rows: [], rowCount: 0 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/contacts?page=2&limit=5")
@@ -249,7 +264,10 @@ describe("GET /contacts", () => {
 
     expect(res.body.pagination.page).toBe(2);
     expect(res.body.pagination.total).toBe(0);
-    expect(vi.mocked(mPool.query).mock.calls[1][1]).toEqual([1, 5, 5]);
+
+    const selectCall = findQueryCall((sql) => sql.includes("offset $2 limit $3"));
+    expect(selectCall).toBeDefined();
+    expect(selectCall![1]).toEqual([1, 5, 5]);
   });
 });
 
@@ -362,7 +380,12 @@ describe("GET /notes", () => {
   });
 
   it("should return paginated notes", async () => {
-    mockSequence({ rows: [{ count: "1" }] }, { rows: [fakeNote], rowCount: 1 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "1" }] },
+      { rows: [fakeNote], rowCount: 1 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/notes")
@@ -375,7 +398,12 @@ describe("GET /notes", () => {
   });
 
   it("should return empty array if no notes", async () => {
-    mockSequence({ rows: [{ count: "0" }] }, { rows: [], rowCount: 0 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "0" }] },
+      { rows: [], rowCount: 0 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/notes")
@@ -436,15 +464,12 @@ describe("POST /notes", () => {
   });
 });
 
-describe("PUT /notes/:id", () => {
+describe("PATCH /notes/:id", () => {
   it("should update a note and return 200", async () => {
-    mockSequence(
-      { rows: [{ id: 1, user_id: 1 }], rowCount: 1 },
-      { rows: [{ id: 1, content: "Updated content" }], rowCount: 1 },
-    );
+    mockDefault({ rows: [{ id: 1, content: "Updated content" }], rowCount: 1 });
 
     const res = await request(app)
-      .put("/notes/1")
+      .patch("/notes/1")
       .set("Authorization", `Bearer ${validToken}`)
       .send({ content: "Updated content" })
       .expect(200);
@@ -456,7 +481,7 @@ describe("PUT /notes/:id", () => {
     mockDefault({ rows: [], rowCount: 0 });
 
     const res = await request(app)
-      .put("/notes/999")
+      .patch("/notes/999")
       .set("Authorization", `Bearer ${validToken}`)
       .send({ content: "Hacked content" })
       .expect(404);
@@ -498,7 +523,12 @@ describe("GET /tasks", () => {
   });
 
   it("should return paginated tasks", async () => {
-    mockSequence({ rows: [{ count: "1" }] }, { rows: [fakeTask], rowCount: 1 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "1" }] },
+      { rows: [fakeTask], rowCount: 1 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/tasks")
@@ -510,7 +540,12 @@ describe("GET /tasks", () => {
   });
 
   it("should return tasks with camelCase fields (userId, createdAt)", async () => {
-    mockSequence({ rows: [{ count: "1" }] }, { rows: [fakeTask], rowCount: 1 });
+    mockSequence(
+      { rows: [], rowCount: 0 },
+      { rows: [{ count: "1" }] },
+      { rows: [fakeTask], rowCount: 1 },
+      { rows: [], rowCount: 0 },
+    );
 
     const res = await request(app)
       .get("/tasks")
@@ -570,7 +605,7 @@ describe("PUT /tasks/:id", () => {
     const res = await request(app)
       .put("/tasks/1")
       .set("Authorization", `Bearer ${validToken}`)
-      .send({ title: "Updated", description: "Updated desc", status: "done" })
+      .send({ title: "Updated", description: "Updated desc", status: "done", position: 1 })
       .expect(200);
 
     expect(res.body.title).toBe("Updated");
@@ -582,7 +617,51 @@ describe("PUT /tasks/:id", () => {
     const res = await request(app)
       .put("/tasks/999")
       .set("Authorization", `Bearer ${validToken}`)
-      .send({ title: "Ghost", description: "", status: "pending" })
+      .send({ title: "Ghost", description: "", status: "pending", position: 0 })
+      .expect(404);
+
+    expect(res.body.error).toContain("Task not found");
+  });
+});
+
+describe("PATCH /tasks/:id", () => {
+  it("should partially update a task and return 200", async () => {
+    mockDefault({ rows: [{ ...fakeTask, status: "in_progress" }], rowCount: 1 });
+
+    const res = await request(app)
+      .patch("/tasks/1")
+      .set("Authorization", `Bearer ${validToken}`)
+      .send({ status: "in_progress" })
+      .expect(200);
+
+    expect(res.body.status).toBe("in_progress");
+  });
+
+  it("should return 400 for invalid status", async () => {
+    const res = await request(app)
+      .patch("/tasks/1")
+      .set("Authorization", `Bearer ${validToken}`)
+      .send({ status: "DROP TABLE users" })
+      .expect(400);
+
+    expect(res.body.error).toBeDefined();
+  });
+
+  it("should return 400 for empty body", async () => {
+    const res = await request(app)
+      .patch("/tasks/1")
+      .set("Authorization", `Bearer ${validToken}`)
+      .send({})
+      .expect(400);
+  });
+
+  it("should return 404 for non-existent task", async () => {
+    mockDefault({ rows: [], rowCount: 0 });
+
+    const res = await request(app)
+      .patch("/tasks/999")
+      .set("Authorization", `Bearer ${validToken}`)
+      .send({ status: "done" })
       .expect(404);
 
     expect(res.body.error).toContain("Task not found");
@@ -623,11 +702,13 @@ describe("GET /users", () => {
 
   it("should return paginated users", async () => {
     mockSequence(
+      { rows: [], rowCount: 0 },
       { rows: [{ count: "1" }] },
       {
         rows: [{ id: 1, email: "test@mail.ru", name: "Test", created_at: new Date().toISOString() }],
         rowCount: 1,
       },
+      { rows: [], rowCount: 0 },
     );
 
     const res = await request(app)

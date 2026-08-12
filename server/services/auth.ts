@@ -206,21 +206,22 @@ export async function loginUser(email: string, password: string) {
 
 export async function logoutUser(refreshToken: string) {
   if (!refreshToken) return;
+  let payload: TokenPayload;
   try {
     const secretKey = JWT_SECRET;
-    const payload = jwt.verify(refreshToken, secretKey, {
+    payload = jwt.verify(refreshToken, secretKey, {
       ignoreExpiration: true,
       algorithms: ["HS256"],
     }) as TokenPayload;
-    const { jti, userId } = payload;
-
-    await pool.query(
-      "delete from refresh_tokens where user_id=$1 and jti=$2 returning *",
-      [userId, jti],
-    );
-  } catch (e) {
-    console.error("Logout cleanup failed:", e);
+  } catch {
+    return;
   }
+  const { jti, userId } = payload;
+
+  await pool.query(
+    "delete from refresh_tokens where user_id=$1 and jti=$2 returning *",
+    [userId, jti],
+  );
 }
 export async function changePassword(userId: number, password: string) {
   const salt = await bcrypt.genSalt(10);

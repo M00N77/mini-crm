@@ -6,7 +6,7 @@ export async function getTasks(req: Request, res: Response) {
     const userId  = Number(req.user.userId);
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-    const result = await tasksService.getTasks(userId, page, limit);
+    const result = await tasksService.getTasks(userId, page, limit, req.query.sortBy as string | undefined, req.query.order as string | undefined);
 
     return res.status(200).send(result);
 }
@@ -30,6 +30,14 @@ export async function updateTask(req: Request, res: Response) {
     const id = Number(req.params.id);
     const {title,description, status, position} = req.body;
     const result = await tasksService.updateTask(Number(id),Number(req.user.userId),{title:title,description:description,status:status,position:position});
+
+    return res.status(200).json(result);
+}
+
+export async function patchTask(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const { title, description, status, position } = req.body;
+    const result = await tasksService.patchTask(Number(id),Number(req.user.userId),{title,description,status,position});
 
     return res.status(200).json(result);
 }

@@ -14,7 +14,10 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: 'http://localhost:3001', credentials: true }))
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3001',
+  credentials: true,
+}))
 
 app.use('/auth', authRouter)
 app.use('/users', usersRouter);

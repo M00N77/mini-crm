@@ -4,7 +4,11 @@ import { TokenPayload } from "../types/types";
 import { AppError } from "../utils/AppError";
 import bcrypt from "bcrypt";
 import pool from "../db";
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-in-prod";
+const JWT_SECRET: string = (() => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET is not set");
+  return secret;
+})();
 
 export async function verificationAccessToken(
   req: Request,
@@ -17,11 +21,13 @@ export async function verificationAccessToken(
     const token = authorization?.split(" ")[1];
     if (!token) return res.status(401).json({message:'Invalid session'});
     const secretKey = JWT_SECRET;
-    const decode = jwt.verify(token, secretKey) as TokenPayload;
+    const decode = jwt.verify(token, secretKey, {
+      algorithms: ["HS256"],
+    }) as TokenPayload;
     req.user = decode;
     next();
   } catch(e : any) {
-      if(e instanceof Error && e.name==='TokenExpiredError') return next(new AppError('Token Expired',401));
+      if(e instanceof Error && e.name==='TokenExpiredError') return next(new AppError('Token Expired',403));
       if(e instanceof Error && e.name==='JsonWebTokenError') return next(new AppError('Invalid token',401));
       return next(new AppError("Authentication failed", 500));
   }
@@ -35,11 +41,13 @@ export async function verificationRefreshToken(
   try {
     const { token } = req.cookies;
     if (!token) return next(new AppError('Token undefined',401))
-    const decode = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    const decode = jwt.verify(token, JWT_SECRET, {
+      algorithms: ["HS256"],
+    }) as TokenPayload;
     req.user = decode;
     next();
   } catch (e){
-    if(e instanceof Error && e.name === 'TokenExpiredError') return next(new AppError('Token Expired',401));
+    if(e instanceof Error && e.name === 'TokenExpiredError') return next(new AppError('Token Expired',403));
     if(e instanceof Error && e.name==='JsonWebTokenError') return next(new AppError('Invalid token',401));
     return next(new AppError("Authentication failed", 500));
   }
@@ -70,4 +78,7 @@ export async function verifyOldPassword(
   }
 };
 
-
+export async function validateUser(req:Request,res:Response,next:NextFunction) {
+  if(!req.user){ throw new AppError('Invalid session',401)}
+  next()
+}
