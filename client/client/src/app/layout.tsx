@@ -18,7 +18,11 @@ export const metadata: Metadata = {
   description: "Mini CRM — contacts, tasks, notes",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html
       lang="en"
