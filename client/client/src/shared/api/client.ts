@@ -1,10 +1,13 @@
+import { useAuthStore } from "../store/use-auth-store";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 /**
  * Thin fetch wrapper with:
  * - Base URL prefixing
  * - JSON body serialization
- * - 401 interception (TODO: refresh token queue)
+ * - Auth Bearer token insertion
+ * - 401 interception & store cleanup
  * - Typed response parsing
  */
 class ApiClient {
@@ -19,24 +22,45 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
+    const token = useAuthStore.getState().accessToken;
 
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
-    // TODO: Attach Authorization header from cookie/session
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
 
-    const res = await fetch(url, { ...options, headers });
+    const res = await fetch(url, {
+      ...options,
+      headers,
+      credentials: "include",
+    });
 
     if (res.status === 401) {
-      // TODO: Redirect to /login or trigger token refresh
+      useAuthStore.getState().logout();
+      if (typeof window !== "undefined") {
+        if (
+          !window.location.pathname.startsWith("/login") &&
+          !window.location.pathname.startsWith("/register")
+        ) {
+          // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+          window.location.href = "/login";
+        }
+      }
       throw new Error("Unauthorized");
     }
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      throw new Error(body.error ?? `HTTP ${res.status}`);
+      const message =
+        body.message ||
+        body.error ||
+        (Array.isArray(body.errors) ? body.errors[0]?.message : null) ||
+        `HTTP ${res.status}`;
+      throw new Error(message);
     }
 
     // 204 No Content
