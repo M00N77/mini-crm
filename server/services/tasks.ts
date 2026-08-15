@@ -4,6 +4,7 @@ import { AppError } from "../utils/AppError";
 import { TaskDto } from "../mappers/task.mapper";
 import { TaskStatus } from "../schemas/tasks.schema";
 import * as tasksRepository from '../repositories/tasks.repository';
+import pool from "../db";
 
 const TASK_SORT: Record<string, string> = {
   title: "title",
@@ -63,7 +64,6 @@ export async function patchTask(id:number,userId:number,fields:{title?:string,de
     const setClause = keys.map((k, i) => `${allowed[k]} = $${i + 1}`).join(", ");
     const values = keys.map((k) => fields[k as keyof typeof fields]);
     
-    import pool from "../db";
     const result = await pool.query(
         `UPDATE tasks SET ${setClause} WHERE id = $${keys.length + 1} AND user_id = $${keys.length + 2} RETURNING id, title, description, user_id, status, position, created_at`,
         [...values, id, userId],
