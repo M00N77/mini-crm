@@ -2,12 +2,9 @@
 
 import { 
   Users, 
-  CheckSquare, 
   PlayCircle, 
   StickyNote, 
-  TrendingUp, 
   AlertCircle, 
-  FileEdit, 
   MoreHorizontal 
 } from "lucide-react";
 import { BlurFade } from "@/shared/ui";
