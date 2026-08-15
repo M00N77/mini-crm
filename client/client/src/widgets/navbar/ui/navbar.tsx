@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   Menu, 
   Search, 
@@ -11,9 +11,12 @@ import {
   Users, 
   CheckSquare, 
   StickyNote, 
-  X 
+  X,
+  LogOut
 } from "lucide-react";
 import { cn } from "@/shared/lib";
+import { useAuthStore } from "@/shared/store/use-auth-store";
+import { apiClient } from "@/shared/api";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Home", href: "/dashboard" },
@@ -24,7 +27,23 @@ const NAV_ITEMS = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post("/auth/logout");
+    } catch {
+      // ignore
+    } finally {
+      logout();
+      router.replace("/login");
+    }
+  };
+
+  const initial = (user?.name || user?.email || "U").charAt(0).toUpperCase();
 
   return (
     <>
@@ -47,12 +66,8 @@ export function Navbar() {
             <Bell className="h-5 w-5" />
             <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-error rounded-full" />
           </button>
-          <div className="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
-            <img 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI3DHVtAwxQIzQSd7Q_zr9aUWnTIBdtxuptMu-13JEKHCPnFh2M3WkNxBqOHUp8yyYdI4XrUxfrqFLPBiOecx9jUJdPJZe7kaPd5FiMsAeVF_oEwZ4LmVbhTWYNZ8ojuDhWTNIVmgXaccCVEpwsVCMSSvxOmNJkU_gO7iTdJVI4T3FYKxwEoQXQCvKgZP-nYncf0PJQhdXHbDjpHFkIM4AY620S3iUBm14m5wEi5dGPc_v0fvrvVYb" 
-              alt="Avatar" 
-              className="w-full h-full object-cover"
-            />
+          <div className="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center font-medium text-xs text-primary">
+            {initial}
           </div>
         </div>
       </header>
@@ -94,6 +109,22 @@ export function Navbar() {
                 })}
               </nav>
             </div>
+
+            <div className="border-t border-outline-variant pt-4 space-y-3">
+              {user && (
+                <div className="text-xs text-on-surface-variant">
+                  <p className="font-medium text-primary">{user.name || user.email}</p>
+                  <p className="text-on-surface-variant/70">{user.email}</p>
+                </div>
+              )}
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 w-full px-3 py-2 text-error hover:bg-error-container/20 rounded-lg text-sm transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Выйти</span>
+              </button>
+            </div>
           </div>
           <div className="flex-1" onClick={() => setMobileMenuOpen(false)} />
         </div>
@@ -104,7 +135,7 @@ export function Navbar() {
         <nav>
           <ol className="flex items-center space-x-2 text-on-surface-variant typo-body-sm">
             <li>
-              <span className="text-primary font-medium capitalization capitalize">
+              <span className="text-primary font-medium capitalize">
                 {pathname.replace("/dashboard", "").replace("/", "") || "Overview"}
               </span>
             </li>
@@ -124,12 +155,8 @@ export function Navbar() {
             <Bell className="h-5 w-5" />
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-error rounded-full" />
           </button>
-          <div className="w-8 h-8 rounded-full border border-outline-variant overflow-hidden">
-            <img 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI3DHVtAwxQIzQSd7Q_zr9aUWnTIBdtxuptMu-13JEKHCPnFh2M3WkNxBqOHUp8yyYdI4XrUxfrqFLPBiOecx9jUJdPJZe7kaPd5FiMsAeVF_oEwZ4LmVbhTWYNZ8ojuDhWTNIVmgXaccCVEpwsVCMSSvxOmNJkU_gO7iTdJVI4T3FYKxwEoQXQCvKgZP-nYncf0PJQhdXHbDjpHFkIM4AY620S3iUBm14m5wEi5dGPc_v0fvrvVYb" 
-              alt="Avatar" 
-              className="w-full h-full object-cover"
-            />
+          <div className="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center font-medium text-xs text-primary">
+            {initial}
           </div>
         </div>
       </header>
