@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/shared/store/use-auth-store";
 import { PayloadRegister } from "../model/types";
-
 
 const registerSchema = z.object({
   name: z.string().min(1, "Введите имя"),
@@ -15,6 +17,16 @@ const registerSchema = z.object({
 });
 
 export function RegisterForm() {
+  const router = useRouter();
+  const isAuth = useAuthStore((state) => state.isAuth);
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  useEffect(() => {
+    if (isAuth && accessToken) {
+      router.replace("/dashboard");
+    }
+  }, [isAuth, accessToken, router]);
+
   const {
     mutate: registerUser,
     isPending,
