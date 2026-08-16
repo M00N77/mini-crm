@@ -3,6 +3,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/shared/ui";
 import { cn } from "@/shared/lib";
+import { useModalStore } from "@/shared/store/modal-store";
 
 interface CreateNoteButtonProps {
   variant?: "default" | "fab" | "outline" | "ghost";
@@ -14,15 +15,26 @@ interface CreateNoteButtonProps {
 
 export function CreateNoteButton({
   variant = "default",
+  contactId,
   className,
   onClick,
   children,
 }: CreateNoteButtonProps) {
+  const { openModal } = useModalStore();
+
+  const handleClick =
+    onClick ||
+    (() =>
+      openModal("createNote", {
+        contactId,
+        defaultValues: contactId ? { contactId } : undefined,
+      }));
+
   if (variant === "fab") {
     return (
       <button
         type="button"
-        onClick={onClick}
+        onClick={handleClick}
         aria-label="Добавить заметку"
         className={cn(
           "fixed bottom-20 right-4 md:hidden z-30 h-12 w-12 rounded-full bg-primary text-on-primary shadow-lg flex items-center justify-center hover:opacity-90 active:scale-95 transition-all border border-outline",
@@ -37,7 +49,7 @@ export function CreateNoteButton({
   return (
     <Button
       type="button"
-      onClick={onClick}
+      onClick={handleClick}
       variant={variant === "outline" ? "outline" : "default"}
       className={cn(
         "bg-primary text-on-primary hover:opacity-90 transition-opacity typo-body-sm font-medium rounded px-4 py-1.5 flex items-center gap-2 cursor-pointer",
