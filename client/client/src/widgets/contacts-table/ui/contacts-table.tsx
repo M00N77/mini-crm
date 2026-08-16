@@ -49,9 +49,19 @@ export function ContactsTable() {
   }, [rawList, searchQuery]);
 
   const handleDelete = (id: number) => {
-    if (confirm("Вы уверены, что хотите удалить этот контакт?")) {
-      deleteContactMutation.mutate(id);
-    }
+    const contact = rawList.find((c) => c.id === id);
+    const contactName = contact?.name ? `«${contact.name}»` : "этот контакт";
+
+    openModal("confirmDelete", {
+      title: "Удалить контакт?",
+      description: `Вы действительно хотите удалить контакт ${contactName}? Это действие необратимо.`,
+      confirmText: "Да, удалить",
+      cancelText: "Отмена",
+      variant: "destructive",
+      onConfirm: async () => {
+        await deleteContactMutation.mutateAsync(id);
+      },
+    });
   };
 
   const handleEdit = (contact: Parameters<typeof ContactRow>[0]["contact"]) => {
