@@ -5,9 +5,6 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/shared/store/use-auth-store";
 import { PayloadRegister } from "../model/types";
 
 const registerSchema = z.object({
@@ -17,15 +14,6 @@ const registerSchema = z.object({
 });
 
 export function RegisterForm() {
-  const router = useRouter();
-  const isAuth = useAuthStore((state) => state.isAuth);
-  const accessToken = useAuthStore((state) => state.accessToken);
-
-  useEffect(() => {
-    if (isAuth && accessToken) {
-      router.replace("/dashboard");
-    }
-  }, [isAuth, accessToken, router]);
 
   const {
     mutate: registerUser,
@@ -40,6 +28,7 @@ export function RegisterForm() {
     formState: { errors },
   } = useForm<PayloadRegister>({
     resolver: zodResolver(registerSchema),
+    mode: "onBlur",
     defaultValues: {
       name: "",
       email: "",
@@ -53,15 +42,20 @@ export function RegisterForm() {
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      action="javascript:void(0);"
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(onSubmit)(e);
+      }}
       className="space-y-4"
     >
       {isError && (
-        <div className="p-3 text-sm text-red-500 bg-red-500/10 rounded border border-red-500/20">
+        <div className="p-3 text-sm text-error bg-error-container/20 rounded border border-error/30">
           {(error as Error)?.message || "Ошибка регистрации. Попробуйте позже."}
         </div>
       )}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <label htmlFor="name" className="typo-caption text-on-surface-variant">
           Имя
         </label>
@@ -71,13 +65,17 @@ export function RegisterForm() {
           id="name"
           type="text"
           placeholder="Иван Иванов"
-          className="w-full rounded border border-outline-variant bg-surface-container px-3 py-2 typo-body-sm text-primary placeholder:text-on-surface-variant/50 focus:border-outline focus:outline-none transition-colors disabled:opacity-50"
+          className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors disabled:opacity-50 ${
+            errors.name
+              ? "border-error focus:border-error"
+              : "border-outline-variant focus:border-outline"
+          }`}
         />
         {errors.name && (
-          <p className="text-xs text-red-500">{errors.name.message}</p>
+          <p className="text-xs text-error">{errors.name.message}</p>
         )}
       </div>
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <label htmlFor="reg-email" className="typo-caption text-on-surface-variant">
           Email
         </label>
@@ -87,13 +85,17 @@ export function RegisterForm() {
           id="reg-email"
           type="email"
           placeholder="user@example.com"
-          className="w-full rounded border border-outline-variant bg-surface-container px-3 py-2 typo-body-sm text-primary placeholder:text-on-surface-variant/50 focus:border-outline focus:outline-none transition-colors disabled:opacity-50"
+          className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors disabled:opacity-50 ${
+            errors.email
+              ? "border-error focus:border-error"
+              : "border-outline-variant focus:border-outline"
+          }`}
         />
         {errors.email && (
-          <p className="text-xs text-red-500">{errors.email.message}</p>
+          <p className="text-xs text-error">{errors.email.message}</p>
         )}
       </div>
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <label htmlFor="reg-password" className="typo-caption text-on-surface-variant">
           Пароль
         </label>
@@ -103,10 +105,14 @@ export function RegisterForm() {
           id="reg-password"
           type="password"
           placeholder="••••••••"
-          className="w-full rounded border border-outline-variant bg-surface-container px-3 py-2 typo-body-sm text-primary placeholder:text-on-surface-variant/50 focus:border-outline focus:outline-none transition-colors disabled:opacity-50"
+          className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors disabled:opacity-50 ${
+            errors.password
+              ? "border-error focus:border-error"
+              : "border-outline-variant focus:border-outline"
+          }`}
         />
         {errors.password && (
-          <p className="text-xs text-red-500">{errors.password.message}</p>
+          <p className="text-xs text-error">{errors.password.message}</p>
         )}
       </div>
       <button
@@ -118,8 +124,7 @@ export function RegisterForm() {
       </button>
       <p className="text-center typo-caption text-on-surface-variant">
         Уже есть аккаунт?{" "}
-        <Link
-          href="/login" className="text-primary hover:underline">
+        <Link href="/login" className="text-primary hover:underline">
           Войти
         </Link>
       </p>
