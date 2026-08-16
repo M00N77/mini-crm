@@ -9,6 +9,7 @@
     "hh": "ts-node index.ts --source=hh",
     "tg": "ts-node index.ts --source=tg",
     "watch": "ts-node index.ts --watch",
+    "seed": "ts-node scripts/seed.ts",
     "test": "NODE_ENV=test vitest run tests/integration",
     "test:unit": "NODE_ENV=test vitest run --exclude tests/integration",
     "test:all": "NODE_ENV=test vitest run",
