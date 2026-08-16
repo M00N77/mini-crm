@@ -1,5 +1,5 @@
 // feature: note-actions
-// Сценарии: добавление/удаление заметок к контактам
-// Imports: entities/note, entities/contact, shared/api
+// Сценарии: добавление/редактирование/удаление заметки к контакту
+// Imports: entities/note, shared/api, shared/ui
 
-export { /* CreateNoteForm, DeleteNoteButton */ } from "./ui/placeholder";
+export { CreateNoteButton } from "./ui/create-note-button";
