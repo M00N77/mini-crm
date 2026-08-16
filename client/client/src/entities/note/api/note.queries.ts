@@ -1,47 +1,76 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import * as apiNote from './note-api';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import * as apiNote from "./note-api";
+import { toast } from "@/shared/store/toast-store";
 
-export const useNotes = () => {
-    return useQuery({
-        queryKey: ['notes'],
-        queryFn: apiNote.getNotes,
-    });
+export const useNotes = (params?: apiNote.GetNotesParams) => {
+  return useQuery({
+    queryKey: ["notes", params],
+    queryFn: () => apiNote.getNotes(params),
+  });
 };
 
 export const useNote = (id: number) => {
-    return useQuery({
-        queryKey: ['notes', id],
-        queryFn: () => apiNote.getNoteById(id),
-    });
+  return useQuery({
+    queryKey: ["notes", id],
+    queryFn: () => apiNote.getNoteById(id),
+    enabled: typeof id === "number" && !isNaN(id),
+  });
 };
 
 export const useCreateNote = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (payload: apiNote.CreateNotePayload) => apiNote.createNote(payload),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['notes'] });
-        },
-    });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: apiNote.CreateNotePayload) =>
+      apiNote.createNote(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      toast.success("Заметка создана", "Заметка успешно прикреплена к контакту");
+    },
+    onError: (error: Error) => {
+      toast.error(
+        "Ошибка при создании заметки",
+        error?.message || "Попробуйте позже"
+      );
+    },
+  });
 };
 
 export const useUpdateNote = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, payload }: { id: number; payload: apiNote.UpdateNotePayload }) => 
-            apiNote.updateNote(id, payload),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['notes'] });
-        },
-    });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: apiNote.UpdateNotePayload;
+    }) => apiNote.updateNote(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      toast.success("Заметка обновлена", "Текст заметки успешно сохранен");
+    },
+    onError: (error: Error) => {
+      toast.error(
+        "Ошибка при обновлении заметки",
+        error?.message || "Попробуйте позже"
+      );
+    },
+  });
 };
 
 export const useDeleteNote = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (id: number) => apiNote.deleteNote(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['notes'] });
-        },
-    });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => apiNote.deleteNote(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      toast.success("Заметка удалена", "Заметка удалена из системы");
+    },
+    onError: (error: Error) => {
+      toast.error(
+        "Ошибка при удалении заметки",
+        error?.message || "Попробуйте позже"
+      );
+    },
+  });
 };
