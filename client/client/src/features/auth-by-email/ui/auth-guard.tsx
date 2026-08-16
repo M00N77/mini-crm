@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/shared/store/use-auth-store";
 
@@ -10,17 +10,13 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
-  const isHydrated = useSyncExternalStore(
-    (callback) => useAuthStore.persist.onFinishHydration(callback),
-    () => useAuthStore.persist.hasHydrated(),
-    () => false
-  );
+  const isHydrated = useAuthStore((state) => state.isHydrated);
   const isAuth = useAuthStore((state) => state.isAuth);
   const accessToken = useAuthStore((state) => state.accessToken);
 
   useEffect(() => {
     if (isHydrated && (!isAuth || !accessToken)) {
-      router.replace("/login");
+      router.replace("/");
     }
   }, [isHydrated, isAuth, accessToken, router]);
 
