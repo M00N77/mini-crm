@@ -7,6 +7,7 @@ import { useModalStore } from "@/shared/store/modal-store";
 
 interface CreateNoteButtonProps {
   variant?: "default" | "fab" | "outline" | "ghost";
+  size?: "default" | "sm" | "lg" | "icon";
   contactId?: number;
   className?: string;
   onClick?: () => void;
@@ -15,6 +16,7 @@ interface CreateNoteButtonProps {
 
 export function CreateNoteButton({
   variant = "default",
+  size = "sm",
   contactId,
   className,
   onClick,
@@ -46,17 +48,22 @@ export function CreateNoteButton({
     );
   }
 
+  const buttonVariant =
+    variant === "outline"
+      ? "outline"
+      : variant === "ghost"
+      ? "ghost"
+      : "default";
+
   return (
     <Button
       type="button"
       onClick={handleClick}
-      variant={variant === "outline" ? "outline" : "default"}
-      className={cn(
-        "bg-primary text-on-primary hover:opacity-90 transition-opacity typo-body-sm font-medium rounded px-4 py-1.5 flex items-center gap-2 cursor-pointer",
-        className
-      )}
+      variant={buttonVariant}
+      size={size}
+      className={cn("gap-1.5 font-medium cursor-pointer shadow-xs", className)}
     >
-      <Plus className="h-4 w-4 shrink-0" />
+      <Plus className="h-3.5 w-3.5 shrink-0" />
       <span>{children || "Добавить заметку"}</span>
     </Button>
   );

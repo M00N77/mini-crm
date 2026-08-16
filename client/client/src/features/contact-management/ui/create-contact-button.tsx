@@ -7,6 +7,7 @@ import { useModalStore } from "@/shared/store/modal-store";
 
 interface CreateContactButtonProps {
   variant?: "default" | "fab" | "outline" | "ghost";
+  size?: "default" | "sm" | "lg" | "icon";
   className?: string;
   onClick?: () => void;
   children?: React.ReactNode;
@@ -14,6 +15,7 @@ interface CreateContactButtonProps {
 
 export function CreateContactButton({
   variant = "default",
+  size = "sm",
   className,
   onClick,
   children,
@@ -26,7 +28,6 @@ export function CreateContactButton({
       <button
         type="button"
         onClick={handleClick}
-
         aria-label="Добавить контакт"
         className={cn(
           "fixed bottom-20 right-4 md:hidden z-30 h-12 w-12 rounded-full bg-primary text-on-primary shadow-lg flex items-center justify-center hover:opacity-90 active:scale-95 transition-all border border-outline",
@@ -42,13 +43,11 @@ export function CreateContactButton({
     <Button
       type="button"
       onClick={handleClick}
-      variant={variant === "outline" ? "outline" : "default"}
-      className={cn(
-        "bg-primary text-on-primary hover:opacity-90 transition-opacity typo-body-sm font-medium rounded px-4 py-1.5 flex items-center gap-2 cursor-pointer",
-        className
-      )}
+      variant={variant === "outline" ? "outline" : variant === "ghost" ? "ghost" : "default"}
+      size={size}
+      className={cn("gap-1.5 font-medium cursor-pointer shadow-xs", className)}
     >
-      <Plus className="h-4 w-4 shrink-0" />
+      <Plus className="h-3.5 w-3.5 shrink-0" />
       <span>{children || "Добавить контакт"}</span>
     </Button>
   );

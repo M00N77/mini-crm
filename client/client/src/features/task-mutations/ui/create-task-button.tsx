@@ -7,6 +7,7 @@ import { useModalStore } from "@/shared/store/modal-store";
 
 interface CreateTaskButtonProps {
   variant?: "default" | "fab" | "outline" | "ghost" | "header";
+  size?: "default" | "sm" | "lg" | "icon";
   status?: string;
   className?: string;
   onClick?: () => void;
@@ -15,6 +16,7 @@ interface CreateTaskButtonProps {
 
 export function CreateTaskButton({
   variant = "default",
+  size = "sm",
   status,
   className,
   onClick,
@@ -45,37 +47,28 @@ export function CreateTaskButton({
     );
   }
 
-  if (variant === "header") {
-    return (
-      <button
-        type="button"
-        onClick={handleClick}
-        className={cn(
-          "flex items-center gap-2 bg-primary text-on-primary px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity typo-body-sm font-medium cursor-pointer shadow-sm",
-          className
-        )}
-      >
-        <Plus className="h-4 w-4 shrink-0" />
-        <span>{children || "Create Task"}</span>
-        <kbd className="hidden sm:inline-block font-label-mono text-[10px] text-on-primary-container bg-surface-container-low px-1.5 py-0.5 rounded border border-outline-variant ml-1">
-          ⌘N
-        </kbd>
-      </button>
-    );
-  }
+  const buttonVariant =
+    variant === "outline"
+      ? "outline"
+      : variant === "ghost"
+      ? "ghost"
+      : "default";
 
   return (
     <Button
       type="button"
       onClick={handleClick}
-      variant={variant === "outline" ? "outline" : "default"}
-      className={cn(
-        "bg-primary text-on-primary hover:opacity-90 transition-opacity typo-body-sm font-medium rounded px-4 py-1.5 flex items-center gap-2 cursor-pointer",
-        className
-      )}
+      variant={buttonVariant}
+      size={size}
+      className={cn("gap-1.5 font-medium cursor-pointer shadow-xs", className)}
     >
-      <Plus className="h-4 w-4 shrink-0" />
-      <span>{children || "Новая задача"}</span>
+      <Plus className="h-3.5 w-3.5 shrink-0" />
+      <span>{children || "Создать задачу"}</span>
+      {variant === "header" && (
+        <kbd className="hidden sm:inline-block font-label-mono text-[10px] text-on-primary/80 bg-black/10 px-1 py-0.2 rounded border border-white/20 ml-0.5">
+          ⌘N
+        </kbd>
+      )}
     </Button>
   );
 }
