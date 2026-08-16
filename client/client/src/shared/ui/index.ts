@@ -27,4 +27,4 @@ export {
 } from "./ui/table";
 export { BlurFade } from "./ui/blur-fade";
 export { Spinner } from "./ui/spinner";
-
+export { ConfirmModal } from "./ui/confirm-modal";

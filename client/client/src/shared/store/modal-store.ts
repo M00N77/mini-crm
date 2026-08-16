@@ -21,9 +21,13 @@ export interface ModalData {
   contactId?: number;
   taskId?: number;
   noteId?: number;
+  defaultValues?: Record<string, unknown>;
   initialValues?: Record<string, unknown> | object;
   title?: string;
   description?: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: "destructive" | "default";
   onConfirm?: () => Promise<void> | void;
   [key: string]: unknown;
 }
