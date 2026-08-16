@@ -1,5 +1,5 @@
 // feature: task-mutations
-// Сценарии: создание задачи, смена статуса (drag), удаление
-// Imports: entities/task, shared/api
+// Сценарии: создание/редактирование/удаление/drag-and-drop задачи
+// Imports: entities/task, shared/api, shared/ui
 
-export { /* CreateTaskDialog, useCreateTask, useUpdateTaskStatus */ } from "./ui/placeholder";
+export { CreateTaskButton } from "./ui/create-task-button";
