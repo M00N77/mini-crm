@@ -14,12 +14,12 @@ async function seed() {
         const userId = userRes.rows[0].id;
         console.log(`👤 Найден пользователь: ${userRes.rows[0].name} (${userRes.rows[0].email}), ID: ${userId}`);
 
-        // Очищаем старые тестовые данные этого пользователя (заметки удалятся каскадно через контакты)
+        // Очищаем старые тестовые данные этого пользователя
         await pool.query('DELETE FROM tasks WHERE user_id = $1', [userId]);
         await pool.query('DELETE FROM contacts WHERE user_id = $1', [userId]);
         console.log('🧹 Очищены старые задачи и контакты пользователя.');
 
-        // 2. Добавление контактов
+        // 2. Добавление 26 контактов для полноценного тестирования пагинации и поиска
         const mockContacts = [
             {
                 name: 'Александр Смирнов',
@@ -63,6 +63,146 @@ async function seed() {
                 company: 'Creative Studio Dev',
                 job_position: 'Art Director',
             },
+            {
+                name: 'Артем Попов',
+                email: 'artem.popov@yandex-cloud.net',
+                phone: '+7 (999) 777-88-99',
+                company: 'Yandex Cloud',
+                job_position: 'Senior Solution Architect',
+            },
+            {
+                name: 'Екатерина Соколова',
+                email: 'e.sokolova@ozon-b2b.ru',
+                phone: '+7 (999) 888-99-00',
+                company: 'OZON Marketplace',
+                job_position: 'E-commerce Lead',
+            },
+            {
+                name: 'Роман Ковалев',
+                email: 'r.kovalev@kaspersky-security.com',
+                phone: '+7 (911) 123-45-67',
+                company: 'Kaspersky Lab',
+                job_position: 'Security Specialist',
+            },
+            {
+                name: 'Ольга Михайлова',
+                email: 'o.mikhaylova@sber-tech.ru',
+                phone: '+7 (912) 234-56-78',
+                company: 'Sber Tech',
+                job_position: 'Product Manager',
+            },
+            {
+                name: 'Максим Федоров',
+                email: 'm.fedorov@vk-teams.com',
+                phone: '+7 (913) 345-67-89',
+                company: 'VK Teams',
+                job_position: 'Engineering Manager',
+            },
+            {
+                name: 'Виктория Павлова',
+                email: 'v.pavlova@tinkoff-b2b.ru',
+                phone: '+7 (914) 456-78-90',
+                company: 'Tinkoff Business',
+                job_position: 'Account Executive',
+            },
+            {
+                name: 'Иван Семенов',
+                email: 'i.semenov@wb-logistics.ru',
+                phone: '+7 (915) 567-89-01',
+                company: 'Wildberries Logistics',
+                job_position: 'Operations Lead',
+            },
+            {
+                name: 'Татьяна Голубева',
+                email: 't.golubeva@avito-services.ru',
+                phone: '+7 (916) 678-90-12',
+                company: 'Avito Services',
+                job_position: 'Sales Director',
+            },
+            {
+                name: 'Кирилл Виноградов',
+                email: 'k.vinogradov@selectel-cloud.ru',
+                phone: '+7 (917) 789-01-23',
+                company: 'Selectel Hosting',
+                job_position: 'Infrastructure Lead',
+            },
+            {
+                name: 'Мария Богданова',
+                email: 'm.bogdanova@hh-tech.ru',
+                phone: '+7 (918) 890-12-34',
+                company: 'HeadHunter HR-tech',
+                job_position: 'HR Business Partner',
+            },
+            {
+                name: 'Денис Воробьев',
+                email: 'd.vorobiev@skyeng-b2b.com',
+                phone: '+7 (919) 901-23-45',
+                company: 'Skyeng B2B',
+                job_position: 'Partnerships Lead',
+            },
+            {
+                name: 'Полина Орлова',
+                email: 'p.orlova@dodo-brands.io',
+                phone: '+7 (920) 012-34-56',
+                company: 'Dodo Brands',
+                job_position: 'Quality Assurance Lead',
+            },
+            {
+                name: 'Сергей Андреев',
+                email: 's.andreev@x5-digital.ru',
+                phone: '+7 (921) 123-45-67',
+                company: 'X5 Digital',
+                job_position: 'Data Engineering Lead',
+            },
+            {
+                name: 'Наталья Макарова',
+                email: 'n.makarova@alfabank-corp.ru',
+                phone: '+7 (922) 234-56-78',
+                company: 'Альфа-Банк',
+                job_position: 'Corporate Banking Lead',
+            },
+            {
+                name: 'Владислав Зайцев',
+                email: 'v.zaytsev@ptsecurity.com',
+                phone: '+7 (923) 345-67-89',
+                company: 'Positive Technologies',
+                job_position: 'Cyber Security Analyst',
+            },
+            {
+                name: 'Кристина Соловьева',
+                email: 'k.solovieva@lamoda-supply.ru',
+                phone: '+7 (924) 456-78-90',
+                company: 'Lamoda Group',
+                job_position: 'Supply Chain Specialist',
+            },
+            {
+                name: 'Игорь Козлов',
+                email: 'i.kozlov@mindbox-crm.io',
+                phone: '+7 (925) 567-89-01',
+                company: 'Mindbox CRM',
+                job_position: 'Integration Engineer',
+            },
+            {
+                name: 'Дарья Белова',
+                email: 'd.belova@skillbox-edtech.ru',
+                phone: '+7 (926) 678-90-12',
+                company: 'Skillbox EdTech',
+                job_position: 'EdTech Consultant',
+            },
+            {
+                name: 'Антон Григорьев',
+                email: 'a.grigoriev@rutube-media.ru',
+                phone: '+7 (927) 789-01-23',
+                company: 'Rutube Media',
+                job_position: 'Streaming Engineer',
+            },
+            {
+                name: 'Юлия Тарасова',
+                email: 'yu.tarasova@nexign-telecom.com',
+                phone: '+7 (928) 890-12-34',
+                company: 'Nexign Telecom',
+                job_position: 'Solution Architect',
+            },
         ];
 
         const insertedContacts = [];
@@ -103,6 +243,14 @@ async function seed() {
                 contactIndex: 4, // Михаил Новиков (RetailPro)
                 content: 'Первичный контакт на конференции TechConf. Запланировали презентацию продукта на следующей неделе.',
             },
+            {
+                contactIndex: 6, // Артем Попов (Yandex Cloud)
+                content: 'Обсудили архитектуру гибридного облака и требования к безопасности данных.',
+            },
+            {
+                contactIndex: 7, // Екатерина Соколова (OZON)
+                content: 'Запрос на пакетную выгрузку каталога и автоматизацию обработки заказов.',
+            },
         ];
 
         let notesCount = 0;
@@ -139,6 +287,12 @@ async function seed() {
                 status: 'pending',
                 position: 2,
             },
+            {
+                title: 'Отправить коммерческое предложение в Yandex Cloud',
+                description: 'Согласовать спецификацию API и технический регламент.',
+                status: 'pending',
+                position: 3,
+            },
 
             // In Progress
             {
@@ -152,6 +306,12 @@ async function seed() {
                 description: 'Реализовать эндпоинты для отправки событий создания сделок и контактов.',
                 status: 'in_progress',
                 position: 1,
+            },
+            {
+                title: 'Интеграция с OZON Marketplace API',
+                description: 'Тестирование синхронизации статусов заказов и остатков.',
+                status: 'in_progress',
+                position: 2,
             },
 
             // Done
