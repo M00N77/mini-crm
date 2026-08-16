@@ -26,3 +26,5 @@ export {
   TableCaption,
 } from "./ui/table";
 export { BlurFade } from "./ui/blur-fade";
+export { Spinner } from "./ui/spinner";
+
