@@ -3,6 +3,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/shared/ui";
 import { cn } from "@/shared/lib";
+import { useModalStore } from "@/shared/store/modal-store";
 
 interface CreateTaskButtonProps {
   variant?: "default" | "fab" | "outline" | "ghost" | "header";
@@ -14,15 +15,25 @@ interface CreateTaskButtonProps {
 
 export function CreateTaskButton({
   variant = "default",
+  status,
   className,
   onClick,
   children,
 }: CreateTaskButtonProps) {
+  const { openModal } = useModalStore();
+
+  const handleClick =
+    onClick ||
+    (() =>
+      openModal("createTask", {
+        defaultValues: status ? { status } : undefined,
+      }));
+
   if (variant === "fab") {
     return (
       <button
         type="button"
-        onClick={onClick}
+        onClick={handleClick}
         aria-label="Создать задачу"
         className={cn(
           "fixed bottom-20 right-4 md:hidden z-30 h-12 w-12 rounded-full bg-primary text-on-primary shadow-lg flex items-center justify-center hover:opacity-90 active:scale-95 transition-all border border-outline",
@@ -38,7 +49,7 @@ export function CreateTaskButton({
     return (
       <button
         type="button"
-        onClick={onClick}
+        onClick={handleClick}
         className={cn(
           "flex items-center gap-2 bg-primary text-on-primary px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity typo-body-sm font-medium cursor-pointer shadow-sm",
           className
@@ -56,7 +67,7 @@ export function CreateTaskButton({
   return (
     <Button
       type="button"
-      onClick={onClick}
+      onClick={handleClick}
       variant={variant === "outline" ? "outline" : "default"}
       className={cn(
         "bg-primary text-on-primary hover:opacity-90 transition-opacity typo-body-sm font-medium rounded px-4 py-1.5 flex items-center gap-2 cursor-pointer",
