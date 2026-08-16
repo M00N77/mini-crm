@@ -23,7 +23,8 @@
 
   /* ── Primary ── */
   --color-primary: #ffffff;
-  --color-on-primary: #2f3132;
+  --color-on-primary: #131315;
+  --color-primary-foreground: #131315;
   --color-primary-container: #e2e2e3;
   --color-on-primary-container: #636466;
   --color-primary-fixed: #e2e2e3;
