@@ -43,11 +43,12 @@ class ApiClient {
       useAuthStore.getState().logout();
       if (typeof window !== "undefined") {
         if (
+          window.location.pathname !== "/" &&
           !window.location.pathname.startsWith("/login") &&
           !window.location.pathname.startsWith("/register")
         ) {
           // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-          window.location.href = "/login";
+          window.location.href = "/";
         }
       }
       throw new Error("Unauthorized");
