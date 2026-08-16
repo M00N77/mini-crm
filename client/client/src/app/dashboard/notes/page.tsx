@@ -1,4 +1,5 @@
 import { CreateNoteButton } from "@/features/note-actions";
+import { NotesGrid } from "@/widgets/notes-grid";
 
 export const metadata = { title: "Заметки — Nexus CRM" };
 
@@ -17,12 +18,8 @@ export default function NotesPage() {
         </CreateNoteButton>
       </div>
 
-      <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-8 text-center text-on-surface-variant/60 typo-body-sm flex flex-col items-center justify-center gap-3">
-        <p>Список заметок пуст</p>
-        <CreateNoteButton variant="outline">
-          Создать первую заметку
-        </CreateNoteButton>
-      </div>
+      {/* Сетка заметок с поиском и фильтром */}
+      <NotesGrid />
 
       {/* Floating Action Button for mobile */}
       <CreateNoteButton variant="fab" />
