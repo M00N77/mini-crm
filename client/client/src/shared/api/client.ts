@@ -7,19 +7,74 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
  * - Base URL prefixing
  * - JSON body serialization
  * - Auth Bearer token insertion
- * - 401 interception & store cleanup
+ * - 401 interception with silent refresh token rotation
+ * - Single-flight refresh token queue to prevent race conditions
  * - Typed response parsing
  */
 class ApiClient {
   private baseUrl: string;
+  private refreshPromise: Promise<string | null> | null = null;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
   }
 
+  /**
+   * Выполняет ротацию refresh токена (HttpOnly cookie) и обновляет accessToken в сторе.
+   * Если несколько запросов одновременно получают 401, они ждут один и тот же промис.
+   */
+  async refreshAccessToken(): Promise<string | null> {
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.refreshPromise = (async () => {
+      try {
+        const url = `${this.baseUrl}/auth/refresh`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to refresh token");
+        }
+
+        const data = (await res.json()) as { accessToken?: string };
+        if (data?.accessToken) {
+          useAuthStore.getState().setAccessToken(data.accessToken);
+          return data.accessToken;
+        }
+
+        return null;
+      } catch {
+        useAuthStore.getState().logout();
+        if (typeof window !== "undefined") {
+          if (
+            window.location.pathname !== "/" &&
+            !window.location.pathname.startsWith("/login") &&
+            !window.location.pathname.startsWith("/register")
+          ) {
+            // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+            window.location.href = "/";
+          }
+        }
+        return null;
+      } finally {
+        this.refreshPromise = null;
+      }
+    })();
+
+    return this.refreshPromise;
+  }
+
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    isRetry: boolean = false
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const token = useAuthStore.getState().accessToken;
@@ -40,17 +95,42 @@ class ApiClient {
     });
 
     if (res.status === 401) {
-      useAuthStore.getState().logout();
-      if (typeof window !== "undefined") {
-        if (
-          window.location.pathname !== "/" &&
-          !window.location.pathname.startsWith("/login") &&
-          !window.location.pathname.startsWith("/register")
-        ) {
-          // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-          window.location.href = "/";
+      const isAuthEndpoint =
+        endpoint.startsWith("/auth/login") ||
+        endpoint.startsWith("/auth/register") ||
+        endpoint.startsWith("/auth/refresh");
+
+      // Пытаемся автоматически обновить токен через refresh cookie
+      if (!isRetry && !isAuthEndpoint) {
+        const newToken = await this.refreshAccessToken();
+        if (newToken) {
+          // Повторяем запрос с новым access токеном
+          const retryHeaders = {
+            ...headers,
+            Authorization: `Bearer ${newToken}`,
+          };
+          return this.request<T>(
+            endpoint,
+            { ...options, headers: retryHeaders },
+            true
+          );
         }
       }
+
+      if (!isAuthEndpoint) {
+        useAuthStore.getState().logout();
+        if (typeof window !== "undefined") {
+          if (
+            window.location.pathname !== "/" &&
+            !window.location.pathname.startsWith("/login") &&
+            !window.location.pathname.startsWith("/register")
+          ) {
+            // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+            window.location.href = "/";
+          }
+        }
+      }
+
       throw new Error("Unauthorized");
     }
 
