@@ -8,7 +8,8 @@ import {
   CheckSquare, 
   StickyNote, 
   Settings, 
-  LogOut 
+  LogOut,
+  Plus
 } from "lucide-react";
 import { cn } from "@/shared/lib";
 import { Button } from "@/shared/ui";
@@ -35,13 +36,13 @@ export function Sidebar() {
       // ignore network / api errors on logout
     } finally {
       logout();
-      router.replace("/login");
+      router.replace("/");
     }
   };
 
   return (
     <aside className="hidden md:flex flex-col h-full w-[240px] shrink-0 border-r border-outline-variant bg-surface-container-lowest p-container-padding justify-between">
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Brand/Logo */}
         <div className="px-2 py-1 flex items-center gap-2">
           <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
@@ -51,6 +52,15 @@ export function Sidebar() {
             Nexus CRM
           </span>
         </div>
+
+        {/* Quick Add / New Record Button */}
+        <button
+          type="button"
+          className="w-full bg-primary text-on-primary rounded-lg py-2 px-3 typo-body-sm font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Новая запись</span>
+        </button>
 
         {/* Navigation list */}
         <nav className="space-y-1">

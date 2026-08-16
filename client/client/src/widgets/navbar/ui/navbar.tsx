@@ -12,7 +12,8 @@ import {
   CheckSquare, 
   StickyNote, 
   X,
-  LogOut
+  LogOut,
+  Plus
 } from "lucide-react";
 import { cn } from "@/shared/lib";
 import { useAuthStore } from "@/shared/store/use-auth-store";
@@ -39,7 +40,7 @@ export function Navbar() {
       // ignore
     } finally {
       logout();
-      router.replace("/login");
+      router.replace("/");
     }
   };
 
@@ -76,7 +77,7 @@ export function Navbar() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden bg-background/80 backdrop-blur-sm">
           <div className="w-[280px] bg-surface border-r border-outline-variant p-container-padding flex flex-col justify-between">
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="typo-headline text-primary font-extrabold">Nexus CRM</span>
                 <button 
@@ -86,6 +87,16 @@ export function Navbar() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
+
+              {/* Quick Add Button */}
+              <button
+                type="button"
+                className="w-full bg-primary text-on-primary rounded-lg py-2 px-3 typo-body-sm font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Новая запись</span>
+              </button>
+
               <nav className="space-y-1">
                 {NAV_ITEMS.map((item) => {
                   const isActive = pathname === item.href;
