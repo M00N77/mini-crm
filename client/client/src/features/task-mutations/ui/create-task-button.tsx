@@ -65,7 +65,7 @@ export function CreateTaskButton({
       <Plus className="h-3.5 w-3.5 shrink-0" />
       <span>{children || "Создать задачу"}</span>
       {variant === "header" && (
-        <kbd className="hidden sm:inline-block font-label-mono text-[10px] text-on-primary/80 bg-black/10 px-1 py-0.2 rounded border border-white/20 ml-0.5">
+        <kbd className="hidden sm:inline-block font-label-mono text-[10px] text-on-primary font-semibold bg-black/10 px-1.5 py-0.5 rounded border border-black/15 ml-0.5">
           ⌘N
         </kbd>
       )}

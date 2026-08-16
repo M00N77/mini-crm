@@ -107,9 +107,9 @@ export function DashboardOverview() {
               Live
             </span>
             <CreateContactButton variant="outline">
-              + Контакт
+              Добавить контакт
             </CreateContactButton>
-            <CreateTaskButton variant="header">
+            <CreateTaskButton variant="default">
               Создать задачу
             </CreateTaskButton>
           </div>
