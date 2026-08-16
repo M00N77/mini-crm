@@ -3,6 +3,7 @@
 import { ReactNode, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ModalProvider } from "./modal-provider";
+import { ToastContainer } from "@/shared/ui";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -24,7 +25,7 @@ export function Providers({ children }: ProvidersProps) {
     <QueryClientProvider client={queryClient}>
       {children}
       <ModalProvider />
+      <ToastContainer />
     </QueryClientProvider>
   );
 }
-
