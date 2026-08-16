@@ -8,6 +8,7 @@ import {
   MoreHorizontal 
 } from "lucide-react";
 import { BlurFade } from "@/shared/ui";
+import { CreateTaskButton } from "@/features/task-mutations";
 
 const METRICS = [
   { label: "Total Contacts", value: "1,248", icon: Users, desc: "12% this week", color: "text-on-primary-container" },
@@ -19,13 +20,21 @@ const METRICS = [
 export function DashboardOverview() {
   return (
     <div className="space-y-container-padding">
-      {/* Page Title */}
+      {/* Page Title & Action */}
       <BlurFade delay={0.05}>
-        <div className="flex justify-between items-end">
-          <h1 className="typo-display text-primary">Overview</h1>
-          <span className="typo-label-mono text-on-surface-variant bg-surface-container px-2 py-1 rounded border border-outline-variant">
-            Live
-          </span>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <h1 className="typo-display text-primary">Overview</h1>
+            <p className="typo-caption text-on-surface-variant/70 mt-1">Панель управления CRM</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="typo-label-mono text-on-surface-variant bg-surface-container px-2 py-1 rounded border border-outline-variant">
+              Live
+            </span>
+            <CreateTaskButton variant="header">
+              Создать задачу
+            </CreateTaskButton>
+          </div>
         </div>
       </BlurFade>
 
