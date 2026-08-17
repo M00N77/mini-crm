@@ -4,6 +4,7 @@ import { CreateContactModal, EditContactModal } from "@/features/contact-managem
 import { CreateTaskModal, EditTaskModal } from "@/features/task-mutations";
 import { CreateNoteModal, EditNoteModal } from "@/features/note-actions";
 import { AccountSettingsModal } from "@/features/account-settings";
+import { CommandPaletteModal } from "@/features/command-palette";
 import { ConfirmModal } from "@/shared/ui";
 
 export function ModalProvider() {
@@ -16,6 +17,7 @@ export function ModalProvider() {
       <CreateNoteModal />
       <EditNoteModal />
       <AccountSettingsModal />
+      <CommandPaletteModal />
       <ConfirmModal />
     </>
   );
