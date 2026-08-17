@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as apiNote from "./note-api";
 import { toast } from "@/shared/store/toast-store";
+import { notifyActivity } from "@/shared/store/notification-store";
 
 export const useNotes = (params?: apiNote.GetNotesParams) => {
   return useQuery({
@@ -25,6 +26,7 @@ export const useCreateNote = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       toast.success("Заметка создана", "Заметка успешно прикреплена к контакту");
+      notifyActivity("Новая заметка", "Заметка прикреплена к карточке контакта", "note");
     },
     onError: (error: Error) => {
       toast.error(
@@ -65,6 +67,7 @@ export const useDeleteNote = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       toast.success("Заметка удалена", "Заметка удалена из системы");
+      notifyActivity("Заметка удалена", "Заметка удалена из базы", "note");
     },
     onError: (error: Error) => {
       toast.error(

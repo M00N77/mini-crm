@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as apiTask from "./task-api";
 import { toast } from "@/shared/store/toast-store";
+import { notifyActivity } from "@/shared/store/notification-store";
 
 export const useTasks = (params?: apiTask.GetTasksParams) => {
   return useQuery({
@@ -27,6 +28,11 @@ export const useCreateTask = () => {
       toast.success(
         "Задача создана",
         data?.title ? `Задача «${data.title}» добавлена` : undefined
+      );
+      notifyActivity(
+        "Новая задача",
+        data?.title ? `Задача «${data.title}» добавлена в Канбан` : "Новая задача создана",
+        "task"
       );
     },
     onError: (error: Error) => {
@@ -87,6 +93,11 @@ export const usePatchTask = () => {
           "Статус задачи изменен",
           `Задача «${data.title}» перемещена в ${statusLabel}`
         );
+        notifyActivity(
+          "Статус задачи",
+          `Задача «${data.title}» перемещена в ${statusLabel}`,
+          "task"
+        );
       }
     },
     onError: (error: Error) => {
@@ -105,6 +116,7 @@ export const useDeleteTask = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       toast.success("Задача удалена", "Задача успешно удалена с доски");
+      notifyActivity("Задача удалена", "Задача была удалена с Канбан-доски", "task");
     },
     onError: (error: Error) => {
       toast.error(

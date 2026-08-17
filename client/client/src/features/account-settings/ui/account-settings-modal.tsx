@@ -15,6 +15,7 @@ import {
 import { useModalStore } from "@/shared/store/modal-store";
 import { useAuthStore } from "@/shared/store/use-auth-store";
 import { toast } from "@/shared/store/toast-store";
+import { notifyActivity } from "@/shared/store/notification-store";
 import { apiClient } from "@/shared/api";
 import {
   Settings,
@@ -65,6 +66,11 @@ function AccountSettingsForm({ onClose }: AccountSettingsFormProps) {
       toast.success(
         "Пароль успешно изменен",
         "Используйте новый пароль при следующем входе"
+      );
+      notifyActivity(
+        "Безопасность",
+        "Пароль учетной записи был успешно изменен",
+        "security"
       );
       reset();
       onClose();

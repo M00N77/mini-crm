@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as apiContact from "./contact-api";
 import { toast } from "@/shared/store/toast-store";
+import { notifyActivity } from "@/shared/store/notification-store";
 
 export const useContacts = (params?: apiContact.GetContactsParams) => {
   return useQuery({
@@ -27,6 +28,11 @@ export const useCreateContact = () => {
       toast.success(
         "Контакт создан",
         data?.name ? `Контакт «${data.name}» успешно добавлен` : undefined
+      );
+      notifyActivity(
+        "Новый контакт",
+        data?.name ? `Контакт «${data.name}» добавлен в систему` : "Новый контакт добавлен",
+        "contact"
       );
     },
     onError: (error: Error) => {
@@ -71,6 +77,7 @@ export const useDeleteContact = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
       toast.success("Контакт удален", "Контакт успешно удален из системы");
+      notifyActivity("Контакт удален", "Контакт был удален из базы", "contact");
     },
     onError: (error: Error) => {
       toast.error(
