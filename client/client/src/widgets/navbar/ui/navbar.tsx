@@ -60,7 +60,15 @@ export function Navbar() {
           </button>
           <span className="typo-headline text-primary font-bold tracking-tight">Nexus</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <button 
+            type="button"
+            onClick={() => openModal("commandPalette")}
+            aria-label="Быстрый поиск"
+            className="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container-high cursor-pointer"
+          >
+            <Search className="h-4.5 w-4.5" />
+          </button>
           <NotificationsPopover />
           <ProfileDropdown />
         </div>
