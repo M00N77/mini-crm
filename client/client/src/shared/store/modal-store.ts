@@ -11,7 +11,9 @@ export type ModalType =
   | "editTask"
   | "createNote"
   | "editNote"
-  | "confirmDelete";
+  | "confirmDelete"
+  | "accountSettings"
+  | "commandPalette";
 
 /**
  * Данные, передаваемые в модальное окно при открытии.
