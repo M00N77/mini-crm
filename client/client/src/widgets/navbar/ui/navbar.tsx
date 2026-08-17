@@ -12,12 +12,13 @@ import {
   CheckSquare, 
   StickyNote, 
   X,
-  LogOut,
-  Plus
+  LogOut
 } from "lucide-react";
 import { cn } from "@/shared/lib";
 import { useAuthStore } from "@/shared/store/use-auth-store";
 import { apiClient } from "@/shared/api";
+import { ProfileDropdown } from "./profile-dropdown";
+import { QuickCreateMenu } from "@/widgets/sidebar/ui/quick-create-menu";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Home", href: "/dashboard" },
@@ -44,8 +45,6 @@ export function Navbar() {
     }
   };
 
-  const initial = (user?.name || user?.email || "U").charAt(0).toUpperCase();
-
   return (
     <>
       {/* Mobile TopAppBar */}
@@ -53,23 +52,18 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setMobileMenuOpen(true)}
-            className="text-on-surface-variant hover:text-primary transition-colors p-1 rounded hover:bg-surface-container-high"
+            className="text-on-surface-variant hover:text-primary transition-colors p-1 rounded hover:bg-surface-container-high cursor-pointer"
           >
             <Menu className="h-5 w-5" />
           </button>
           <span className="typo-headline text-primary font-bold tracking-tight">Nexus</span>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="text-on-surface-variant hover:text-primary transition-colors p-1 rounded hover:bg-surface-container-high">
-            <Search className="h-5 w-5" />
-          </button>
-          <button className="text-on-surface-variant hover:text-primary transition-colors p-1 rounded hover:bg-surface-container-high relative">
-            <Bell className="h-5 w-5" />
+        <div className="flex items-center gap-2">
+          <button className="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container-high relative cursor-pointer">
+            <Bell className="h-4 w-4" />
             <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-error rounded-full" />
           </button>
-          <div className="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center font-medium text-xs text-primary">
-            {initial}
-          </div>
+          <ProfileDropdown />
         </div>
       </header>
 
@@ -82,20 +76,14 @@ export function Navbar() {
                 <span className="typo-headline text-primary font-extrabold">Nexus CRM</span>
                 <button 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container-high"
+                  className="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container-high cursor-pointer"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
-              {/* Quick Add Button */}
-              <button
-                type="button"
-                className="w-full bg-primary text-on-primary rounded-lg py-2 px-3 typo-body-sm font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Новая запись</span>
-              </button>
+              {/* Quick Add Button with Dropdown */}
+              <QuickCreateMenu onActionSelect={() => setMobileMenuOpen(false)} />
 
               <nav className="space-y-1">
                 {NAV_ITEMS.map((item) => {
@@ -130,7 +118,7 @@ export function Navbar() {
               )}
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-3 w-full px-3 py-2 text-error hover:bg-error-container/20 rounded-lg text-sm transition-colors"
+                className="flex items-center gap-3 w-full px-3 py-2 text-error hover:bg-error-container/20 rounded-lg text-sm transition-colors cursor-pointer"
               >
                 <LogOut className="h-4 w-4" />
                 <span>Выйти</span>
@@ -152,23 +140,22 @@ export function Navbar() {
             </li>
           </ol>
         </nav>
-        <div className="flex items-center gap-4">
-          <button className="flex items-center justify-between px-3 py-1.5 w-64 bg-surface-container-low border border-outline-variant rounded-md text-on-surface-variant hover:text-primary hover:border-outline transition-all">
+        <div className="flex items-center gap-3">
+          <button className="flex items-center justify-between px-3 py-1.5 w-64 bg-surface-container-low border border-outline-variant rounded-md text-on-surface-variant hover:text-primary hover:border-outline transition-all cursor-pointer">
             <span className="flex items-center gap-2 typo-body-sm">
               <Search className="h-4 w-4" />
               Search commands...
             </span>
-            <kbd className="hidden sm:inline-block typo-label-mono bg-surface-container border border-outline-variant rounded px-1.5 text-on-surface-variant">
+            <kbd className="hidden sm:inline-block typo-label-mono bg-surface-container border border-outline-variant rounded px-1.5 text-on-surface-variant text-[11px]">
               ⌘K
             </kbd>
           </button>
-          <button className="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container-high relative">
-            <Bell className="h-5 w-5" />
+          <button className="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container-high relative cursor-pointer">
+            <Bell className="h-4.5 w-4.5" />
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-error rounded-full" />
           </button>
-          <div className="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center font-medium text-xs text-primary">
-            {initial}
-          </div>
+          
+          <ProfileDropdown />
         </div>
       </header>
 
