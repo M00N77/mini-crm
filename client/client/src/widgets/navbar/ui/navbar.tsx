@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { 
   Menu, 
   Search, 
-  Bell, 
   LayoutDashboard, 
   Users, 
   CheckSquare, 
@@ -16,8 +15,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/shared/lib";
 import { useAuthStore } from "@/shared/store/use-auth-store";
+import { useModalStore } from "@/shared/store/modal-store";
 import { apiClient } from "@/shared/api";
 import { ProfileDropdown } from "./profile-dropdown";
+import { NotificationsPopover } from "./notifications-popover";
 import { QuickCreateMenu } from "@/widgets/sidebar/ui/quick-create-menu";
 
 const NAV_ITEMS = [
@@ -33,6 +34,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
+  const { openModal } = useModalStore();
 
   const handleLogout = async () => {
     try {
@@ -59,10 +61,7 @@ export function Navbar() {
           <span className="typo-headline text-primary font-bold tracking-tight">Nexus</span>
         </div>
         <div className="flex items-center gap-2">
-          <button className="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container-high relative cursor-pointer">
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-error rounded-full" />
-          </button>
+          <NotificationsPopover />
           <ProfileDropdown />
         </div>
       </header>
@@ -141,7 +140,11 @@ export function Navbar() {
           </ol>
         </nav>
         <div className="flex items-center gap-3">
-          <button className="flex items-center justify-between px-3 py-1.5 w-64 bg-surface-container-low border border-outline-variant rounded-md text-on-surface-variant hover:text-primary hover:border-outline transition-all cursor-pointer">
+          <button 
+            type="button"
+            onClick={() => openModal("commandPalette")}
+            className="flex items-center justify-between px-3 py-1.5 w-64 bg-surface-container-low border border-outline-variant rounded-md text-on-surface-variant hover:text-primary hover:border-outline transition-all cursor-pointer"
+          >
             <span className="flex items-center gap-2 typo-body-sm">
               <Search className="h-4 w-4" />
               Search commands...
@@ -150,11 +153,8 @@ export function Navbar() {
               ⌘K
             </kbd>
           </button>
-          <button className="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container-high relative cursor-pointer">
-            <Bell className="h-4.5 w-4.5" />
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-error rounded-full" />
-          </button>
           
+          <NotificationsPopover />
           <ProfileDropdown />
         </div>
       </header>
