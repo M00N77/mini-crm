@@ -3,10 +3,12 @@ import { Request, Response } from "express";
 import { AppError } from "../utils/AppError";
 import crypto from "crypto";
 
+const isProd = process.env.NODE_ENV === "production";
+
 const refreshCookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict" as const,
+  secure: isProd,
+  sameSite: (isProd ? "none" : "strict") as "none" | "strict",
   path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
@@ -168,8 +170,10 @@ export async function googleAuthCallback(req: Request, res: Response) {
   // 4. Установка refreshToken в HttpOnly cookie
   res.cookie("token", result.refreshToken, refreshCookieOptions);
 
-  // 5. Перенаправление пользователя в Dashboard
-  return res.redirect(clientDashboardUrl);
+  // 5. Перенаправление пользователя в Dashboard с токеном в хэше
+  const redirectUrl = new URL(clientDashboardUrl);
+  redirectUrl.hash = `token=${result.accessToken}`;
+  return res.redirect(redirectUrl.toString());
 }
 
 export const googleCallback = googleAuthCallback;

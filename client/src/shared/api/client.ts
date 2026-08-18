@@ -1,6 +1,9 @@
 import { useAuthStore } from "../store/use-auth-store";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_BASE_URL =
+  typeof window !== "undefined"
+    ? "/api/backend"
+    : process.env.NEXT_PUBLIC_API_URL ?? "https://mini-crm-api-ms.vercel.app";
 
 /**
  * Thin fetch wrapper with:

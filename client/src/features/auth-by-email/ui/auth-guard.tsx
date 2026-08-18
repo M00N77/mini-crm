@@ -14,6 +14,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const isHydrated = useAuthStore((state) => state.isHydrated);
   const isAuth = useAuthStore((state) => state.isAuth);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const setUser = useAuthStore((state) => state.setUser);
 
   const [isVerifying, setIsVerifying] = useState(false);
@@ -22,12 +23,42 @@ export function AuthGuard({ children }: AuthGuardProps) {
   useEffect(() => {
     if (!isHydrated) return;
 
-    // Если в сторе уже есть токен, доступ разрешен
+    // 1. Проверяем наличие токена из Google OAuth в хэше URL (#token=...) или query параметре (?token=...)
+    if (typeof window !== "undefined") {
+      let incomingToken: string | null = null;
+
+      if (window.location.hash) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        incomingToken = hashParams.get("token");
+      }
+
+      if (!incomingToken && window.location.search) {
+        const searchParams = new URLSearchParams(window.location.search);
+        incomingToken = searchParams.get("token");
+      }
+
+      if (incomingToken) {
+        setAccessToken(incomingToken);
+        window.history.replaceState(null, "", window.location.pathname);
+
+        apiClient
+          .get<User>("/users/me")
+          .then((userData) => {
+            if (userData) {
+              setUser(userData);
+            }
+          })
+          .catch(() => {});
+        return;
+      }
+    }
+
+    // 2. Если в сторе уже есть токен, доступ разрешен
     if (isAuth && accessToken) {
       return;
     }
 
-    // Если токена в памяти нет, пробуем тихий refresh через HttpOnly cookie
+    // 3. Если токена в памяти нет, пробуем тихий refresh через cookie
     if (!hasAttemptedRefresh.current) {
       hasAttemptedRefresh.current = true;
       setIsVerifying(true);
@@ -36,14 +67,13 @@ export function AuthGuard({ children }: AuthGuardProps) {
         .refreshAccessToken()
         .then(async (newToken) => {
           if (newToken) {
-            // Подгружаем профиль пользователя, если он не сохранен
             try {
               const userData = await apiClient.get<User>("/users/me");
               if (userData) {
                 setUser(userData);
               }
             } catch {
-              // Игнорируем ошибку получения профиля, токен уже валиден
+              // Токен валиден, игнорируем ошибку профиля
             }
             setIsVerifying(false);
           } else {
@@ -54,14 +84,14 @@ export function AuthGuard({ children }: AuthGuardProps) {
           router.replace("/");
         });
     }
-  }, [isHydrated, isAuth, accessToken, router, setUser]);
+  }, [isHydrated, isAuth, accessToken, router, setUser, setAccessToken]);
 
   if (!isHydrated || isVerifying || (!isAuth && !accessToken)) {
     return (
       <div className="flex h-dvh w-full items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <span className="typo-caption text-on-surface-variant/70">
+          <div className="h-6 w-6 animate-spin rounded-none border-2 border-accent border-t-transparent" />
+          <span className="font-mono text-xs text-text-tertiary">
             Проверка авторизации...
           </span>
         </div>

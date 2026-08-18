@@ -13,9 +13,10 @@ const registerSchema = z.object({
   password: z.string().min(6, "Пароль должен быть не менее 6 символов"),
 });
 
-const GOOGLE_AUTH_URL = process.env.NEXT_PUBLIC_API_URL
-  ? `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
-  : "http://localhost:3000/auth/google";
+const GOOGLE_AUTH_URL =
+  process.env.NEXT_PUBLIC_API_URL
+    ? `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
+    : "https://mini-crm-api-ms.vercel.app/auth/google";
 
 export function RegisterForm() {
   const {
