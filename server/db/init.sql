@@ -2,8 +2,10 @@ create table if not exists users (
     id serial primary key,
     name varchar(255) not null,
     email varchar(255) unique not null,
-    hashed_password varchar(255) not null,
-    created_at timestamp default now() not null
+    hashed_password varchar(255) null,
+    google_sub varchar(255) unique null,
+    created_at timestamp default now() not null,
+    constraint auth_method_required check (hashed_password is not null or google_sub is not null)
 );
 
 CREATE TABLE IF NOT EXISTS tasks (
