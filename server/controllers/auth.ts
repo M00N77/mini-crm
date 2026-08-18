@@ -1,7 +1,7 @@
-import crypto from "crypto";
 import * as service from "../services/auth";
 import { Request, Response } from "express";
 import { AppError } from "../utils/AppError";
+import crypto from "crypto";
 
 const refreshCookieOptions = {
   httpOnly: true,
@@ -60,7 +60,6 @@ export async function googleAuth(req: Request, res: Response) {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CALLBACK_URL) {
     throw new Error("Google OAuth credentials are not configured in .env");
   }
-
   const state = crypto.randomBytes(32).toString("hex");
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID,
@@ -71,7 +70,6 @@ export async function googleAuth(req: Request, res: Response) {
     access_type: "offline",
     prompt: "consent",
   });
-
   res.cookie("oauth_state", state, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -79,7 +77,6 @@ export async function googleAuth(req: Request, res: Response) {
     maxAge: 10 * 60 * 1000,
     path: "/",
   });
-
   const endpoint =
     process.env.oauth2Endpoint ||
     "https://accounts.google.com/o/oauth2/v2/auth";
@@ -87,7 +84,7 @@ export async function googleAuth(req: Request, res: Response) {
   return res.redirect(authUrl);
 }
 
-export async function googleCallback(req: Request, res: Response) {
+export async function googleAuthCallback(req: Request, res: Response) {
   const { code, state, error } = req.query;
   const savedState = req.cookies.oauth_state;
 
@@ -105,53 +102,50 @@ export async function googleCallback(req: Request, res: Response) {
     return res.redirect(`${clientLoginUrl}?error=invalid_state`);
   }
 
-  // 1. Обмениваем authorization code на access_token Google
-  const tokenParams = new URLSearchParams({
-    code: code,
-    client_id: process.env.GOOGLE_CLIENT_ID || "",
-    client_secret: process.env.GOOGLE_CLIENT_SECRET || "",
-    redirect_uri: process.env.GOOGLE_CALLBACK_URL || "",
-    grant_type: "authorization_code",
-  });
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CALLBACK_URL) {
+    throw new Error("Google OAuth credentials are not configured in .env");
+  }
 
-  const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+  // 1. Обмен authorization code на токен от Google
+  const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: tokenParams.toString(),
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET || "",
+      redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+      grant_type: "authorization_code",
+    }),
   });
 
-  if (!tokenResponse.ok) {
-    const errorBody = await tokenResponse.text();
+  if (!tokenRes.ok) {
+    const errorBody = await tokenRes.text();
     console.error("Google token exchange failed:", errorBody);
     return res.redirect(`${clientLoginUrl}?error=token_exchange_failed`);
   }
 
-  const tokenData = (await tokenResponse.json()) as {
+  const { access_token } = (await tokenRes.json()) as {
     access_token?: string;
     id_token?: string;
   };
 
-  if (!tokenData.access_token) {
+  if (!access_token) {
     return res.redirect(`${clientLoginUrl}?error=no_access_token`);
   }
 
-  // 2. Запрашиваем профиль пользователя у Google UserInfo API
-  const userResponse = await fetch(
-    "https://www.googleapis.com/oauth2/v3/userinfo",
-    {
-      headers: {
-        Authorization: `Bearer ${tokenData.access_token}`,
-      },
+  // 2. Получение данных профиля пользователя от Google
+  const userRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
     },
-  );
+  });
 
-  if (!userResponse.ok) {
+  if (!userRes.ok) {
     return res.redirect(`${clientLoginUrl}?error=user_info_failed`);
   }
 
-  const googleProfile = (await userResponse.json()) as {
+  const googleProfile = (await userRes.json()) as {
     sub: string;
     email: string;
     name?: string;
@@ -163,7 +157,7 @@ export async function googleCallback(req: Request, res: Response) {
     return res.redirect(`${clientLoginUrl}?error=no_email_provided`);
   }
 
-  // 3. Авторизуем или создаем пользователя в БД и генерируем сессионные токены
+  // 3. Авторизация / регистрация пользователя в БД с Account Linking
   const result = await service.loginOrRegisterGoogleUser({
     googleSub: googleProfile.sub,
     email: googleProfile.email,
@@ -171,9 +165,11 @@ export async function googleCallback(req: Request, res: Response) {
     emailVerified: googleProfile.email_verified !== false,
   });
 
-  // 4. Устанавливаем refreshToken в HttpOnly cookie
+  // 4. Установка refreshToken в HttpOnly cookie
   res.cookie("token", result.refreshToken, refreshCookieOptions);
 
-  // 5. Перенаправляем пользователя в Dashboard
+  // 5. Перенаправление пользователя в Dashboard
   return res.redirect(clientDashboardUrl);
 }
+
+export const googleCallback = googleAuthCallback;
