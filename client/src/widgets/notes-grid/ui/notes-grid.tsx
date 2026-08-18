@@ -207,7 +207,7 @@ export function NotesGrid() {
             </p>
           </div>
           <CreateNoteButton variant="default" className="mt-2">
-            + Создать первую заметку
+            Создать первую заметку
           </CreateNoteButton>
         </div>
       )}

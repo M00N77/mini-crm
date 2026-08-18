@@ -50,7 +50,7 @@ export function QuickCreateMenu({
       >
         <div className="flex items-center gap-2 font-mono">
           <Plus className="h-4 w-4 shrink-0" />
-          <span>+ НОВАЯ ЗАПИСЬ</span>
+          <span>НОВАЯ ЗАПИСЬ</span>
         </div>
         <ChevronDown
           className={cn(

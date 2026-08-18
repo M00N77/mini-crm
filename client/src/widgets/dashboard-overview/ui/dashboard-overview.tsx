@@ -114,10 +114,10 @@ export function DashboardOverview() {
               LIVE 200 OK
             </span>
             <CreateContactButton variant="outline">
-              + Контакт
+              Контакт
             </CreateContactButton>
             <CreateTaskButton variant="default">
-              + Задача
+              Задача
             </CreateTaskButton>
           </div>
         </div>

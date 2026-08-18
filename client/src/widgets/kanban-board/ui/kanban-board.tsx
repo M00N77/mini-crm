@@ -229,7 +229,7 @@ export function KanbanBoard() {
               className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-mono text-text-secondary hover:text-text-primary hover:bg-subtle rounded-none border border-dashed border-border-subtle hover:border-border-strong transition-colors cursor-pointer mt-auto"
             >
               <Plus className="h-3 w-3" />
-              <span>+ ДОБАВИТЬ ЗАДАЧУ</span>
+              <span>ДОБАВИТЬ ЗАДАЧУ</span>
             </button>
           </div>
         );
