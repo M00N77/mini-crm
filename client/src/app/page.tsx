@@ -12,14 +12,14 @@ import {
   LayoutDashboard, 
   Terminal, 
   Database,
-  Cpu,
   Search,
-  Plus,
   Clock,
-  Sparkles,
   Command,
   Zap,
-  ArrowUpRight
+  ArrowUpRight,
+  Shield,
+  Layers,
+  Sparkles
 } from "lucide-react";
 import { useAuthStore } from "@/shared/store/use-auth-store";
 import { Button, ThemeToggle } from "@/shared/ui";
@@ -101,16 +101,19 @@ export default function LandingPage() {
 
           <div className="hidden md:flex items-center gap-6 ml-8 font-mono text-xs">
             <a href="#demo" className="text-text-secondary hover:text-text-primary transition-colors">
-              //_ДЕМО
+              Демо
             </a>
-            <a href="#features" className="text-text-secondary hover:text-text-primary transition-colors">
-              //_ФУНКЦИОНАЛ
+            <a href="#contacts" className="text-text-secondary hover:text-text-primary transition-colors">
+              Контакты
+            </a>
+            <a href="#kanban" className="text-text-secondary hover:text-text-primary transition-colors">
+              Канбан
             </a>
             <a href="#architecture" className="text-text-secondary hover:text-text-primary transition-colors">
-              //_АРХИТЕКТУРА
+              Архитектура
             </a>
             <a href="#pricing" className="text-text-secondary hover:text-text-primary transition-colors">
-              //_ТАРИФЫ
+              Тарифы
             </a>
           </div>
         </div>
@@ -120,7 +123,7 @@ export default function LandingPage() {
 
           {loggedIn ? (
             <Link href="/dashboard">
-              <Button size="sm" className="gap-1.5 rounded-none">
+              <Button size="sm" className="gap-1.5 rounded-none font-medium">
                 <LayoutDashboard className="h-3.5 w-3.5" />
                 <span>Панель управления</span>
               </Button>
@@ -133,7 +136,7 @@ export default function LandingPage() {
                 </Button>
               </Link>
               <Link href="/register">
-                <Button size="sm" className="rounded-none">
+                <Button size="sm" className="rounded-none font-medium">
                   Регистрация
                 </Button>
               </Link>
@@ -143,9 +146,9 @@ export default function LandingPage() {
       </nav>
 
       {/* ── Kinetic Hero Section ── */}
-      <section className="relative min-h-[860px] flex flex-col items-center justify-start pt-28 pb-20 px-container-padding overflow-hidden border-b border-border-subtle">
-        {/* Technical Coordinate Background Grid */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border-subtle)_1px,transparent_1px),linear-gradient(to_bottom,var(--border-subtle)_1px,transparent_1px)] bg-[size:32px_32px] opacity-40 pointer-events-none" />
+      <section className="relative min-h-[820px] flex flex-col items-center justify-start pt-28 pb-20 px-container-padding overflow-hidden border-b border-border-subtle">
+        {/* Coordinate Background Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border-subtle)_1px,transparent_1px),linear-gradient(to_bottom,var(--border-subtle)_1px,transparent_1px)] bg-[size:32px_32px] opacity-35 pointer-events-none" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-accent/5 rounded-none blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-4xl text-center flex flex-col items-center gap-6">
@@ -154,12 +157,14 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2.5 px-3 py-1 rounded-none border border-border-strong bg-surface text-text-secondary font-mono text-xs shadow-xs"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-none border border-border-strong bg-surface text-text-secondary font-mono text-xs shadow-xs"
           >
-            <span className="h-2 w-2 rounded-none bg-status-success animate-pulse" />
-            <span className="text-text-primary font-medium">PostgreSQL REST Engine</span>
-            <span className="text-border-strong">|</span>
-            <span className="text-accent">~11ms latency</span>
+            <span className="h-1.5 w-1.5 rounded-none bg-status-success animate-pulse" />
+            <span className="text-text-primary font-medium">v2.4</span>
+            <span className="text-border-strong">/</span>
+            <span className="text-text-secondary">Keyboard-First CRM</span>
+            <span className="text-border-strong">/</span>
+            <span className="text-accent font-semibold">Latency ~11ms</span>
           </motion.div>
 
           {/* Kinetic Headline */}
@@ -169,7 +174,7 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="typo-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.08] text-text-primary text-balance"
           >
-            Инженерная CRM без визуального шума.
+            Минималистичная CRM для тех, кто ценит скорость.
           </motion.h1>
 
           {/* Subtitle */}
@@ -179,7 +184,7 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-text-secondary text-base sm:text-lg max-w-2xl leading-relaxed text-pretty"
           >
-            Высокоплотный рабочий кокпит для управления сделками, канбан-задачами и реляционными контактами. Мгновенная отзывчивость, строгая типографика и клавиатурные команды.
+            Быстрый рабочий интерфейс для управления сделками, канбаном и контактами. Мгновенный отклик, навигация через ⌘K и нулевой визуальный шум.
           </motion.p>
 
           {/* Hero CTAs */}
@@ -191,14 +196,14 @@ export default function LandingPage() {
           >
             <Link href={loggedIn ? "/dashboard" : "/register"}>
               <Button size="lg" className="px-6 h-10 font-semibold gap-2 rounded-none">
-                <span>{loggedIn ? "Открыть рабочее пространство" : "Развернуть бесплатно"}</span>
+                <span>{loggedIn ? "Открыть дашборд" : "Начать работу бесплатно"}</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <a href="#demo">
               <Button variant="outline" size="lg" className="px-6 h-10 font-mono text-xs gap-2 rounded-none">
                 <Terminal className="h-3.5 w-3.5 text-accent" />
-                <span>Интерактивное превью</span>
+                <span>Открыть демо-стенд</span>
               </Button>
             </a>
           </motion.div>
@@ -222,7 +227,7 @@ export default function LandingPage() {
               </div>
               <span className="font-mono text-xs font-semibold text-text-primary ml-2 flex items-center gap-1.5">
                 <Terminal className="h-3.5 w-3.5 text-accent" />
-                nexus-cockpit://live-preview
+                app.nexus-crm.com/live-demo
               </span>
             </div>
 
@@ -238,7 +243,7 @@ export default function LandingPage() {
                 }`}
               >
                 <Users className="h-3.5 w-3.5" />
-                <span>[01_КОНТАКТЫ]</span>
+                <span>Контакты</span>
               </button>
               <button
                 type="button"
@@ -250,7 +255,7 @@ export default function LandingPage() {
                 }`}
               >
                 <Kanban className="h-3.5 w-3.5" />
-                <span>[02_КАНБАН]</span>
+                <span>Канбан</span>
               </button>
               <button
                 type="button"
@@ -262,7 +267,7 @@ export default function LandingPage() {
                 }`}
               >
                 <FileText className="h-3.5 w-3.5" />
-                <span>[03_ЗАМЕТКИ]</span>
+                <span>Заметки</span>
               </button>
             </div>
           </div>
@@ -339,7 +344,7 @@ export default function LandingPage() {
                     </table>
                   </div>
                   <div className="text-right text-[11px] font-mono text-text-tertiary">
-                    💡 Кликните в поиск выше для живой фильтрации данных
+                    💡 Мгновенная локальная фильтрация без сетевой задержки
                   </div>
                 </motion.div>
               )}
@@ -372,7 +377,7 @@ export default function LandingPage() {
                       ))}
                     </div>
                     <div className="text-xs font-mono text-text-tertiary">
-                      Кликните на карточку для смены статуса
+                      Кликните на карточку для смены статуса (Optimistic Update)
                     </div>
                   </div>
 
@@ -445,7 +450,7 @@ export default function LandingPage() {
                         <div>
                           <div className="flex items-center justify-between font-mono text-[11px] text-text-tertiary mb-2">
                             <span>{note.id}</span>
-                            <span className="flex items-center gap-1 text-accent">
+                            <span className="flex items-center gap-1 text-accent font-medium">
                               <Users className="h-3 w-3" />
                               {note.contact}
                             </span>
@@ -468,26 +473,49 @@ export default function LandingPage() {
           {/* Cockpit Status Bar */}
           <div className="bg-subtle border-t border-border-subtle px-4 py-2 flex items-center justify-between font-mono text-[11px] text-text-tertiary flex-wrap gap-2">
             <div className="flex items-center gap-3">
-              <span className="text-status-success flex items-center gap-1">
+              <span className="text-status-success flex items-center gap-1 font-semibold">
                 ● 200 OK
               </span>
-              <span>SCHEMA: PUBLIC</span>
-              <span>ENCODING: UTF-8</span>
+              <span>POSTGRESQL 17</span>
+              <span>UTF-8</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="border border-border-subtle bg-surface px-1.5 py-0.5 rounded-none text-text-secondary">
-                ⌘K ДЛЯ КОМАНД
+              <span className="border border-border-subtle bg-surface px-1.5 py-0.5 rounded-none text-text-secondary font-medium">
+                НАВИГАЦИЯ ЧЕРЕЗ ⌘K
               </span>
             </div>
           </div>
         </motion.div>
       </section>
 
-      {/* ── Feature Deep-Dives (Scroll Reveals & Kinetic Showcases) ── */}
-      <section className="py-24 px-container-padding max-w-6xl mx-auto w-full space-y-28" id="features">
+      {/* ── Key Metrics Bar ── */}
+      <section className="border-b border-border-subtle bg-subtle/50 py-8 px-container-padding">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 font-mono text-center">
+          <div className="space-y-1">
+            <div className="text-2xl sm:text-3xl font-extrabold text-accent tabular-nums">~11ms</div>
+            <div className="text-xs text-text-secondary">Время отклика REST API</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-2xl sm:text-3xl font-extrabold text-accent tabular-nums">0ms</div>
+            <div className="text-xs text-text-secondary">Задержка UI (Optimistic)</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-2xl sm:text-3xl font-extrabold text-accent">⌘K</div>
+            <div className="text-xs text-text-secondary">Управление с клавиатуры</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-2xl sm:text-3xl font-extrabold text-accent">ACID</div>
+            <div className="text-xs text-text-secondary">Реляционная БД PostgreSQL</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Feature Deep-Dives (Clear UX-Driven Showcases) ── */}
+      <section className="py-24 px-container-padding max-w-6xl mx-auto w-full space-y-28">
         
-        {/* Showcase 1: High-Velocity Contacts */}
+        {/* Showcase 1: Contacts Table */}
         <motion.div 
+          id="contacts"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -496,37 +524,37 @@ export default function LandingPage() {
         >
           <div className="lg:col-span-5 space-y-4">
             <div className="font-mono text-xs text-accent font-bold tracking-wider uppercase">
-              //_01_МАТРИЦА_КОНТАКТОВ
+              База контактов
             </div>
-            <h2 className="typo-display text-2xl sm:text-3xl text-text-primary tracking-tight">
-              Операторская таблица с мгновенной фильтрацией.
+            <h2 className="typo-display text-2xl sm:text-3xl text-text-primary tracking-tight font-bold">
+              Работа с базой контактов без задержек.
             </h2>
             <p className="text-text-secondary text-sm leading-relaxed">
-              Без тормозящих библиотек и лишних слоев. Поиск по префиксам, привязка компаний, экспорт данных и моментальное открытие карточки в модальном окне без перезагрузки страниц.
+              Таблица с мгновенной локальной фильтрацией, серверной пагинацией и просмотром карточек без перезагрузки страниц. Никаких тяжелых интерфейсных фреймворков и визуального мусора.
             </p>
-            <div className="pt-2 flex flex-col gap-2 font-mono text-xs text-text-secondary">
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-accent" />
-                <span>Мгновенный локальный поиск с мемоизацией</span>
+            <div className="pt-2 flex flex-col gap-2.5 font-sans text-xs text-text-secondary">
+              <div className="flex items-start gap-2.5">
+                <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                <span><strong className="text-text-primary font-semibold">Мгновенный поиск:</strong> фильтрация по префиксам, именам и компаниям прямо при вводе.</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-accent" />
-                <span>Серверная пагинация и фильтрация limit/offset</span>
+              <div className="flex items-start gap-2.5">
+                <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                <span><strong className="text-text-primary font-semibold">Связанные сущности:</strong> быстрый доступ к истории сделок, задачам и заметкам из строки контакта.</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-accent" />
-                <span>Связка с историей задач и заметками</span>
+              <div className="flex items-start gap-2.5">
+                <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                <span><strong className="text-text-primary font-semibold">Плотное отображение:</strong> максимум полезных данных на одном экране без лишней прокрутки.</span>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-7 border border-border-strong rounded-none bg-surface p-5 shadow-xl">
             <div className="font-mono text-xs text-text-tertiary pb-3 mb-3 border-b border-border-subtle flex items-center justify-between">
-              <span>QUERY: SELECT * FROM contacts WHERE active = true</span>
-              <span className="text-accent">LIMIT 100</span>
+              <span>РЕЕСТР КЛИЕНТОВ И ПАРТНЕРОВ</span>
+              <span className="text-accent font-semibold">4 АКТИВНЫХ</span>
             </div>
             <div className="space-y-2">
-              {MOCK_CONTACTS.slice(0, 3).map((c, i) => (
+              {MOCK_CONTACTS.slice(0, 3).map((c) => (
                 <div key={c.id} className="border border-border-subtle rounded-none p-3 bg-subtle/50 flex items-center justify-between font-mono text-xs">
                   <div>
                     <div className="font-sans font-bold text-text-primary">{c.name}</div>
@@ -541,8 +569,9 @@ export default function LandingPage() {
           </div>
         </motion.div>
 
-        {/* Showcase 2: Tactical Kanban Engine */}
+        {/* Showcase 2: Kanban Pipeline */}
         <motion.div 
+          id="kanban"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -553,7 +582,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-2 gap-3 font-mono text-xs">
               <div className="border border-border-subtle rounded-none bg-subtle p-3 space-y-2">
                 <div className="text-accent font-bold flex items-center gap-1.5 pb-2 border-b border-border-subtle">
-                  <span>[IN-PROGRESS]</span>
+                  <span>В РАБОТЕ</span>
                   <span className="text-[10px] text-text-tertiary">(2)</span>
                 </div>
                 <div className="bg-surface border border-border-subtle p-2.5 rounded-none text-xs space-y-1">
@@ -568,7 +597,7 @@ export default function LandingPage() {
 
               <div className="border border-border-subtle rounded-none bg-subtle p-3 space-y-2">
                 <div className="text-status-success font-bold flex items-center gap-1.5 pb-2 border-b border-border-subtle">
-                  <span>[COMPLETED]</span>
+                  <span>ВЫПОЛНЕНО</span>
                   <span className="text-[10px] text-text-tertiary">(1)</span>
                 </div>
                 <div className="bg-surface border border-border-subtle p-2.5 rounded-none text-xs space-y-1 opacity-80">
@@ -581,22 +610,22 @@ export default function LandingPage() {
 
           <div className="lg:col-span-5 order-1 lg:order-2 space-y-4">
             <div className="font-mono text-xs text-accent font-bold tracking-wider uppercase">
-              //_02_КАНБАН_ДВИЖОК
+              Пайплайн задач
             </div>
-            <h2 className="typo-display text-2xl sm:text-3xl text-text-primary tracking-tight">
-              Тактическое ведение сделок и этапов.
+            <h2 className="typo-display text-2xl sm:text-3xl text-text-primary tracking-tight font-bold">
+              Управление сделками и пайплайном.
             </h2>
             <p className="text-text-secondary text-sm leading-relaxed">
-              Четкая иерархия задач с маркировкой приоритетов [P0/P1/P2], строгой валидацией дедлайнов и оптимистичными мутациями через TanStack Query.
+              Канбан-доска с оптимистичными обновлениями: интерфейс реагирует мгновенно, не дожидаясь ответа сервера.
             </p>
-            <div className="pt-2 flex flex-col gap-2 font-mono text-xs text-text-secondary">
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-accent" />
-                <span>Оптимистичные обновления интерфейса (0ms lag)</span>
+            <div className="pt-2 flex flex-col gap-2.5 font-sans text-xs text-text-secondary">
+              <div className="flex items-start gap-2.5">
+                <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                <span><strong className="text-text-primary font-semibold">Приоритеты и дедлайны:</strong> четкая градация задач [P0 / P1 / P2] со строгим контролем сроков.</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-accent" />
-                <span>Мгновенное изменение статусов в один клик</span>
+              <div className="flex items-start gap-2.5">
+                <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                <span><strong className="text-text-primary font-semibold">Мгновенный Drag-and-Drop:</strong> перемещение задач и смена этапов в один клик без фризов.</span>
               </div>
             </div>
           </div>
@@ -612,22 +641,30 @@ export default function LandingPage() {
         >
           <div className="lg:col-span-5 space-y-4">
             <div className="font-mono text-xs text-accent font-bold tracking-wider uppercase">
-              //_03_COMMAND_PALETTE
+              Быстрые действия
             </div>
-            <h2 className="typo-display text-2xl sm:text-3xl text-text-primary tracking-tight">
-              Клавиатурное управление без отрыва рук.
+            <h2 className="typo-display text-2xl sm:text-3xl text-text-primary tracking-tight font-bold">
+              Навигация без отрыва рук от клавиатуры.
             </h2>
             <p className="text-text-secondary text-sm leading-relaxed">
-              Нажмите <kbd className="font-mono bg-subtle border border-border-strong px-1.5 py-0.5 rounded-none text-text-primary text-xs">⌘K</kbd> в любой точке CRM, чтобы моментально создать задачу, найти контакт или перейти к заметкам.
+              Вызывайте командную панель в любой точке системы через <kbd className="font-mono bg-subtle border border-border-strong px-1.5 py-0.5 rounded-none text-text-primary text-xs">⌘K</kbd> (или <kbd className="font-mono bg-subtle border border-border-strong px-1.5 py-0.5 rounded-none text-text-primary text-xs">Ctrl+K</kbd>), чтобы мгновенно создавать записи, менять статусы и перемещаться по разделам.
             </p>
             <div className="pt-2 flex flex-col gap-2 font-mono text-xs text-text-secondary">
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-accent" />
-                <span>Глобальный шорткат ⌘K / Ctrl+K</span>
+              <div className="flex items-center justify-between border-b border-border-subtle pb-1.5">
+                <span>Создать новый контакт</span>
+                <kbd className="bg-subtle border border-border-subtle px-1.5 py-0.5 rounded-none text-text-primary">Alt + C</kbd>
               </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-accent" />
-                <span>Быстрые действия: Создать контакт, задачу, заметку</span>
+              <div className="flex items-center justify-between border-b border-border-subtle pb-1.5">
+                <span>Добавить задачу в пайплайн</span>
+                <kbd className="bg-subtle border border-border-subtle px-1.5 py-0.5 rounded-none text-text-primary">Alt + T</kbd>
+              </div>
+              <div className="flex items-center justify-between border-b border-border-subtle pb-1.5">
+                <span>Перейти в аналитику</span>
+                <kbd className="bg-subtle border border-border-subtle px-1.5 py-0.5 rounded-none text-text-primary">G + D</kbd>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Фокус на строке поиска</span>
+                <kbd className="bg-subtle border border-border-subtle px-1.5 py-0.5 rounded-none text-text-primary">/</kbd>
               </div>
             </div>
           </div>
@@ -667,29 +704,42 @@ export default function LandingPage() {
       <section className="py-20 px-container-padding bg-subtle/40 border-y border-border-subtle" id="architecture">
         <div className="max-w-5xl mx-auto space-y-12">
           <div className="text-center space-y-3">
-            <div className="font-mono text-xs text-accent font-bold uppercase tracking-wider">//_ТЕХНИЧЕСКИЙ_СТЕК</div>
-            <h2 className="typo-display text-2xl sm:text-3xl text-text-primary">Построено для максимальной скорости</h2>
+            <div className="font-mono text-xs text-accent font-bold uppercase tracking-wider">Архитектура</div>
+            <h2 className="typo-display text-2xl sm:text-3xl text-text-primary font-bold">Спроектировано для максимальной производительности</h2>
             <p className="text-text-secondary text-sm max-w-xl mx-auto">
-              Чистая архитектура Feature-Sliced Design, раздельные слои API и минимальный размер бандла.
+              Никакого избыточного оверхеда. Только строгая типизация, реляционная надежность и легковесный бандл.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono">
-            <div className="border border-border-subtle rounded-none bg-surface p-4 text-center space-y-1">
-              <div className="text-2xl font-bold text-accent tabular-nums">~11ms</div>
-              <div className="text-xs text-text-secondary">REST API Response</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="border border-border-subtle rounded-none bg-surface p-5 space-y-3">
+              <div className="h-8 w-8 rounded-none bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                <Database className="h-4 w-4" />
+              </div>
+              <h3 className="font-sans font-bold text-text-primary text-base">ACID-хранилище PostgreSQL</h3>
+              <p className="font-sans text-xs text-text-secondary leading-relaxed">
+                Реляционная целостность с каскадными связями, B-Tree индексами и транзакционными миграциями.
+              </p>
             </div>
-            <div className="border border-border-subtle rounded-none bg-surface p-4 text-center space-y-1">
-              <div className="text-2xl font-bold text-accent tabular-nums">100%</div>
-              <div className="text-xs text-text-secondary">TypeScript Strict</div>
+
+            <div className="border border-border-subtle rounded-none bg-surface p-5 space-y-3">
+              <div className="h-8 w-8 rounded-none bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                <Shield className="h-4 w-4" />
+              </div>
+              <h3 className="font-sans font-bold text-text-primary text-base">Strict TypeScript 5.3</h3>
+              <p className="font-sans text-xs text-text-secondary leading-relaxed">
+                Сквозное 100% покрытие типов от схемы базы данных и REST API до интерфейсных компонентов.
+              </p>
             </div>
-            <div className="border border-border-subtle rounded-none bg-surface p-4 text-center space-y-1">
-              <div className="text-2xl font-bold text-accent tabular-nums">0KB</div>
-              <div className="text-xs text-text-secondary">Heavy UI Bloat</div>
-            </div>
-            <div className="border border-border-subtle rounded-none bg-surface p-4 text-center space-y-1">
-              <div className="text-2xl font-bold text-accent tabular-nums">Postgres</div>
-              <div className="text-xs text-text-secondary">ACID Storage</div>
+
+            <div className="border border-border-subtle rounded-none bg-surface p-5 space-y-3">
+              <div className="h-8 w-8 rounded-none bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                <Zap className="h-4 w-4" />
+              </div>
+              <h3 className="font-sans font-bold text-text-primary text-base">Легковесный бандл</h3>
+              <p className="font-sans text-xs text-text-secondary leading-relaxed">
+                Статический рендеринг SSG, калиброванные шрифты Zero-CLS и отсутствие раздутых UI-зависимостей.
+              </p>
             </div>
           </div>
         </div>
@@ -698,39 +748,39 @@ export default function LandingPage() {
       {/* ── Transparent Capabilities & Pricing ── */}
       <section className="py-24 px-container-padding max-w-5xl mx-auto w-full" id="pricing">
         <div className="text-center mb-16 space-y-3">
-          <div className="font-mono text-xs text-accent font-bold uppercase tracking-wider">//_ТАРИФЫ_И_ДОСТУП</div>
-          <h2 className="typo-display text-2xl sm:text-3xl text-text-primary">Прозрачный доступ</h2>
-          <p className="text-text-secondary text-sm">Никаких скрытых платежей. Выбирайте вариант под масштаб команды.</p>
+          <div className="font-mono text-xs text-accent font-bold uppercase tracking-wider">Тарифы</div>
+          <h2 className="typo-display text-2xl sm:text-3xl text-text-primary font-bold">Прозрачные условия. Без скрытых ограничений.</h2>
+          <p className="text-text-secondary text-sm">Выбирайте подходящий вариант для себя или вашей команды.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Free Developer Workspace */}
+          {/* Free Community Workspace */}
           <div className="border border-border-subtle rounded-none bg-surface p-7 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between font-mono text-xs">
-                <span className="text-text-tertiary">TIER: 01_COMMUNITY</span>
-                <span className="border border-border-subtle px-2 py-0.5 rounded-none bg-subtle text-text-secondary">OPEN</span>
+                <span className="text-text-tertiary">ТАРИФ: COMMUNITY</span>
+                <span className="border border-border-subtle px-2 py-0.5 rounded-none bg-subtle text-text-secondary font-semibold">FREE</span>
               </div>
-              <h3 className="typo-headline text-xl text-text-primary">Developer Workspace</h3>
+              <h3 className="typo-headline text-xl text-text-primary font-bold">Community</h3>
               <div className="flex items-baseline gap-1 font-mono">
-                <span className="text-3xl font-bold text-text-primary">₽0</span>
+                <span className="text-3xl font-bold text-text-primary">0 ₽</span>
                 <span className="text-xs text-text-secondary">/ навсегда</span>
               </div>
               <p className="text-text-secondary text-xs leading-relaxed font-sans">
-                Полный функционал для индивидуальных инженеров и тестирования.
+                Для индивидуального использования, разработчиков и тестирования.
               </p>
 
-              <ul className="space-y-2.5 font-mono text-xs text-text-secondary pt-4 border-t border-border-subtle">
-                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> До 10,000 запросов в месяц</li>
-                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> Канбан-доска и контакты</li>
-                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> Реляционные заметки</li>
-                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> Полный доступ к Swagger API</li>
+              <ul className="space-y-2.5 font-sans text-xs text-text-secondary pt-4 border-t border-border-subtle">
+                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent shrink-0" /> До 10 000 запросов к API в месяц</li>
+                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent shrink-0" /> Канбан-доска и реляционная база контактов</li>
+                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent shrink-0" /> Редактор заметок и история активности</li>
+                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent shrink-0" /> Доступ к документации REST API (Swagger)</li>
               </ul>
             </div>
 
             <Link href={loggedIn ? "/dashboard" : "/register"} className="w-full">
-              <Button variant="outline" className="w-full font-mono text-xs rounded-none">
-                {loggedIn ? "Открыть дашборд" : "Начать работу"}
+              <Button variant="outline" className="w-full font-mono text-xs rounded-none font-semibold">
+                {loggedIn ? "Открыть дашборд" : "Начать бесплатно"}
               </Button>
             </Link>
           </div>
@@ -739,29 +789,29 @@ export default function LandingPage() {
           <div className="border border-accent rounded-none bg-surface p-7 flex flex-col justify-between space-y-6 relative shadow-lg">
             <div className="space-y-4">
               <div className="flex items-center justify-between font-mono text-xs">
-                <span className="text-accent font-bold">TIER: 02_PRODUCTION</span>
-                <span className="bg-accent text-accent-contrast px-2 py-0.5 rounded-none font-bold">ENTERPRISE SLA</span>
+                <span className="text-accent font-bold">ТАРИФ: PRODUCTION</span>
+                <span className="bg-accent text-accent-contrast px-2 py-0.5 rounded-none font-bold text-[10px]">ENTERPRISE SLA</span>
               </div>
-              <h3 className="typo-headline text-xl text-text-primary">Dedicated Cloud</h3>
+              <h3 className="typo-headline text-xl text-text-primary font-bold">Production</h3>
               <div className="flex items-baseline gap-1 font-mono">
-                <span className="text-3xl font-bold text-text-primary">₽1,990</span>
+                <span className="text-3xl font-bold text-text-primary">1 990 ₽</span>
                 <span className="text-xs text-text-secondary">/ месяц</span>
               </div>
               <p className="text-text-secondary text-xs leading-relaxed font-sans">
-                Для растущих команд с выделенной базой данных и приоритетной техподдержкой.
+                Для команд, которым требуется выделенная инфраструктура и гарантированный SLA.
               </p>
 
-              <ul className="space-y-2.5 font-mono text-xs text-text-secondary pt-4 border-t border-border-subtle">
-                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> Неограниченные контакты и задачи</li>
-                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> Выделенный инстанс PostgreSQL</li>
-                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> SLA доступности 99.95%</li>
-                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> Поддержка вебхуков и интеграций</li>
+              <ul className="space-y-2.5 font-sans text-xs text-text-secondary pt-4 border-t border-border-subtle">
+                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent shrink-0" /> Неограниченное число контактов и задач</li>
+                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent shrink-0" /> Выделенный инстанс PostgreSQL</li>
+                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent shrink-0" /> Поддержка вебхуков и интеграций</li>
+                <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent shrink-0" /> SLA доступности 99.95%</li>
               </ul>
             </div>
 
             <Link href={loggedIn ? "/dashboard" : "/register"} className="w-full">
               <Button className="w-full font-mono text-xs font-bold rounded-none">
-                {loggedIn ? "Перейти в CRM" : "Подключить тариф"}
+                {loggedIn ? "Перейти в CRM" : "Подключить Production"}
               </Button>
             </Link>
           </div>
@@ -772,10 +822,10 @@ export default function LandingPage() {
       <section className="py-20 px-container-padding border-t border-border-subtle bg-subtle/30">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <h2 className="typo-display text-3xl sm:text-4xl text-text-primary font-bold">
-            Готовы навести порядок в сделках?
+            Разверните рабочее пространство за 30 секунд.
           </h2>
           <p className="text-text-secondary text-sm max-w-xl mx-auto">
-            Разверните рабочее пространство за 30 секунд. Без громоздких настроек.
+            Чистый интерфейс, готовый к работе с первого клика. Без лишних настроек.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <Link href={loggedIn ? "/dashboard" : "/register"}>
@@ -793,7 +843,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-text-primary font-bold">
             <span className="h-4 w-4 rounded-none bg-accent flex items-center justify-center text-[10px] text-accent-contrast font-bold">N</span>
-            <span>Nexus CRM // Engineering Workspace</span>
+            <span>Nexus CRM // Workspace</span>
           </div>
           <div className="flex items-center gap-6">
             <Link href="/dashboard" className="hover:text-text-primary transition-colors">Панель</Link>
