@@ -30,3 +30,5 @@ yarn-error.log*
 # Internal skills & temporary agent design docs (untracked)
 .agents/
 DESIGN_TOKENS_AND_COMPONENTS.md
+.vercel
+.env*

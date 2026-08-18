@@ -1,6 +1,9 @@
 {
   "name": "recruiter-parser",
   "version": "1.0.0",
+  "engines": {
+    "node": "20.x"
+  },
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -51,6 +54,7 @@
     "@types/supertest": "^7.2.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "@vercel/node": "^5.10.1",
     "nodemon": "^3.0.0",
     "supertest": "^7.2.2",
     "ts-node": "^10.9.0",

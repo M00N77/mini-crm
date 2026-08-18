@@ -5,3 +5,5 @@ dist/
 .mentor/
 AGENTS.md
 RULES.md
+.vercel
+.env*

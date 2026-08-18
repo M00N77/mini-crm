@@ -55,6 +55,15 @@ app.use(
   })
 );
 
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'Nexus CRM REST API',
+    version: '2.4.0',
+    documentation: '/api-docs',
+  });
+});
+
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/tasks', tasksRouter);
