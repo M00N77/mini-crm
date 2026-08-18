@@ -6,12 +6,12 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
-import authRouter from "../server/routes/auth";
-import contactsRouter from "../server/routes/contacts";
-import notesRouter from "../server/routes/notes";
-import tasksRouter from "../server/routes/tasks";
-import usersRouter from "../server/routes/users";
-import { errorHandler } from "../server/middleware/errorHandler";
+import authRouter from "../routes/auth";
+import contactsRouter from "../routes/contacts";
+import notesRouter from "../routes/notes";
+import tasksRouter from "../routes/tasks";
+import usersRouter from "../routes/users";
+import { errorHandler } from "../middleware/errorHandler";
 
 const { mPool, PoolMock } = vi.hoisted(() => {
   const mPool: any = { query: vi.fn(), connect: vi.fn(), release: vi.fn() };
@@ -96,7 +96,7 @@ function mockDefault(result: unknown) {
 
 function findQueryCall(predicate: (sql: string) => boolean) {
   const calls = vi.mocked(mPool.query).mock.calls;
-  return calls.find(([sql]) => typeof sql === "string" && predicate(sql));
+  return calls.find(([sql]: any[]) => typeof sql === "string" && predicate(sql));
 }
 
 beforeEach(() => {

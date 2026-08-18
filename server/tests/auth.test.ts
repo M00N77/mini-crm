@@ -6,9 +6,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
-import authRouter from "../server/routes/auth";
-import contactsRouter from "../server/routes/contacts";
-import { errorHandler } from "../server/middleware/errorHandler";
+import authRouter from "../routes/auth";
+import contactsRouter from "../routes/contacts";
+import { errorHandler } from "../middleware/errorHandler";
 
 const { mPool, PoolMock } = vi.hoisted(() => {
   const mPool: any = { query: vi.fn(), connect: vi.fn(), release: vi.fn() };
