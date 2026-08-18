@@ -204,6 +204,60 @@ export async function loginUser(email: string, password: string) {
   }
 }
 
+export async function loginOrRegisterWithGoogle(email: string, name: string) {
+  const client = await pool.connect();
+  let committed = false;
+
+  try {
+    await client.query("begin");
+    let user = await authRepository.emailTaken(client, email);
+
+    if (!user) {
+      // Генерируем надежный случайный пароль для пользователя Google OAuth
+      const randomPassword = crypto.randomBytes(32).toString("hex");
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+      const result = await client.query(
+        "insert into users (email, hashed_password, name) values ($1, $2, $3) returning id, email, name, created_at",
+        [email, hashedPassword, name || email.split("@")[0]],
+      );
+      user = result.rows[0];
+    }
+
+    const { hashed_password, ...userWithoutPassword } = user;
+    const secretKey = JWT_SECRET;
+
+    const payload: TokenPayload = {
+      userId: user.id,
+      email: user.email,
+    };
+
+    const { accessToken, refreshToken, hashedRefreshToken, expiresAt, jti } =
+      TokenService.generatePair(payload, secretKey);
+
+    await client.query(
+      "insert into refresh_tokens (user_id, token_hash, expires_at, jti) values ($1, $2, $3, $4) returning *",
+      [payload.userId, hashedRefreshToken, expiresAt, jti],
+    );
+
+    await client.query("commit");
+    committed = true;
+
+    return {
+      user: new UserDto(userWithoutPassword),
+      accessToken,
+      refreshToken,
+    };
+  } catch (e: any) {
+    if (!committed) await client.query("rollback");
+    if (e instanceof AppError) throw e;
+    throw new AppError("Failed to authenticate with Google", 500);
+  } finally {
+    client.release();
+  }
+}
+
 export async function logoutUser(refreshToken: string) {
   if (!refreshToken) return;
   let payload: TokenPayload;
@@ -224,6 +278,7 @@ export async function logoutUser(refreshToken: string) {
     [userId, jti],
   );
 }
+
 export async function changePassword(userId: number, password: string) {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);

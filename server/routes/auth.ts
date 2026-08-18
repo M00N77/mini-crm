@@ -116,4 +116,13 @@ router.post(
   middlewareAuth.verifyOldPassword,
   asyncHandler(controllerAuth.changePassword),
 );
+router.get(
+  "/google",
+  asyncHandler(controllerAuth.googleAuth),
+);
+router.get(
+  "/google/callback",
+  asyncHandler(controllerAuth.googleCallback),
+);
+
 export default router;
