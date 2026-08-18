@@ -128,7 +128,10 @@ export function EditNoteModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="sm:max-w-[500px] bg-surface border-border-strong text-text-primary rounded-none">
+      <DialogContent 
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="sm:max-w-[500px] bg-surface border-border-strong text-text-primary rounded-none"
+      >
         <DialogHeader>
           <DialogTitle className="text-sm font-bold text-text-primary flex items-center gap-2 font-mono">
             <Edit3 className="h-4.5 w-4.5 text-accent" />

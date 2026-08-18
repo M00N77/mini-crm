@@ -22,7 +22,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nexus CRM — Precision Engineering Workspace",
+  title: "Nexus CRM - Precision Engineering Workspace",
   description: "High-density CRM for contacts, kanban tasks, and notes",
 };
 

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { LoginForm } from "@/features/auth-by-email";
 
-export const metadata = { title: "Войти — Nexus CRM" };
+export const metadata = { title: "Войти - Nexus CRM" };
 
 export default function LoginPage() {
   return (

@@ -1,7 +1,7 @@
 import { KanbanBoard } from "@/widgets/kanban-board";
 import { CreateTaskButton } from "@/features/task-mutations";
 
-export const metadata = { title: "Задачи — Nexus CRM" };
+export const metadata = { title: "Задачи - Nexus CRM" };
 
 export default function TasksPage() {
   return (

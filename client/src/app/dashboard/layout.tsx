@@ -2,7 +2,9 @@ import { Sidebar } from "@/widgets/sidebar";
 import { Navbar } from "@/widgets/navbar";
 import { AuthGuard } from "@/features/auth-by-email";
 
-export const metadata = { title: "Dashboard — Nexus CRM" };
+export const metadata = {
+  title: "Dashboard - Nexus CRM",
+};
 
 export default function DashboardLayout({
   children,

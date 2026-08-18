@@ -1,7 +1,7 @@
 import { ContactsTable } from "@/widgets/contacts-table";
 import { CreateContactButton } from "@/features/contact-management";
 
-export const metadata = { title: "Контакты — Nexus CRM" };
+export const metadata = { title: "Контакты - Nexus CRM" };
 
 export default function ContactsPage() {
   return (

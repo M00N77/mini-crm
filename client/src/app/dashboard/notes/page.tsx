@@ -1,7 +1,7 @@
 import { CreateNoteButton } from "@/features/note-actions";
 import { NotesGrid } from "@/widgets/notes-grid";
 
-export const metadata = { title: "Заметки — Nexus CRM" };
+export const metadata = { title: "Заметки - Nexus CRM" };
 
 export default function NotesPage() {
   return (

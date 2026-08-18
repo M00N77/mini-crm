@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { RegisterForm } from "@/features/auth-by-email";
 
-export const metadata = { title: "Регистрация — Nexus CRM" };
+export const metadata = { title: "Регистрация - Nexus CRM" };
 
 export default function RegisterPage() {
   return (

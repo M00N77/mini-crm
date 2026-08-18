@@ -215,7 +215,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="relative z-10 mt-12 w-full max-w-5xl rounded-none border border-border-strong bg-surface shadow-2xl overflow-hidden"
+          className="scroll-mt-24 relative z-10 mt-12 w-full max-w-5xl rounded-none border border-border-strong bg-surface shadow-2xl overflow-hidden"
         >
           {/* Cockpit Window Header */}
           <div className="bg-subtle border-b border-border-subtle px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
@@ -520,7 +520,7 @@ export default function LandingPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5 }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center"
+          className="scroll-mt-28 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center"
         >
           <div className="lg:col-span-5 space-y-4">
             <div className="font-mono text-xs text-accent font-bold tracking-wider uppercase">
@@ -576,7 +576,7 @@ export default function LandingPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5 }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center"
+          className="scroll-mt-28 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center"
         >
           <div className="lg:col-span-7 order-2 lg:order-1 border border-border-strong rounded-none bg-surface p-5 shadow-xl">
             <div className="grid grid-cols-2 gap-3 font-mono text-xs">
@@ -701,7 +701,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Architecture & Performance Benchmark ── */}
-      <section className="py-20 px-container-padding bg-subtle/40 border-y border-border-subtle" id="architecture">
+      <section className="scroll-mt-14 py-20 px-container-padding bg-subtle/40 border-y border-border-subtle" id="architecture">
         <div className="max-w-5xl mx-auto space-y-12">
           <div className="text-center space-y-3">
             <div className="font-mono text-xs text-accent font-bold uppercase tracking-wider">Архитектура</div>
@@ -746,8 +746,8 @@ export default function LandingPage() {
       </section>
 
       {/* ── Transparent Capabilities & Pricing ── */}
-      <section className="py-24 px-container-padding max-w-5xl mx-auto w-full" id="pricing">
-        <div className="text-center mb-16 space-y-3">
+      <section className="py-16 sm:py-20 px-container-padding max-w-5xl mx-auto w-full">
+        <div id="pricing" className="scroll-mt-20 text-center mb-12 space-y-3">
           <div className="font-mono text-xs text-accent font-bold uppercase tracking-wider">Тарифы</div>
           <h2 className="typo-display text-2xl sm:text-3xl text-text-primary font-bold">Прозрачные условия. Без скрытых ограничений.</h2>
           <p className="text-text-secondary text-sm">Выбирайте подходящий вариант для себя или вашей команды.</p>
