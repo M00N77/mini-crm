@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,9 +15,12 @@ const loginSchema = z.object({
 
 const GOOGLE_AUTH_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
-  : "/auth/google";
+  : "http://localhost:3000/auth/google";
 
 export function LoginForm() {
+  const searchParams = useSearchParams();
+  const oauthError = searchParams.get("error");
+
   const {
     mutate: login,
     isPending,
@@ -43,6 +47,16 @@ export function LoginForm() {
 
   return (
     <div className="space-y-4">
+      {oauthError && (
+        <div className="p-3 text-sm text-error bg-error-container/20 rounded border border-error/30">
+          {oauthError === "oauth_denied"
+            ? "Вход через Google был отменен."
+            : oauthError === "invalid_state"
+            ? "Ошибка безопасности сессии. Попробуйте еще раз."
+            : "Ошибка авторизации через Google. Попробуйте позже."}
+        </div>
+      )}
+
       {/* Кнопка "Войти через Google" */}
       <a
         href={GOOGLE_AUTH_URL}

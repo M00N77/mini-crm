@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { RegisterForm } from "@/features/auth-by-email";
 
 export const metadata = { title: "Регистрация — Nexus CRM" };
@@ -12,7 +13,9 @@ export default function RegisterPage() {
             Создайте аккаунт
           </p>
         </div>
-        <RegisterForm />
+        <Suspense fallback={<div className="h-40 flex items-center justify-center"><div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>}>
+          <RegisterForm />
+        </Suspense>
       </div>
     </main>
   );

@@ -15,7 +15,7 @@ const registerSchema = z.object({
 
 const GOOGLE_AUTH_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
-  : "/auth/google";
+  : "http://localhost:3000/auth/google";
 
 export function RegisterForm() {
   const {
