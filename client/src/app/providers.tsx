@@ -15,7 +15,10 @@ export function Providers({ children }: ProvidersProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60,
+            staleTime: 1000 * 60, // 1 минута кэша (предотвращает лишние повторные сетевые запросы)
+            gcTime: 1000 * 60 * 5, // 5 минут хранения неактивных данных в памяти
+            refetchOnWindowFocus: false, // Исключает избыточные рефетчи при переключении вкладок
+            retry: 1,
           },
         },
       })
