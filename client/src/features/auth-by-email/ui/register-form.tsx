@@ -48,7 +48,7 @@ export function RegisterForm() {
       {/* Кнопка "Зарегистрироваться через Google" */}
       <a
         href={GOOGLE_AUTH_URL}
-        className="flex w-full items-center justify-center gap-3 rounded-lg border border-outline-variant bg-surface-container-low px-4 py-2.5 typo-body-sm font-medium text-on-surface hover:bg-surface-container hover:text-primary hover:border-outline transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.98]"
+        className="flex w-full items-center justify-center gap-3 rounded-none border border-border-strong bg-surface px-4 py-2.5 text-xs font-mono font-medium text-text-primary hover:bg-subtle hover:border-text-primary transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.99]"
       >
         <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
           <path
@@ -72,13 +72,13 @@ export function RegisterForm() {
       </a>
 
       {/* Разделитель */}
-      <div className="relative my-4">
+      <div className="relative my-4 font-mono text-xs">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-outline-variant/60" />
+          <div className="w-full border-t border-border-subtle" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-on-surface-variant/70 typo-caption text-[11px]">
-            или через почту
+        <div className="relative flex justify-center uppercase">
+          <span className="bg-surface px-2 text-text-tertiary text-[10px]">
+            // или через почту
           </span>
         </div>
       </div>
@@ -90,16 +90,16 @@ export function RegisterForm() {
           e.preventDefault();
           handleSubmit(onSubmit)(e);
         }}
-        className="space-y-4"
+        className="space-y-3.5"
       >
         {isError && (
-          <div className="p-3 text-sm text-error bg-error-container/20 rounded border border-error/30">
+          <div className="p-3 text-xs font-mono text-status-danger bg-status-danger-bg rounded-none border border-status-danger-border">
             {(error as Error)?.message || "Ошибка регистрации. Попробуйте позже."}
           </div>
         )}
-        <div className="space-y-1.5">
-          <label htmlFor="name" className="typo-caption text-on-surface-variant">
-            Имя
+        <div className="space-y-1">
+          <label htmlFor="name" className="text-xs font-mono text-text-secondary">
+            ИМЯ ОПЕРАТОРА
           </label>
           <input
             disabled={isPending}
@@ -107,39 +107,39 @@ export function RegisterForm() {
             id="name"
             type="text"
             placeholder="Иван Иванов"
-            className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors disabled:opacity-50 ${
+            className={`w-full rounded-none border bg-subtle px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors disabled:opacity-50 ${
               errors.name
-                ? "border-error focus:border-error"
-                : "border-outline-variant focus:border-outline"
+                ? "border-status-danger focus:border-status-danger"
+                : "border-border-subtle focus:border-border-strong"
             }`}
           />
           {errors.name && (
-            <p className="text-xs text-error">{errors.name.message}</p>
+            <p className="text-[11px] font-mono text-status-danger">{errors.name.message}</p>
           )}
         </div>
-        <div className="space-y-1.5">
-          <label htmlFor="reg-email" className="typo-caption text-on-surface-variant">
-            Email
+        <div className="space-y-1">
+          <label htmlFor="reg-email" className="text-xs font-mono text-text-secondary">
+            EMAIL
           </label>
           <input
             disabled={isPending}
             {...register("email")}
             id="reg-email"
             type="email"
-            placeholder="user@example.com"
-            className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors disabled:opacity-50 ${
+            placeholder="operator@nexus.crm"
+            className={`w-full rounded-none border bg-subtle px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors disabled:opacity-50 ${
               errors.email
-                ? "border-error focus:border-error"
-                : "border-outline-variant focus:border-outline"
+                ? "border-status-danger focus:border-status-danger"
+                : "border-border-subtle focus:border-border-strong"
             }`}
           />
           {errors.email && (
-            <p className="text-xs text-error">{errors.email.message}</p>
+            <p className="text-[11px] font-mono text-status-danger">{errors.email.message}</p>
           )}
         </div>
-        <div className="space-y-1.5">
-          <label htmlFor="reg-password" className="typo-caption text-on-surface-variant">
-            Пароль
+        <div className="space-y-1">
+          <label htmlFor="reg-password" className="text-xs font-mono text-text-secondary">
+            ПАРОЛЬ
           </label>
           <input
             disabled={isPending}
@@ -147,26 +147,26 @@ export function RegisterForm() {
             id="reg-password"
             type="password"
             placeholder="••••••••"
-            className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors disabled:opacity-50 ${
+            className={`w-full rounded-none border bg-subtle px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors disabled:opacity-50 ${
               errors.password
-                ? "border-error focus:border-error"
-                : "border-outline-variant focus:border-outline"
+                ? "border-status-danger focus:border-status-danger"
+                : "border-border-subtle focus:border-border-strong"
             }`}
           />
           {errors.password && (
-            <p className="text-xs text-error">{errors.password.message}</p>
+            <p className="text-[11px] font-mono text-status-danger">{errors.password.message}</p>
           )}
         </div>
         <button
           type="submit"
           disabled={isPending}
-          className="w-full rounded bg-primary text-on-primary px-4 py-2 typo-body-lg font-medium hover:bg-primary-fixed-dim transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full rounded-none bg-accent text-accent-contrast px-4 py-2 text-xs font-mono font-bold hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border border-accent-border uppercase tracking-wider"
         >
-          {isPending ? "Создание..." : "Создать аккаунт"}
+          {isPending ? "Создание учетной записи..." : "Создать аккаунт"}
         </button>
-        <p className="text-center typo-caption text-on-surface-variant">
-          Уже есть аккаунт?{" "}
-          <Link href="/login" className="text-primary hover:underline">
+        <p className="text-center text-xs font-mono text-text-tertiary pt-1">
+          Уже зарегистрированы?{" "}
+          <Link href="/login" className="text-accent hover:underline font-bold">
             Войти
           </Link>
         </p>

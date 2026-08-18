@@ -112,12 +112,12 @@ export function NotesGrid() {
 
   if (isNotesError) {
     return (
-      <div className="p-8 rounded-lg border border-error/30 bg-error-container/20 flex flex-col items-center justify-center text-center gap-2">
-        <AlertCircle className="h-6 w-6 text-error" />
-        <p className="typo-body-sm text-error font-medium">
+      <div className="p-8 rounded-none border border-status-danger/30 bg-status-danger-bg flex flex-col items-center justify-center text-center gap-2">
+        <AlertCircle className="h-6 w-6 text-status-danger" />
+        <p className="text-sm font-semibold text-status-danger">
           Ошибка при загрузке заметок
         </p>
-        <p className="typo-caption text-on-surface-variant/70">
+        <p className="text-xs font-mono text-text-tertiary">
           {notesError instanceof Error
             ? notesError.message
             : "Не удалось получить список заметок"}
@@ -133,20 +133,20 @@ export function NotesGrid() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1">
           {/* Поиск */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-variant/60" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Поиск по заметкам, именам или компаниям..."
-              className="w-full pl-9 pr-8 py-2 rounded-lg border border-outline-variant bg-surface-container-lowest typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:outline-none transition-colors"
+              className="w-full pl-9 pr-8 py-1.5 rounded-none border border-border-subtle bg-surface text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:border-border-strong focus:outline-none transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
                 aria-label="Очистить поиск"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-on-surface-variant/60 hover:text-on-surface rounded-full transition-colors"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-text-tertiary hover:text-text-primary rounded-none transition-colors"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -163,7 +163,7 @@ export function NotesGrid() {
                     e.target.value === "all" ? "all" : Number(e.target.value)
                   )
                 }
-                className="py-2 pl-3 pr-8 rounded-lg border border-outline-variant bg-surface-container-lowest typo-body-sm text-on-surface focus:border-primary focus:outline-none transition-colors cursor-pointer appearance-none text-xs"
+                className="py-1.5 pl-3 pr-8 rounded-none border border-border-subtle bg-surface text-xs font-mono text-text-primary focus:border-border-strong focus:outline-none transition-colors cursor-pointer appearance-none"
               >
                 <option value="all">Все контакты ({rawNotes.length})</option>
                 {rawContacts.map((c) => {
@@ -178,15 +178,15 @@ export function NotesGrid() {
                   );
                 })}
               </select>
-              <Filter className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-on-surface-variant/60 pointer-events-none" />
+              <Filter className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary pointer-events-none" />
             </div>
           </div>
         </div>
 
         {/* Общий счетчик */}
-        <div className="typo-caption text-on-surface-variant text-right hidden sm:block">
-          Найдено заметок:{" "}
-          <span className="font-semibold text-primary">
+        <div className="text-xs font-mono text-text-tertiary text-right hidden sm:block">
+          НАЙДЕНО:{" "}
+          <span className="font-bold text-accent tabular-nums">
             {filteredNotes.length}
           </span>
         </div>
@@ -194,39 +194,39 @@ export function NotesGrid() {
 
       {/* Пустое состояние (нет заметок вообще) */}
       {rawNotes.length === 0 && (
-        <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-12 text-center flex flex-col items-center justify-center gap-3">
-          <div className="h-12 w-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant/60">
-            <StickyNote className="h-6 w-6" />
+        <div className="rounded-none border border-border-subtle bg-surface p-12 text-center flex flex-col items-center justify-center gap-3 font-mono">
+          <div className="h-10 w-10 rounded-none bg-subtle border border-border-subtle flex items-center justify-center text-text-tertiary">
+            <StickyNote className="h-5 w-5" />
           </div>
           <div className="space-y-1">
-            <h3 className="typo-body-lg font-medium text-primary">
-              Заметок пока нет
+            <h3 className="text-xs font-bold text-text-primary">
+              // ЗАМЕТОК ПОКА НЕТ
             </h3>
-            <p className="typo-caption text-on-surface-variant/70 max-w-sm">
-              Фиксируйте важные детали переговоров, договоренности и планы по каждому контакту.
+            <p className="text-xs text-text-tertiary max-w-sm">
+              Фиксируйте важные детали переговоров, договоренности и протоколы по каждому контакту.
             </p>
           </div>
           <CreateNoteButton variant="default" className="mt-2">
-            Добавить первую заметку
+            + Создать первую заметку
           </CreateNoteButton>
         </div>
       )}
 
       {/* Поиск ничего не нашел */}
       {rawNotes.length > 0 && filteredNotes.length === 0 && (
-        <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-10 text-center flex flex-col items-center justify-center gap-2">
-          <Search className="h-6 w-6 text-on-surface-variant/40" />
-          <p className="typo-body-sm text-on-surface-variant font-medium">
-            Ничего не найдено
+        <div className="rounded-none border border-border-subtle bg-surface p-10 text-center flex flex-col items-center justify-center gap-2 font-mono">
+          <Search className="h-6 w-6 text-text-tertiary" />
+          <p className="text-xs font-bold text-text-primary">
+            // НИЧЕГО НЕ НАЙДЕНО
           </p>
-          <p className="typo-caption text-on-surface-variant/60">
+          <p className="text-xs text-text-tertiary">
             По заданным фильтрам заметок не обнаружено
           </p>
           <Button
             type="button"
             variant="outline"
             onClick={handleClearFilters}
-            className="mt-2 text-xs py-1 px-3 border-outline-variant text-primary"
+            className="mt-2 text-xs py-1 px-3 rounded-none"
           >
             Сбросить фильтры
           </Button>
@@ -235,7 +235,7 @@ export function NotesGrid() {
 
       {/* Сетка заметок */}
       {filteredNotes.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {filteredNotes.map((note) => {
             const contactId = note.contactId ?? note.contact_id;
             const contact = contactId ? contactsMap.get(contactId) : undefined;

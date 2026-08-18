@@ -1,84 +1,104 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════
-   Nexus CRM — Design Tokens
-   Material Design 3 color system (dark theme)
+   Nexus CRM — Semantic Design System Tokens
+   Industrial Precision / Swiss Monospace B2B Theme
+   Dual-Theme Architecture: Light & Dark
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Surface Palette ── */
-  --color-surface: #131315;
-  --color-surface-dim: #131315;
-  --color-surface-bright: #39393b;
-  --color-surface-container-lowest: #0e0e10;
-  --color-surface-container-low: #1c1b1d;
-  --color-surface-container: #201f22;
-  --color-surface-container-high: #2a2a2c;
-  --color-surface-container-highest: #353437;
-  --color-surface-variant: #353437;
-  --color-surface-tint: #c6c6c7;
+  /* ── Light Mode Palette (Default) ── */
+  --bg-canvas: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f1f3f5;
+  --bg-muted: #e9ecef;
+  --bg-elevated: #ffffff;
 
-  /* ── Background ── */
-  --color-background: #131315;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.20);
+  --border-accent: rgba(217, 119, 6, 0.35);
 
-  /* ── Primary ── */
-  --color-primary: #ffffff;
-  --color-on-primary: #131315;
-  --color-primary-foreground: #131315;
-  --color-primary-container: #e2e2e3;
-  --color-on-primary-container: #636466;
-  --color-primary-fixed: #e2e2e3;
-  --color-primary-fixed-dim: #c6c6c7;
-  --color-on-primary-fixed: #1a1c1d;
-  --color-on-primary-fixed-variant: #454748;
-  --color-inverse-primary: #5d5e60;
+  --text-primary: #09090b;
+  --text-secondary: #52525b;
+  --text-tertiary: #71717a;
+  --text-muted: #a1a1aa;
 
-  /* ── Secondary ── */
-  --color-secondary: #c6c6cf;
-  --color-on-secondary: #2f3037;
-  --color-secondary-container: #45464e;
-  --color-on-secondary-container: #b4b4bd;
-  --color-secondary-fixed: #e2e1eb;
-  --color-secondary-fixed-dim: #c6c6cf;
-  --color-on-secondary-fixed: #1a1b22;
-  --color-on-secondary-fixed-variant: #45464e;
+  /* ── Signature Accent (Industrial Amber) ── */
+  --accent: #d97706;
+  --accent-hover: #b45309;
+  --accent-contrast: #ffffff;
+  --accent-subtle: rgba(217, 119, 6, 0.10);
+  --accent-border: rgba(217, 119, 6, 0.25);
 
-  /* ── Tertiary ── */
-  --color-tertiary: #ffffff;
-  --color-on-tertiary: #352f2d;
-  --color-tertiary-container: #ebe0dc;
-  --color-on-tertiary-container: #6a6360;
-  --color-tertiary-fixed: #ebe0dc;
-  --color-tertiary-fixed-dim: #cec4c1;
-  --color-on-tertiary-fixed: #1f1b18;
-  --color-on-tertiary-fixed-variant: #4c4543;
+  /* ── Functional Statuses ── */
+  --status-success: #15803d;
+  --status-success-bg: rgba(22, 163, 74, 0.10);
+  --status-success-border: rgba(22, 163, 74, 0.25);
 
-  /* ── Error ── */
-  --color-error: #ffb4ab;
-  --color-on-error: #690005;
-  --color-error-container: #93000a;
-  --color-on-error-container: #ffdad6;
+  --status-warning: #b45309;
+  --status-warning-bg: rgba(245, 158, 11, 0.12);
+  --status-warning-border: rgba(245, 158, 11, 0.30);
 
-  /* ── On-colors & Outlines ── */
-  --color-on-surface: #e5e1e4;
-  --color-on-surface-variant: #c4c7c9;
-  --color-on-background: #e5e1e4;
-  --color-outline: #8e9193;
-  --color-outline-variant: #444749;
+  --status-danger: #b91c1c;
+  --status-danger-bg: rgba(239, 68, 68, 0.10);
+  --status-danger-border: rgba(239, 68, 68, 0.25);
 
-  /* ── Inverse ── */
-  --color-inverse-surface: #e5e1e4;
-  --color-inverse-on-surface: #313032;
+  --status-info: #1d4ed8;
+  --status-info-bg: rgba(59, 130, 246, 0.10);
+  --status-info-border: rgba(59, 130, 246, 0.25);
 
-  /* ── Typography ── */
-  --font-display: "Geist", var(--font-geist-sans), system-ui, sans-serif;
-  --font-headline: "Geist", var(--font-geist-sans), system-ui, sans-serif;
-  --font-body-lg: "Geist", var(--font-geist-sans), system-ui, sans-serif;
-  --font-body-sm: "Geist", var(--font-geist-sans), system-ui, sans-serif;
-  --font-caption: "Geist", var(--font-geist-sans), system-ui, sans-serif;
-  --font-label-mono: "JetBrains Mono", var(--font-geist-mono), ui-monospace, monospace;
+  /* ── Backward Compatibility Aliases ── */
+  --color-background: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-surface-dim: var(--bg-canvas);
+  --color-surface-bright: var(--bg-muted);
+  --color-surface-container-lowest: var(--bg-surface);
+  --color-surface-container-low: var(--bg-subtle);
+  --color-surface-container: var(--bg-subtle);
+  --color-surface-container-high: var(--bg-muted);
+  --color-surface-container-highest: var(--bg-muted);
+  --color-surface-variant: var(--bg-subtle);
+  --color-surface-tint: var(--accent);
 
-  /* ── Spacing ── */
+  --color-primary: var(--accent);
+  --color-on-primary: var(--accent-contrast);
+  --color-primary-foreground: var(--accent-contrast);
+  --color-primary-container: var(--accent-subtle);
+  --color-on-primary-container: var(--accent);
+
+  --color-secondary: var(--text-secondary);
+  --color-on-secondary: var(--text-primary);
+  --color-secondary-container: var(--bg-muted);
+  --color-on-secondary-container: var(--text-primary);
+
+  --color-tertiary: var(--accent);
+  --color-on-tertiary: var(--accent-contrast);
+  --color-tertiary-container: var(--accent-subtle);
+  --color-on-tertiary-container: var(--accent);
+
+  --color-error: var(--status-danger);
+  --color-on-error: #ffffff;
+  --color-error-container: var(--status-danger-bg);
+  --color-on-error-container: var(--status-danger);
+
+  --color-on-surface: var(--text-primary);
+  --color-on-surface-variant: var(--text-secondary);
+  --color-on-background: var(--text-primary);
+  --color-outline: var(--border-strong);
+  --color-outline-variant: var(--border-subtle);
+
+  /* ── Typography Scale ── */
+  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --font-display: var(--font-sans);
+  --font-headline: var(--font-sans);
+  --font-body-lg: var(--font-sans);
+  --font-body-sm: var(--font-sans);
+  --font-caption: var(--font-sans);
+  --font-label-mono: var(--font-mono);
+
+  /* ── Precision Spacing ── */
   --spacing-unit: 4px;
   --spacing-stack-sm: 4px;
   --spacing-item-gap: 8px;
@@ -86,10 +106,123 @@
   --spacing-container-padding: 16px;
 }
 
-/* ── Tailwind v4 @theme ── */
+.dark {
+  /* ── Dark Mode Palette (Precision Coal / Titanium) ── */
+  --bg-canvas: #09090b;
+  --bg-surface: #111114;
+  --bg-subtle: #17171c;
+  --bg-muted: #202027;
+  --bg-elevated: #1a1a21;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-accent: rgba(245, 158, 11, 0.40);
+
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-muted: #52525b;
+
+  /* ── Signature Accent (Electric Amber) ── */
+  --accent: #f59e0b;
+  --accent-hover: #fbbf24;
+  --accent-contrast: #09090b;
+  --accent-subtle: rgba(245, 158, 11, 0.12);
+  --accent-border: rgba(245, 158, 11, 0.35);
+
+  /* ── Functional Statuses ── */
+  --status-success: #22c55e;
+  --status-success-bg: rgba(34, 197, 94, 0.12);
+  --status-success-border: rgba(34, 197, 94, 0.30);
+
+  --status-warning: #f59e0b;
+  --status-warning-bg: rgba(245, 158, 11, 0.15);
+  --status-warning-border: rgba(245, 158, 11, 0.35);
+
+  --status-danger: #ef4444;
+  --status-danger-bg: rgba(239, 68, 68, 0.12);
+  --status-danger-border: rgba(239, 68, 68, 0.30);
+
+  --status-info: #3b82f6;
+  --status-info-bg: rgba(59, 130, 246, 0.12);
+  --status-info-border: rgba(59, 130, 246, 0.30);
+
+  /* ── Backward Compatibility Aliases ── */
+  --color-background: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-surface-dim: var(--bg-canvas);
+  --color-surface-bright: var(--bg-muted);
+  --color-surface-container-lowest: var(--bg-surface);
+  --color-surface-container-low: var(--bg-subtle);
+  --color-surface-container: var(--bg-subtle);
+  --color-surface-container-high: var(--bg-muted);
+  --color-surface-container-highest: var(--bg-muted);
+  --color-surface-variant: var(--bg-subtle);
+  --color-surface-tint: var(--accent);
+
+  --color-primary: var(--accent);
+  --color-on-primary: var(--accent-contrast);
+  --color-primary-foreground: var(--accent-contrast);
+  --color-primary-container: var(--accent-subtle);
+  --color-on-primary-container: var(--accent);
+
+  --color-secondary: var(--text-secondary);
+  --color-on-secondary: var(--text-primary);
+  --color-secondary-container: var(--bg-muted);
+  --color-on-secondary-container: var(--text-primary);
+
+  --color-tertiary: var(--accent);
+  --color-on-tertiary: var(--accent-contrast);
+  --color-tertiary-container: var(--accent-subtle);
+  --color-on-tertiary-container: var(--accent);
+
+  --color-error: var(--status-danger);
+  --color-on-error: #ffffff;
+  --color-error-container: var(--status-danger-bg);
+  --color-on-error-container: var(--status-danger);
+
+  --color-on-surface: var(--text-primary);
+  --color-on-surface-variant: var(--text-secondary);
+  --color-on-background: var(--text-primary);
+  --color-outline: var(--border-strong);
+  --color-outline-variant: var(--border-subtle);
+}
+
+/* ── Tailwind v4 @theme inline mappings ── */
 @theme inline {
-  /* Surface */
-  --color-surface: var(--color-surface);
+  /* Semantic Surfaces */
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-subtle: var(--bg-subtle);
+  --color-muted: var(--bg-muted);
+  --color-elevated: var(--bg-elevated);
+
+  /* Semantic Borders */
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-border-accent: var(--border-accent);
+
+  /* Semantic Text */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-muted: var(--text-muted);
+
+  /* Signature Accent */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-accent-border: var(--accent-border);
+
+  /* Status Colors */
+  --color-status-success: var(--status-success);
+  --color-status-warning: var(--status-warning);
+  --color-status-danger: var(--status-danger);
+  --color-status-info: var(--status-info);
+
+  /* Compatibility Surfaces */
+  --color-background: var(--color-background);
   --color-surface-dim: var(--color-surface-dim);
   --color-surface-bright: var(--color-surface-bright);
   --color-surface-container-lowest: var(--color-surface-container-lowest);
@@ -100,58 +233,31 @@
   --color-surface-variant: var(--color-surface-variant);
   --color-surface-tint: var(--color-surface-tint);
 
-  /* Background */
-  --color-background: var(--color-background);
-
-  /* Primary */
+  /* Compatibility Primary/Secondary/Error */
   --color-primary: var(--color-primary);
   --color-on-primary: var(--color-on-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
   --color-primary-container: var(--color-primary-container);
   --color-on-primary-container: var(--color-on-primary-container);
-  --color-primary-fixed: var(--color-primary-fixed);
-  --color-primary-fixed-dim: var(--color-primary-fixed-dim);
-  --color-on-primary-fixed: var(--color-on-primary-fixed);
-  --color-on-primary-fixed-variant: var(--color-on-primary-fixed-variant);
-  --color-inverse-primary: var(--color-inverse-primary);
-
-  /* Secondary */
   --color-secondary: var(--color-secondary);
   --color-on-secondary: var(--color-on-secondary);
   --color-secondary-container: var(--color-secondary-container);
   --color-on-secondary-container: var(--color-on-secondary-container);
-  --color-secondary-fixed: var(--color-secondary-fixed);
-  --color-secondary-fixed-dim: var(--color-secondary-fixed-dim);
-  --color-on-secondary-fixed: var(--color-on-secondary-fixed);
-  --color-on-secondary-fixed-variant: var(--color-on-secondary-fixed-variant);
-
-  /* Tertiary */
   --color-tertiary: var(--color-tertiary);
   --color-on-tertiary: var(--color-on-tertiary);
-  --color-tertiary-container: var(--color-tertiary-container);
-  --color-on-tertiary-container: var(--color-on-tertiary-container);
-  --color-tertiary-fixed: var(--color-tertiary-fixed);
-  --color-tertiary-fixed-dim: var(--color-tertiary-fixed-dim);
-  --color-on-tertiary-fixed: var(--color-on-tertiary-fixed);
-  --color-on-tertiary-fixed-variant: var(--color-on-tertiary-fixed-variant);
-
-  /* Error */
   --color-error: var(--color-error);
   --color-on-error: var(--color-on-error);
   --color-error-container: var(--color-error-container);
   --color-on-error-container: var(--color-on-error-container);
-
-  /* On-colors & Outlines */
   --color-on-surface: var(--color-on-surface);
   --color-on-surface-variant: var(--color-on-surface-variant);
   --color-on-background: var(--color-on-background);
   --color-outline: var(--color-outline);
   --color-outline-variant: var(--color-outline-variant);
 
-  /* Inverse */
-  --color-inverse-surface: var(--color-inverse-surface);
-  --color-inverse-on-surface: var(--color-inverse-on-surface);
-
-  /* Font Families */
+  /* Fonts */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
   --font-display: var(--font-display);
   --font-headline: var(--font-headline);
   --font-body-lg: var(--font-body-lg);
@@ -167,26 +273,26 @@
   --spacing-container-padding: var(--spacing-container-padding);
 }
 
-/* ── Typography Composite Utilities ── */
+/* ── Typography & Data Utility Classes ── */
 
 @utility typo-display {
-  font-family: var(--font-display);
-  font-size: 24px;
+  font-family: var(--font-sans);
+  font-size: 26px;
   line-height: 32px;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+@utility typo-headline {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 24px;
   letter-spacing: -0.02em;
   font-weight: 600;
 }
 
-@utility typo-headline {
-  font-family: var(--font-headline);
-  font-size: 18px;
-  line-height: 24px;
-  letter-spacing: -0.01em;
-  font-weight: 600;
-}
-
 @utility typo-body-lg {
-  font-family: var(--font-body-lg);
+  font-family: var(--font-sans);
   font-size: 14px;
   line-height: 20px;
   letter-spacing: -0.01em;
@@ -194,7 +300,7 @@
 }
 
 @utility typo-body-sm {
-  font-family: var(--font-body-sm);
+  font-family: var(--font-sans);
   font-size: 13px;
   line-height: 18px;
   letter-spacing: 0em;
@@ -202,7 +308,7 @@
 }
 
 @utility typo-caption {
-  font-family: var(--font-caption);
+  font-family: var(--font-sans);
   font-size: 11px;
   line-height: 14px;
   letter-spacing: 0.01em;
@@ -210,19 +316,50 @@
 }
 
 @utility typo-label-mono {
-  font-family: var(--font-label-mono);
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0.02em;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 15px;
+  letter-spacing: 0.03em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
-/* ── Base Styles ── */
+@utility typo-data-mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Base Styles & Typography Optimizations ── */
 
 body {
-  background: var(--color-background);
-  color: var(--color-on-background);
-  font-family: var(--font-body-sm);
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+/* Headings auto text-wrap balance (prevents single-word orphan lines) */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+/* Body copy auto text-wrap pretty (clean line-end distribution) */
+p, li {
+  text-wrap: pretty;
+}
+
+/* Accessible focus visible utility */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
@@ -232,3 +369,19 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Text Overflow & Line Clamping Utilities */
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility text-pretty {
+  text-wrap: pretty;
+}
+
+@utility truncate-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+

@@ -46,11 +46,11 @@ export function QuickCreateMenu({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full bg-primary text-on-primary rounded-lg py-2 px-3 typo-body-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-between gap-2 cursor-pointer shadow-xs"
+        className="w-full bg-accent text-accent-contrast rounded-none py-2 px-3 text-xs font-semibold hover:bg-accent-hover active:scale-[0.99] transition-all flex items-center justify-between gap-2 cursor-pointer shadow-xs border border-accent-border"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 font-mono">
           <Plus className="h-4 w-4 shrink-0" />
-          <span>Новая запись</span>
+          <span>+ НОВАЯ ЗАПИСЬ</span>
         </div>
         <ChevronDown
           className={cn(
@@ -64,24 +64,24 @@ export function QuickCreateMenu({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 6, scale: 0.96 }}
+            initial={{ opacity: 0, y: 6, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 4, scale: 0.96 }}
+            exit={{ opacity: 0, y: 4, scale: 0.98 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute left-0 right-0 top-full mt-1.5 rounded-xl border border-outline-variant bg-surface-container-lowest p-1 shadow-xl shadow-black/20 z-50 overflow-hidden select-none space-y-0.5"
+            className="absolute left-0 right-0 top-full mt-1.5 rounded-none border border-border-strong bg-surface p-1 shadow-xl shadow-black/20 z-50 overflow-hidden select-none space-y-0.5"
           >
             {/* Новый контакт */}
             <button
               type="button"
               onClick={() => handleAction("createContact")}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-on-surface hover:text-primary hover:bg-surface-container rounded-lg transition-colors cursor-pointer text-left group"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-subtle rounded-none transition-colors cursor-pointer text-left group font-sans"
             >
-              <div className="h-6 w-6 rounded-md bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors shrink-0">
+              <div className="h-6 w-6 rounded-none bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors shrink-0">
                 <UserPlus className="h-3.5 w-3.5" />
               </div>
               <div>
-                <p className="font-semibold text-primary leading-tight">Контакт</p>
-                <p className="text-[10px] text-on-surface-variant/70 mt-0.5">Добавить клиента</p>
+                <p className="font-semibold text-text-primary leading-tight">Контакт</p>
+                <p className="text-[10px] text-text-tertiary mt-0.5 font-mono">Добавить клиента</p>
               </div>
             </button>
 
@@ -89,14 +89,14 @@ export function QuickCreateMenu({
             <button
               type="button"
               onClick={() => handleAction("createTask")}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-on-surface hover:text-primary hover:bg-surface-container rounded-lg transition-colors cursor-pointer text-left group"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-subtle rounded-none transition-colors cursor-pointer text-left group font-sans"
             >
-              <div className="h-6 w-6 rounded-md bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-colors shrink-0">
+              <div className="h-6 w-6 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-colors shrink-0">
                 <CheckSquare className="h-3.5 w-3.5" />
               </div>
               <div>
-                <p className="font-semibold text-primary leading-tight">Задача</p>
-                <p className="text-[10px] text-on-surface-variant/70 mt-0.5">Добавить в Канбан</p>
+                <p className="font-semibold text-text-primary leading-tight">Задача</p>
+                <p className="text-[10px] text-text-tertiary mt-0.5 font-mono">Добавить в Канбан</p>
               </div>
             </button>
 
@@ -104,14 +104,14 @@ export function QuickCreateMenu({
             <button
               type="button"
               onClick={() => handleAction("createNote")}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-on-surface hover:text-primary hover:bg-surface-container rounded-lg transition-colors cursor-pointer text-left group"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-subtle rounded-none transition-colors cursor-pointer text-left group font-sans"
             >
-              <div className="h-6 w-6 rounded-md bg-purple-500/10 flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors shrink-0">
+              <div className="h-6 w-6 rounded-none bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors shrink-0">
                 <StickyNote className="h-3.5 w-3.5" />
               </div>
               <div>
-                <p className="font-semibold text-primary leading-tight">Заметка</p>
-                <p className="text-[10px] text-on-surface-variant/70 mt-0.5">Зафиксировать детали</p>
+                <p className="font-semibold text-text-primary leading-tight">Заметка</p>
+                <p className="text-[10px] text-text-tertiary mt-0.5 font-mono">Зафиксировать детали</p>
               </div>
             </button>
           </motion.div>

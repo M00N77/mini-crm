@@ -16,9 +16,9 @@ import { useTask, useUpdateTask, Task, TaskStatus } from "@/entities/task";
 import { Edit3, AlignLeft, Flag, CheckSquare } from "lucide-react";
 
 const STATUS_OPTIONS: { key: TaskStatus; label: string }[] = [
-  { key: "pending", label: "Pending" },
-  { key: "in_progress", label: "In Progress" },
-  { key: "done", label: "Done" },
+  { key: "pending", label: "QUEUE" },
+  { key: "in_progress", label: "PROG" },
+  { key: "done", label: "DONE" },
 ];
 
 interface EditTaskFormProps {
@@ -68,15 +68,15 @@ function EditTaskForm({ initialData, taskId, onClose }: EditTaskFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 py-2">
+    <form onSubmit={handleSubmit} className="space-y-4 py-2 font-sans">
       {/* Название */}
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <label
           htmlFor="edit-task-title"
-          className="typo-caption font-medium text-on-surface flex items-center gap-1.5"
+          className="text-xs font-mono text-text-secondary flex items-center gap-1.5"
         >
-          <CheckSquare className="h-3.5 w-3.5 text-on-surface-variant" />
-          Название <span className="text-error">*</span>
+          <CheckSquare className="h-3.5 w-3.5 text-text-tertiary" />
+          НАЗВАНИЕ ЗАДАЧИ <span className="text-status-danger">*</span>
         </label>
         <input
           id="edit-task-title"
@@ -88,47 +88,47 @@ function EditTaskForm({ initialData, taskId, onClose }: EditTaskFormProps) {
             if (errors.title) setErrors({});
           }}
           placeholder="Название задачи"
-          className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors ${
+          className={`w-full rounded-none border bg-subtle px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors ${
             errors.title
-              ? "border-error focus:border-error"
-              : "border-outline-variant focus:border-primary"
+              ? "border-status-danger focus:border-status-danger"
+              : "border-border-subtle focus:border-border-strong"
           }`}
         />
-        {errors.title && <p className="typo-caption text-error">{errors.title}</p>}
+        {errors.title && <p className="text-[11px] font-mono text-status-danger">{errors.title}</p>}
       </div>
 
       {/* Статус / Колонка */}
-      <div className="space-y-1.5">
-        <label className="typo-caption font-medium text-on-surface flex items-center gap-1.5">
-          <Flag className="h-3.5 w-3.5 text-on-surface-variant" />
-          Колонка (Статус)
+      <div className="space-y-1">
+        <label className="text-xs font-mono text-text-secondary flex items-center gap-1.5">
+          <Flag className="h-3.5 w-3.5 text-text-tertiary" />
+          СТАТУС (КОЛОНКА)
         </label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 font-mono">
           {STATUS_OPTIONS.map((opt) => (
             <button
               key={opt.key}
               type="button"
               onClick={() => setStatus(opt.key)}
-              className={`py-1.5 px-2 rounded border text-xs font-medium transition-colors cursor-pointer ${
+              className={`py-1.5 px-2 rounded-none border text-xs font-bold transition-colors cursor-pointer ${
                 status === opt.key
-                  ? "bg-primary text-on-primary border-primary"
-                  : "bg-surface-container border-outline-variant text-on-surface-variant hover:text-on-surface"
+                  ? "bg-accent text-accent-contrast border-accent"
+                  : "bg-subtle border-border-subtle text-text-secondary hover:text-text-primary"
               }`}
             >
-              {opt.label}
+              [{opt.label}]
             </button>
           ))}
         </div>
       </div>
 
       {/* Описание */}
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <label
           htmlFor="edit-task-description"
-          className="typo-caption font-medium text-on-surface flex items-center gap-1.5"
+          className="text-xs font-mono text-text-secondary flex items-center gap-1.5"
         >
-          <AlignLeft className="h-3.5 w-3.5 text-on-surface-variant" />
-          Описание (опционально)
+          <AlignLeft className="h-3.5 w-3.5 text-text-tertiary" />
+          ОПИСАНИЕ (ОПЦИОНАЛЬНО)
         </label>
         <textarea
           id="edit-task-description"
@@ -136,23 +136,23 @@ function EditTaskForm({ initialData, taskId, onClose }: EditTaskFormProps) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Детали задачи..."
-          className="w-full rounded border border-outline-variant bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:outline-none transition-colors resize-none"
+          className="w-full rounded-none border border-border-subtle bg-subtle px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:border-border-strong focus:outline-none transition-colors resize-none"
         />
       </div>
 
-      <DialogFooter className="pt-3 gap-2 sm:gap-0">
+      <DialogFooter className="pt-3 gap-2 sm:gap-2 font-mono">
         <Button
           type="button"
           variant="outline"
           onClick={onClose}
-          className="border-outline-variant text-on-surface hover:bg-surface-container"
+          className="rounded-none text-xs"
         >
           Отмена
         </Button>
         <Button
           type="submit"
           disabled={isPending}
-          className="bg-primary text-on-primary hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="rounded-none text-xs bg-accent text-accent-contrast hover:bg-accent-hover font-bold disabled:opacity-50"
         >
           {isPending ? "Сохранение..." : "Сохранить изменения"}
         </Button>
@@ -171,13 +171,13 @@ export function EditTaskModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="sm:max-w-[480px] bg-surface-container-lowest border-outline-variant text-on-surface">
+      <DialogContent className="sm:max-w-[480px] bg-surface border-border-strong text-text-primary rounded-none">
         <DialogHeader>
-          <DialogTitle className="typo-title-lg text-primary flex items-center gap-2">
-            <Edit3 className="h-5 w-5 text-primary" />
-            Редактировать задачу
+          <DialogTitle className="text-sm font-bold text-text-primary flex items-center gap-2 font-mono">
+            <Edit3 className="h-4.5 w-4.5 text-accent" />
+            РЕДАКТИРОВАТЬ ЗАДАЧУ
           </DialogTitle>
-          <DialogDescription className="typo-caption text-on-surface-variant">
+          <DialogDescription className="text-xs text-text-secondary">
             Измените параметры задачи или переместите её в другую колонку
           </DialogDescription>
         </DialogHeader>

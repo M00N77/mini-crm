@@ -87,23 +87,23 @@ function AccountSettingsForm({ onClose }: AccountSettingsFormProps) {
   const initial = (user?.name || user?.email || "U").charAt(0).toUpperCase();
 
   return (
-    <div className="space-y-5 py-2">
+    <div className="space-y-5 py-2 font-sans">
       {/* Профиль пользователя */}
-      <div className="flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant bg-surface-container-low/60">
-        <div className="w-11 h-11 rounded-full bg-primary text-on-primary font-bold text-base flex items-center justify-center shrink-0">
+      <div className="flex items-center gap-3 p-3.5 rounded-none border border-border-subtle bg-subtle">
+        <div className="w-11 h-11 rounded-none bg-accent text-accent-contrast font-mono font-bold text-base flex items-center justify-center shrink-0 border border-accent-border">
           {initial}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="typo-body-sm font-semibold text-primary truncate">
+            <h4 className="text-xs font-semibold text-text-primary truncate">
               {user?.name || "Пользователь"}
             </h4>
-            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 font-medium">
+            <span className="inline-flex items-center gap-1 text-[10px] font-mono text-status-success bg-status-success-bg px-1.5 py-0.5 rounded-none border border-status-success-border font-medium">
               <ShieldCheck className="h-3 w-3" />
-              Активен
+              АКТИВЕН
             </span>
           </div>
-          <p className="typo-caption text-on-surface-variant/70 text-xs truncate mt-0.5">
+          <p className="font-mono text-text-tertiary text-xs truncate mt-0.5">
             {user?.email || "—"}
           </p>
         </div>
@@ -117,22 +117,22 @@ function AccountSettingsForm({ onClose }: AccountSettingsFormProps) {
           e.preventDefault();
           handleSubmit(onSubmit)(e);
         }}
-        className="space-y-4"
+        className="space-y-3.5 font-sans"
       >
-        <div className="flex items-center gap-2 pb-1 border-b border-outline-variant/60">
-          <KeyRound className="h-4 w-4 text-primary" />
-          <h5 className="typo-body-sm font-semibold text-primary">
+        <div className="flex items-center gap-2 pb-1 border-b border-border-subtle font-mono">
+          <KeyRound className="h-4 w-4 text-accent" />
+          <h5 className="text-xs font-bold text-text-primary uppercase tracking-wider">
             Смена пароля
           </h5>
         </div>
 
         {/* Текущий пароль */}
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <label
             htmlFor="old-password"
-            className="typo-caption font-medium text-on-surface flex items-center justify-between"
+            className="text-xs font-mono text-text-secondary flex items-center justify-between"
           >
-            <span>Текущий пароль <span className="text-error">*</span></span>
+            <span>ТЕКУЩИЙ ПАРОЛЬ <span className="text-status-danger">*</span></span>
           </label>
           <div className="relative">
             <input
@@ -140,17 +140,17 @@ function AccountSettingsForm({ onClose }: AccountSettingsFormProps) {
               type={showOldPassword ? "text" : "password"}
               placeholder="••••••••"
               {...register("oldPassword")}
-              className={`w-full rounded border bg-surface-container px-3 py-2 pr-9 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors ${
+              className={`w-full rounded-none border bg-subtle px-3 py-2 pr-9 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors ${
                 errors.oldPassword
-                  ? "border-error focus:border-error"
-                  : "border-outline-variant focus:border-primary"
+                  ? "border-status-danger focus:border-status-danger"
+                  : "border-border-subtle focus:border-border-strong"
               }`}
             />
             <button
               type="button"
               onClick={() => setShowOldPassword((prev) => !prev)}
               tabIndex={-1}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant/60 hover:text-primary transition-colors cursor-pointer"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
             >
               {showOldPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -160,17 +160,17 @@ function AccountSettingsForm({ onClose }: AccountSettingsFormProps) {
             </button>
           </div>
           {errors.oldPassword && (
-            <p className="typo-caption text-error">{errors.oldPassword.message}</p>
+            <p className="text-[11px] font-mono text-status-danger">{errors.oldPassword.message}</p>
           )}
         </div>
 
         {/* Новый пароль */}
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <label
             htmlFor="new-password"
-            className="typo-caption font-medium text-on-surface flex items-center justify-between"
+            className="text-xs font-mono text-text-secondary flex items-center justify-between"
           >
-            <span>Новый пароль <span className="text-error">*</span></span>
+            <span>НОВЫЙ ПАРОЛЬ <span className="text-status-danger">*</span></span>
           </label>
           <div className="relative">
             <input
@@ -178,17 +178,17 @@ function AccountSettingsForm({ onClose }: AccountSettingsFormProps) {
               type={showNewPassword ? "text" : "password"}
               placeholder="••••••••"
               {...register("newPassword")}
-              className={`w-full rounded border bg-surface-container px-3 py-2 pr-9 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors ${
+              className={`w-full rounded-none border bg-subtle px-3 py-2 pr-9 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors ${
                 errors.newPassword
-                  ? "border-error focus:border-error"
-                  : "border-outline-variant focus:border-primary"
+                  ? "border-status-danger focus:border-status-danger"
+                  : "border-border-subtle focus:border-border-strong"
               }`}
             />
             <button
               type="button"
               onClick={() => setShowNewPassword((prev) => !prev)}
               tabIndex={-1}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant/60 hover:text-primary transition-colors cursor-pointer"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
             >
               {showNewPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -198,17 +198,17 @@ function AccountSettingsForm({ onClose }: AccountSettingsFormProps) {
             </button>
           </div>
           {errors.newPassword && (
-            <p className="typo-caption text-error">{errors.newPassword.message}</p>
+            <p className="text-[11px] font-mono text-status-danger">{errors.newPassword.message}</p>
           )}
         </div>
 
         {/* Подтверждение пароля */}
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <label
             htmlFor="confirm-password"
-            className="typo-caption font-medium text-on-surface flex items-center justify-between"
+            className="text-xs font-mono text-text-secondary flex items-center justify-between"
           >
-            <span>Подтверждение пароля <span className="text-error">*</span></span>
+            <span>ПОДТВЕРЖДЕНИЕ ПАРОЛЯ <span className="text-status-danger">*</span></span>
           </label>
           <div className="relative">
             <input
@@ -216,17 +216,17 @@ function AccountSettingsForm({ onClose }: AccountSettingsFormProps) {
               type={showConfirmPassword ? "text" : "password"}
               placeholder="••••••••"
               {...register("confirmPassword")}
-              className={`w-full rounded border bg-surface-container px-3 py-2 pr-9 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors ${
+              className={`w-full rounded-none border bg-subtle px-3 py-2 pr-9 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors ${
                 errors.confirmPassword
-                  ? "border-error focus:border-error"
-                  : "border-outline-variant focus:border-primary"
+                  ? "border-status-danger focus:border-status-danger"
+                  : "border-border-subtle focus:border-border-strong"
               }`}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword((prev) => !prev)}
               tabIndex={-1}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant/60 hover:text-primary transition-colors cursor-pointer"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
             >
               {showConfirmPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -236,25 +236,25 @@ function AccountSettingsForm({ onClose }: AccountSettingsFormProps) {
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="typo-caption text-error">
+            <p className="text-[11px] font-mono text-status-danger">
               {errors.confirmPassword.message}
             </p>
           )}
         </div>
 
-        <DialogFooter className="pt-3 gap-2 sm:gap-0">
+        <DialogFooter className="pt-3 gap-2 sm:gap-2 font-mono">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
-            className="border-outline-variant text-on-surface hover:bg-surface-container"
+            className="rounded-none text-xs"
           >
             Закрыть
           </Button>
           <Button
             type="submit"
             disabled={isPending}
-            className="bg-primary text-on-primary hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="rounded-none text-xs bg-accent text-accent-contrast hover:bg-accent-hover font-bold disabled:opacity-50"
           >
             {isPending ? "Сохранение..." : "Обновить пароль"}
           </Button>
@@ -270,13 +270,13 @@ export function AccountSettingsModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="sm:max-w-[480px] bg-surface-container-lowest border-outline-variant text-on-surface">
+      <DialogContent className="sm:max-w-[480px] bg-surface border-border-strong text-text-primary rounded-none">
         <DialogHeader>
-          <DialogTitle className="typo-title-lg text-primary flex items-center gap-2">
-            <Settings className="h-5 w-5 text-primary" />
-            Настройки аккаунта
+          <DialogTitle className="text-sm font-bold text-text-primary flex items-center gap-2 font-mono">
+            <Settings className="h-4.5 w-4.5 text-accent" />
+            НАСТРОЙКИ АККАУНТА
           </DialogTitle>
-          <DialogDescription className="typo-caption text-on-surface-variant">
+          <DialogDescription className="text-xs text-text-secondary">
             Управление параметрами учетной записи и безопасностью
           </DialogDescription>
         </DialogHeader>

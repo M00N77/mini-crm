@@ -110,20 +110,20 @@ export function ContactsTable() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1">
           {/* Поиск */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-variant/60" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Поиск по имени, email, телефону, компании..."
-              className="w-full pl-9 pr-8 py-2 rounded-lg border border-outline-variant bg-surface-container-lowest typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:outline-none transition-colors"
+              className="w-full pl-9 pr-8 py-1.5 rounded-none border border-border-subtle bg-surface text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:border-border-strong focus:outline-none transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={handleClearSearch}
                 aria-label="Очистить поиск"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-on-surface-variant/60 hover:text-on-surface rounded-full transition-colors"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-text-tertiary hover:text-text-primary rounded-none transition-colors"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -142,7 +142,7 @@ export function ContactsTable() {
                 setSortBy(field);
                 setSortOrder(order);
               }}
-              className="py-2 pl-3 pr-8 rounded-lg border border-outline-variant bg-surface-container-lowest typo-body-sm text-on-surface focus:border-primary focus:outline-none transition-colors cursor-pointer appearance-none text-xs font-medium"
+              className="py-1.5 pl-3 pr-8 rounded-none border border-border-subtle bg-surface text-xs font-mono text-text-primary focus:border-border-strong focus:outline-none transition-colors cursor-pointer appearance-none"
             >
               <option value="createdAt-desc">Сначала новые (по дате)</option>
               <option value="createdAt-asc">Сначала старые (по дате)</option>
@@ -151,31 +151,31 @@ export function ContactsTable() {
               <option value="company-asc">По компании (А → Я)</option>
               <option value="email-asc">По Email (A → Z)</option>
             </select>
-            <ArrowUpDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-on-surface-variant/60 pointer-events-none" />
+            <ArrowUpDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary pointer-events-none" />
           </div>
         </div>
 
-        <div className="typo-caption text-on-surface-variant text-right hidden sm:block">
-          Всего в базе: <span className="font-semibold text-primary">{total}</span>
+        <div className="text-xs font-mono text-text-tertiary text-right hidden sm:block">
+          ВСЕГО В БАЗЕ: <span className="font-bold text-accent tabular-nums">{total}</span>
         </div>
       </div>
 
       {/* Таблица */}
-      <div className="rounded-lg border border-outline-variant bg-surface-container-lowest overflow-hidden shadow-xs">
+      <div className="rounded-none border border-border-subtle bg-surface overflow-hidden shadow-2xs">
         {/* Table header с кликабельной сортировкой */}
-        <div className="grid grid-cols-[1.5fr_1.5fr_1fr_auto] gap-gutter px-gutter py-3 border-b border-outline-variant bg-surface-container-low select-none">
+        <div className="grid grid-cols-[1.5fr_1.5fr_1fr_auto] gap-gutter px-gutter py-2.5 border-b border-border-subtle bg-subtle select-none font-mono text-xs text-text-secondary">
           {/* Имя */}
           <button
             type="button"
             onClick={() => handleToggleSort("name")}
-            className="flex items-center gap-1.5 typo-caption text-on-surface-variant hover:text-primary font-medium transition-colors cursor-pointer text-left group"
+            className="flex items-center gap-1.5 font-bold hover:text-text-primary transition-colors cursor-pointer text-left group"
           >
-            <span>Имя</span>
+            <span>ИМЯ</span>
             {sortBy === "name" ? (
               sortOrder === "asc" ? (
-                <ArrowUp className="h-3.5 w-3.5 text-primary" />
+                <ArrowUp className="h-3.5 w-3.5 text-accent" />
               ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-primary" />
+                <ArrowDown className="h-3.5 w-3.5 text-accent" />
               )
             ) : (
               <ArrowUpDown className="h-3 w-3 opacity-30 group-hover:opacity-70 transition-opacity" />
@@ -186,14 +186,14 @@ export function ContactsTable() {
           <button
             type="button"
             onClick={() => handleToggleSort("email")}
-            className="flex items-center gap-1.5 typo-caption text-on-surface-variant hover:text-primary font-medium transition-colors cursor-pointer text-left group"
+            className="flex items-center gap-1.5 font-bold hover:text-text-primary transition-colors cursor-pointer text-left group"
           >
-            <span>Email</span>
+            <span>EMAIL</span>
             {sortBy === "email" ? (
               sortOrder === "asc" ? (
-                <ArrowUp className="h-3.5 w-3.5 text-primary" />
+                <ArrowUp className="h-3.5 w-3.5 text-accent" />
               ) : (
-                <ArrowDown className="h-3.5 w-3.5 text-primary" />
+                <ArrowDown className="h-3.5 w-3.5 text-accent" />
               )
             ) : (
               <ArrowUpDown className="h-3 w-3 opacity-30 group-hover:opacity-70 transition-opacity" />
@@ -201,13 +201,13 @@ export function ContactsTable() {
           </button>
 
           {/* Телефон */}
-          <span className="typo-caption text-on-surface-variant font-medium hidden sm:block">
-            Телефон
+          <span className="font-bold hidden sm:block">
+            ТЕЛЕФОН
           </span>
 
           {/* Действия */}
-          <span className="typo-caption text-on-surface-variant font-medium text-right pr-1">
-            Действия
+          <span className="font-bold text-right pr-1">
+            ДЕЙСТВИЯ
           </span>
         </div>
 
@@ -221,11 +221,11 @@ export function ContactsTable() {
         {/* Состояние ошибки */}
         {isError && (
           <div className="p-8 flex flex-col items-center justify-center text-center gap-2">
-            <AlertCircle className="h-6 w-6 text-error" />
-            <p className="typo-body-sm text-error font-medium">
+            <AlertCircle className="h-6 w-6 text-status-danger" />
+            <p className="text-sm font-semibold text-status-danger">
               Ошибка при загрузке контактов
             </p>
-            <p className="typo-caption text-on-surface-variant/70">
+            <p className="text-xs font-mono text-text-tertiary">
               {error instanceof Error
                 ? error.message
                 : "Не удалось получить список контактов"}
@@ -235,14 +235,14 @@ export function ContactsTable() {
 
         {/* Пустое состояние (нет контактов вообще) */}
         {!isLoading && !isError && rawList.length === 0 && (
-          <div className="py-12 flex flex-col items-center justify-center text-center gap-2">
-            <div className="h-10 w-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant/60">
+          <div className="py-12 flex flex-col items-center justify-center text-center gap-2 font-mono">
+            <div className="h-10 w-10 rounded-none bg-subtle border border-border-subtle flex items-center justify-center text-text-tertiary">
               <UserX className="h-5 w-5" />
             </div>
-            <p className="typo-body-sm text-on-surface-variant font-medium">
-              Контакты не найдены
+            <p className="text-xs font-bold text-text-primary">
+              // КОНТАКТЫ НЕ НАЙДЕНЫ
             </p>
-            <p className="typo-caption text-on-surface-variant/60">
+            <p className="text-xs text-text-tertiary">
               Добавьте первый контакт, чтобы начать работу
             </p>
           </div>
@@ -253,19 +253,19 @@ export function ContactsTable() {
           !isError &&
           rawList.length > 0 &&
           filteredAndSortedList.length === 0 && (
-            <div className="py-10 flex flex-col items-center justify-center text-center gap-2">
-              <Search className="h-6 w-6 text-on-surface-variant/40" />
-              <p className="typo-body-sm text-on-surface-variant font-medium">
-                Ничего не найдено
+            <div className="py-10 flex flex-col items-center justify-center text-center gap-2 font-mono">
+              <Search className="h-6 w-6 text-text-tertiary" />
+              <p className="text-xs font-bold text-text-primary">
+                // НИЧЕГО НЕ НАЙДЕНО
               </p>
-              <p className="typo-caption text-on-surface-variant/60">
+              <p className="text-xs text-text-tertiary">
                 По запросу «{searchQuery}» совпадений нет
               </p>
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleClearSearch}
-                className="mt-2 text-xs py-1 px-3 border-outline-variant text-primary"
+                className="mt-2 text-xs py-1 px-3"
               >
                 Сбросить поиск
               </Button>
@@ -274,7 +274,7 @@ export function ContactsTable() {
 
         {/* Список контактов */}
         {!isLoading && !isError && filteredAndSortedList.length > 0 && (
-          <div className="divide-y divide-outline-variant/60">
+          <div className="divide-y divide-border-subtle">
             {filteredAndSortedList.map((contact) => (
               <ContactRow
                 key={contact.id}
@@ -287,8 +287,8 @@ export function ContactsTable() {
         )}
 
         {/* Панель пагинации внизу таблицы */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-gutter py-3 border-t border-outline-variant bg-surface-container-low/40">
-          <span className="typo-caption text-on-surface-variant">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-gutter py-2.5 border-t border-border-subtle bg-subtle font-mono text-xs">
+          <span className="text-text-tertiary">
             {isLoading
               ? "Загрузка..."
               : total > 0
@@ -303,7 +303,7 @@ export function ContactsTable() {
               variant="outline"
               disabled={page <= 1 || isLoading}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="h-8 px-2.5 text-xs gap-1 border-outline-variant text-on-surface hover:bg-surface-container disabled:opacity-40 cursor-pointer"
+              className="h-7 px-2 text-xs gap-1 disabled:opacity-40 cursor-pointer rounded-none"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Назад</span>
@@ -325,17 +325,17 @@ export function ContactsTable() {
                   return (
                     <div key={p} className="flex items-center gap-1">
                       {hasGap && (
-                        <span className="px-1 text-xs text-on-surface-variant/50 select-none">
+                        <span className="px-1 text-xs text-text-tertiary select-none">
                           ...
                         </span>
                       )}
                       <button
                         type="button"
                         onClick={() => setPage(p)}
-                        className={`h-8 min-w-8 px-2 rounded text-xs font-medium transition-colors cursor-pointer ${
+                        className={`h-7 min-w-7 px-1.5 rounded-none text-xs font-mono font-medium transition-colors cursor-pointer ${
                           page === p
-                            ? "bg-primary text-on-primary"
-                            : "text-on-surface hover:bg-surface-container border border-outline-variant/60"
+                            ? "bg-accent text-accent-contrast font-bold"
+                            : "text-text-secondary hover:text-text-primary hover:bg-muted border border-border-subtle"
                         }`}
                       >
                         {p}
@@ -350,7 +350,7 @@ export function ContactsTable() {
               variant="outline"
               disabled={page >= totalPages || isLoading}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="h-8 px-2.5 text-xs gap-1 border-outline-variant text-on-surface hover:bg-surface-container disabled:opacity-40 cursor-pointer"
+              className="h-7 px-2 text-xs gap-1 disabled:opacity-40 cursor-pointer rounded-none"
             >
               <span className="hidden sm:inline">Вперед</span>
               <ChevronRight className="h-3.5 w-3.5" />

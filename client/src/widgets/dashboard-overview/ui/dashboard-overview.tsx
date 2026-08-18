@@ -11,8 +11,10 @@ import {
   ArrowRight,
   User,
   Building2,
+  Activity,
+  ArrowUpRight
 } from "lucide-react";
-import { BlurFade, Spinner } from "@/shared/ui";
+import { BlurFade, Spinner, Button } from "@/shared/ui";
 import { useContacts } from "@/entities/contact";
 import { useTasks, Task } from "@/entities/task";
 import { useNotes } from "@/entities/note";
@@ -94,52 +96,53 @@ export function DashboardOverview() {
     <div className="space-y-6">
       {/* Page Title & Action */}
       <BlurFade delay={0.05}>
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-border-subtle">
           <div>
-            <h1 className="typo-display text-primary">Overview</h1>
-            <p className="typo-caption text-on-surface-variant/70 mt-1">
-              Сводка активности и показатели CRM в реальном времени
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold tracking-tight text-text-primary">Панель управления</h1>
+              <span className="font-mono text-[10px] text-accent px-1.5 py-0.5 rounded-none border border-accent-border bg-accent-subtle font-bold">
+                [COCKPIT]
+              </span>
+            </div>
+            <p className="text-xs text-text-secondary mt-1 font-mono">
+              Оперативная сводка активности и состояние пайплайна в реальном времени
             </p>
           </div>
           <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 typo-label-mono text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded border border-emerald-500/20 text-xs font-semibold">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live
+            <span className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-status-success bg-status-success-bg px-2.5 py-1 rounded-none border border-status-success-border">
+              <span className="h-1.5 w-1.5 rounded-none bg-status-success animate-pulse" />
+              LIVE 200 OK
             </span>
             <CreateContactButton variant="outline">
-              Добавить контакт
+              + Контакт
             </CreateContactButton>
             <CreateTaskButton variant="default">
-              Создать задачу
+              + Задача
             </CreateTaskButton>
           </div>
         </div>
       </BlurFade>
 
-      {/* 4 Metric Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      {/* 4 Metric Cards (Industrial KPI Strip) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Total Contacts */}
         <BlurFade delay={0.1}>
           <Link
             href="/dashboard/contacts"
-            className="group block bg-surface-container-lowest border border-outline-variant p-4 rounded-lg shadow-xs hover:border-outline hover:bg-surface-container-low transition-all"
+            className="group block bg-surface border border-border-subtle p-4 rounded-none hover:border-border-strong hover:bg-subtle/50 transition-all shadow-2xs"
           >
-            <div className="flex items-center justify-between">
-              <span className="typo-caption text-on-surface-variant font-medium">
-                Контакты
-              </span>
-              <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
-                <Users className="h-4 w-4" />
-              </div>
+            <div className="flex items-center justify-between font-mono text-xs text-text-secondary">
+              <span>//_01_КОНТАКТЫ</span>
+              <Users className="h-3.5 w-3.5 text-text-tertiary group-hover:text-accent transition-colors" />
             </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="typo-display text-2xl sm:text-3xl font-bold text-primary">
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-mono text-2xl sm:text-3xl font-bold text-text-primary tabular-nums">
                 {isLoading ? <Spinner size="sm" /> : totalContacts}
               </span>
             </div>
-            <p className="typo-caption text-on-surface-variant/70 text-[11px] mt-1 flex items-center gap-1">
-              Вся база клиентов
-              <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity ml-auto text-primary" />
+            <p className="text-[11px] font-mono text-text-tertiary mt-1 flex items-center justify-between">
+              <span>Всего в реестре</span>
+              <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
             </p>
           </Link>
         </BlurFade>
@@ -148,24 +151,20 @@ export function DashboardOverview() {
         <BlurFade delay={0.15}>
           <Link
             href="/dashboard/tasks"
-            className="group block bg-surface-container-lowest border border-outline-variant p-4 rounded-lg shadow-xs hover:border-outline hover:bg-surface-container-low transition-all"
+            className="group block bg-surface border border-border-subtle p-4 rounded-none hover:border-border-strong hover:bg-subtle/50 transition-all shadow-2xs"
           >
-            <div className="flex items-center justify-between">
-              <span className="typo-caption text-on-surface-variant font-medium">
-                В работе
-              </span>
-              <div className="h-7 w-7 rounded-md bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
-                <PlayCircle className="h-4 w-4" />
-              </div>
+            <div className="flex items-center justify-between font-mono text-xs text-text-secondary">
+              <span>//_02_В_РАБОТЕ</span>
+              <PlayCircle className="h-3.5 w-3.5 text-accent group-hover:scale-110 transition-transform" />
             </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="typo-display text-2xl sm:text-3xl font-bold text-primary">
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-mono text-2xl sm:text-3xl font-bold text-accent tabular-nums">
                 {isLoading ? <Spinner size="sm" /> : inProgressTasks.length}
               </span>
             </div>
-            <p className="typo-caption text-on-surface-variant/70 text-[11px] mt-1 flex items-center gap-1">
-              Активные задачи
-              <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity ml-auto text-primary" />
+            <p className="text-[11px] font-mono text-text-tertiary mt-1 flex items-center justify-between">
+              <span>Активные задачи</span>
+              <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
             </p>
           </Link>
         </BlurFade>
@@ -174,24 +173,20 @@ export function DashboardOverview() {
         <BlurFade delay={0.2}>
           <Link
             href="/dashboard/tasks"
-            className="group block bg-surface-container-lowest border border-outline-variant p-4 rounded-lg shadow-xs hover:border-outline hover:bg-surface-container-low transition-all"
+            className="group block bg-surface border border-border-subtle p-4 rounded-none hover:border-border-strong hover:bg-subtle/50 transition-all shadow-2xs"
           >
-            <div className="flex items-center justify-between">
-              <span className="typo-caption text-on-surface-variant font-medium">
-                В очереди
-              </span>
-              <div className="h-7 w-7 rounded-md bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-colors">
-                <Clock className="h-4 w-4" />
-              </div>
+            <div className="flex items-center justify-between font-mono text-xs text-text-secondary">
+              <span>//_03_В_ОЧЕРЕДИ</span>
+              <Clock className="h-3.5 w-3.5 text-text-tertiary group-hover:text-text-primary transition-colors" />
             </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="typo-display text-2xl sm:text-3xl font-bold text-primary">
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-mono text-2xl sm:text-3xl font-bold text-text-primary tabular-nums">
                 {isLoading ? <Spinner size="sm" /> : pendingTasks.length}
               </span>
             </div>
-            <p className="typo-caption text-on-surface-variant/70 text-[11px] mt-1 flex items-center gap-1">
-              Ожидают выполнения
-              <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity ml-auto text-primary" />
+            <p className="text-[11px] font-mono text-text-tertiary mt-1 flex items-center justify-between">
+              <span>Ожидают взятия</span>
+              <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
             </p>
           </Link>
         </BlurFade>
@@ -200,24 +195,20 @@ export function DashboardOverview() {
         <BlurFade delay={0.25}>
           <Link
             href="/dashboard/notes"
-            className="group block bg-surface-container-lowest border border-outline-variant p-4 rounded-lg shadow-xs hover:border-outline hover:bg-surface-container-low transition-all"
+            className="group block bg-surface border border-border-subtle p-4 rounded-none hover:border-border-strong hover:bg-subtle/50 transition-all shadow-2xs"
           >
-            <div className="flex items-center justify-between">
-              <span className="typo-caption text-on-surface-variant font-medium">
-                Заметки
-              </span>
-              <div className="h-7 w-7 rounded-md bg-purple-500/10 flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
-                <StickyNote className="h-4 w-4" />
-              </div>
+            <div className="flex items-center justify-between font-mono text-xs text-text-secondary">
+              <span>//_04_ПРОТОКОЛЫ</span>
+              <StickyNote className="h-3.5 w-3.5 text-text-tertiary group-hover:text-accent transition-colors" />
             </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="typo-display text-2xl sm:text-3xl font-bold text-primary">
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-mono text-2xl sm:text-3xl font-bold text-text-primary tabular-nums">
                 {isLoading ? <Spinner size="sm" /> : totalNotes}
               </span>
             </div>
-            <p className="typo-caption text-on-surface-variant/70 text-[11px] mt-1 flex items-center gap-1">
-              История по клиентам
-              <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity ml-auto text-primary" />
+            <p className="text-[11px] font-mono text-text-tertiary mt-1 flex items-center justify-between">
+              <span>Заметки и история</span>
+              <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
             </p>
           </Link>
         </BlurFade>
@@ -225,135 +216,128 @@ export function DashboardOverview() {
 
       {/* Task Lifecycle & Progress */}
       <BlurFade delay={0.3}>
-        <div className="bg-surface-container-lowest border border-outline-variant p-5 rounded-lg shadow-xs space-y-4">
+        <div className="bg-surface border border-border-subtle p-5 rounded-none space-y-4 shadow-2xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <h2 className="typo-headline text-primary font-semibold text-base">
-                Прогресс задач (Канбан)
-              </h2>
-              <p className="typo-caption text-on-surface-variant/70 text-xs">
-                Всего задач: <span className="font-semibold text-primary">{totalTasks}</span> • Завершено: <span className="text-emerald-500 font-semibold">{donePercent}%</span>
+              <div className="flex items-center gap-2">
+                <h2 className="font-mono text-xs font-bold text-text-primary uppercase tracking-wide">
+                  //_ПРОГРЕСС_ПАЙПЛАЙНА (КАНБАН)
+                </h2>
+              </div>
+              <p className="text-xs text-text-secondary font-mono mt-1">
+                Всего задач: <span className="font-bold text-text-primary tabular-nums">{totalTasks}</span> • Завершено: <span className="text-status-success font-bold tabular-nums">{donePercent}%</span>
               </p>
             </div>
             <Link
               href="/dashboard/tasks"
-              className="text-xs font-medium text-primary hover:underline flex items-center gap-1 self-start sm:self-auto"
+              className="text-xs font-mono text-accent hover:underline flex items-center gap-1 self-start sm:self-auto"
             >
-              Открыть доску
-              <ArrowRight className="h-3.5 w-3.5" />
+              Открыть канбан →
             </Link>
           </div>
 
-          {/* Segmented Progress Bar */}
-          <div className="h-3 w-full rounded-full bg-surface-container overflow-hidden flex">
+          {/* Segmented Precision Progress Bar */}
+          <div className="h-2.5 w-full rounded-none bg-subtle overflow-hidden flex border border-border-subtle">
             {doneTasks.length > 0 && (
               <div
                 style={{ width: `${donePercent}%` }}
                 title={`Завершено: ${doneTasks.length} (${donePercent}%)`}
-                className="bg-emerald-500 h-full transition-all duration-500"
+                className="bg-status-success h-full transition-all duration-500"
               />
             )}
             {inProgressTasks.length > 0 && (
               <div
                 style={{ width: `${inProgressPercent}%` }}
                 title={`В работе: ${inProgressTasks.length} (${inProgressPercent}%)`}
-                className="bg-blue-500 h-full transition-all duration-500"
+                className="bg-accent h-full transition-all duration-500"
               />
             )}
             {pendingTasks.length > 0 && (
               <div
                 style={{ width: `${pendingPercent}%` }}
                 title={`В очереди: ${pendingTasks.length} (${pendingPercent}%)`}
-                className="bg-amber-500 h-full transition-all duration-500"
+                className="bg-text-tertiary h-full transition-all duration-500"
               />
             )}
           </div>
 
           {/* Legend */}
-          <div className="flex items-center gap-4 sm:gap-6 text-xs flex-wrap pt-1">
+          <div className="flex items-center gap-4 sm:gap-6 text-xs font-mono flex-wrap pt-1">
             <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-              <span className="text-on-surface font-medium">Done:</span>
-              <span className="text-on-surface-variant font-label-mono">{doneTasks.length}</span>
+              <span className="h-2 w-2 rounded-none bg-status-success" />
+              <span className="text-text-primary font-medium">Done:</span>
+              <span className="text-text-secondary tabular-nums">{doneTasks.length}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
-              <span className="text-on-surface font-medium">In Progress:</span>
-              <span className="text-on-surface-variant font-label-mono">{inProgressTasks.length}</span>
+              <span className="h-2 w-2 rounded-none bg-accent" />
+              <span className="text-text-primary font-medium">In Progress:</span>
+              <span className="text-text-secondary tabular-nums">{inProgressTasks.length}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-              <span className="text-on-surface font-medium">Pending:</span>
-              <span className="text-on-surface-variant font-label-mono">{pendingTasks.length}</span>
+              <span className="h-2 w-2 rounded-none bg-text-tertiary" />
+              <span className="text-text-primary font-medium">Pending:</span>
+              <span className="text-text-secondary tabular-nums">{pendingTasks.length}</span>
             </div>
           </div>
         </div>
       </BlurFade>
 
       {/* Two-Column Recent Activity: Recent Tasks & Recent Contacts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Recent Tasks */}
         <BlurFade delay={0.35}>
-          <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 shadow-xs flex flex-col justify-between space-y-4">
-            <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
+          <div className="bg-surface border border-border-subtle rounded-none p-4 shadow-2xs flex flex-col justify-between space-y-3">
+            <div className="flex items-center justify-between border-b border-border-subtle pb-2.5">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-primary" />
-                <h3 className="typo-body-lg font-semibold text-primary text-sm">
+                <CheckCircle2 className="h-4 w-4 text-accent" />
+                <h3 className="font-mono text-xs font-bold text-text-primary uppercase">
                   Последние задачи
                 </h3>
               </div>
               <Link
                 href="/dashboard/tasks"
-                className="text-xs text-on-surface-variant hover:text-primary transition-colors"
+                className="text-xs font-mono text-text-secondary hover:text-text-primary transition-colors"
               >
-                Смотреть все →
+                Все задачи →
               </Link>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {tasksList.length === 0 ? (
-                <div className="py-8 text-center text-xs text-on-surface-variant/50">
-                  Задач пока нет
+                <div className="py-8 text-center text-xs font-mono text-text-tertiary">
+                  // НЕТ АКТИВНЫХ ЗАДАЧ
                 </div>
               ) : (
                 tasksList.slice(0, 4).map((task) => {
-                  const statusColor =
-                    task.status === "done"
-                      ? "text-emerald-600 bg-emerald-500/10 border-emerald-500/20"
-                      : task.status === "in_progress"
-                      ? "text-blue-600 bg-blue-500/10 border-blue-500/20"
-                      : "text-amber-600 bg-amber-500/10 border-amber-500/20";
-
-                  const statusText =
-                    task.status === "done"
-                      ? "Done"
-                      : task.status === "in_progress"
-                      ? "In Progress"
-                      : "Pending";
+                  const isDone = task.status === "done";
+                  const isInProgress = task.status === "in_progress";
 
                   return (
                     <div
                       key={task.id}
                       onClick={() => handleEditTask(task)}
-                      className="group p-3 rounded-lg border border-outline-variant/60 bg-surface-container-low hover:bg-surface-container hover:border-outline transition-all cursor-pointer flex items-start justify-between gap-3"
+                      className="group p-2.5 rounded-none border border-border-subtle bg-subtle/50 hover:bg-subtle hover:border-border-strong transition-all cursor-pointer flex items-center justify-between gap-3"
                     >
-                      <div className="min-w-0 space-y-1">
-                        <h4 className="typo-body-sm font-medium text-primary line-clamp-1 group-hover:text-primary transition-colors text-xs sm:text-sm">
-                          {task.title}
-                        </h4>
-                        {task.description && (
-                          <p className="typo-caption text-on-surface-variant text-[11px] line-clamp-1">
-                            {task.description}
-                          </p>
-                        )}
+                      <div className="min-w-0 space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-[10px] text-text-tertiary group-hover:text-accent">
+                            TSK-{String(task.id).padStart(3, "0")}
+                          </span>
+                          <h4 className={`text-xs font-medium text-text-primary truncate ${isDone ? "line-through opacity-70" : ""}`}>
+                            {task.title}
+                          </h4>
+                        </div>
                       </div>
                       <span
-                        className={cn(
-                          "px-2 py-0.5 rounded text-[10px] font-semibold border shrink-0 uppercase tracking-wide",
-                          statusColor
-                        )}
+                        className={`font-mono px-1.5 py-0.5 rounded-none text-[10px] font-bold border shrink-0 uppercase tracking-wider ${
+                          isDone
+                            ? "bg-status-success-bg text-status-success border-status-success-border"
+                            : isInProgress
+                            ? "bg-accent-subtle text-accent border-accent-border"
+                            : "bg-subtle text-text-secondary border-border-subtle"
+                        }`}
                       >
-                        {statusText}
+                        {isDone ? "[DONE]" : isInProgress ? "[PROG]" : "[WAIT]"}
                       </span>
                     </div>
                   );
@@ -365,54 +349,45 @@ export function DashboardOverview() {
 
         {/* Recent Contacts */}
         <BlurFade delay={0.4}>
-          <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 shadow-xs flex flex-col justify-between space-y-4">
-            <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
+          <div className="bg-surface border border-border-subtle rounded-none p-4 shadow-2xs flex flex-col justify-between space-y-3">
+            <div className="flex items-center justify-between border-b border-border-subtle pb-2.5">
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-primary" />
-                <h3 className="typo-body-lg font-semibold text-primary text-sm">
+                <User className="h-4 w-4 text-accent" />
+                <h3 className="font-mono text-xs font-bold text-text-primary uppercase">
                   Новые контакты
                 </h3>
               </div>
               <Link
                 href="/dashboard/contacts"
-                className="text-xs text-on-surface-variant hover:text-primary transition-colors"
+                className="text-xs font-mono text-text-secondary hover:text-text-primary transition-colors"
               >
                 Все контакты →
               </Link>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {contactsList.length === 0 ? (
-                <div className="py-8 text-center text-xs text-on-surface-variant/50">
-                  Контактов пока нет
+                <div className="py-8 text-center text-xs font-mono text-text-tertiary">
+                  // НЕТ ЗАПИСЕЙ
                 </div>
               ) : (
                 contactsList.slice(0, 4).map((contact) => {
-                  const initials = contact.name
-                    ? contact.name
-                        .split(" ")
-                        .map((n: string) => n[0])
-                        .slice(0, 2)
-                        .join("")
-                        .toUpperCase()
-                    : "—";
-
                   return (
                     <div
                       key={contact.id}
                       onClick={() => handleEditContact(contact)}
-                      className="group p-3 rounded-lg border border-outline-variant/60 bg-surface-container-low hover:bg-surface-container hover:border-outline transition-all cursor-pointer flex items-center justify-between gap-3"
+                      className="group p-2.5 rounded-none border border-border-subtle bg-subtle/50 hover:bg-subtle hover:border-border-strong transition-all cursor-pointer flex items-center justify-between gap-3"
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-8 w-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold shrink-0">
-                          {initials}
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="h-6 w-6 rounded-none bg-accent text-accent-contrast flex items-center justify-center text-[10px] font-mono font-bold shrink-0">
+                          {(contact.name || "C").charAt(0).toUpperCase()}
                         </div>
-                        <div className="min-w-0 space-y-0.5">
-                          <h4 className="typo-body-sm font-medium text-primary line-clamp-1 group-hover:text-primary transition-colors text-xs sm:text-sm">
+                        <div className="min-w-0">
+                          <h4 className="text-xs font-medium text-text-primary truncate group-hover:text-accent transition-colors">
                             {contact.name}
                           </h4>
                           {contact.company && (
-                            <span className="flex items-center gap-1 text-[11px] text-on-surface-variant/70 truncate">
+                            <span className="flex items-center gap-1 text-[10px] text-text-tertiary truncate font-mono">
                               <Building2 className="h-3 w-3 shrink-0" />
                               <span className="truncate">{contact.company}</span>
                             </span>
@@ -421,7 +396,7 @@ export function DashboardOverview() {
                       </div>
 
                       {contact.phone && (
-                        <span className="text-[11px] text-on-surface-variant font-label-mono shrink-0 hidden sm:inline">
+                        <span className="text-[10px] text-text-tertiary font-mono shrink-0 hidden sm:inline tabular-nums">
                           {contact.phone}
                         </span>
                       )}

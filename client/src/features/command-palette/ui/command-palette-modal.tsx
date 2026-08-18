@@ -299,7 +299,7 @@ function CommandPaletteContent({ onClose }: CommandPaletteContentProps) {
           placeholder="Поиск по CRM, контактам, задачам или командам..."
           className="w-full bg-transparent typo-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none"
         />
-        <kbd className="hidden sm:inline-flex items-center gap-1 typo-label-mono text-[10px] text-on-surface-variant/70 bg-surface-container border border-outline-variant rounded px-1.5 py-0.5">
+        <kbd className="hidden sm:inline-flex items-center gap-1 font-mono text-[10px] text-text-tertiary bg-surface border border-border-subtle rounded-none px-1.5 py-0.5">
           ESC
         </kbd>
       </div>
@@ -307,23 +307,23 @@ function CommandPaletteContent({ onClose }: CommandPaletteContentProps) {
       {/* Список результатов */}
       <div
         ref={listRef}
-        className="max-h-[380px] overflow-y-auto p-2 divide-y divide-transparent select-none"
+        className="max-h-[380px] overflow-y-auto p-2 divide-y divide-transparent select-none font-mono"
       >
         {allCommands.length === 0 ? (
-          <div className="py-12 flex flex-col items-center justify-center text-center p-6 text-on-surface-variant/60">
-            <Sparkles className="h-8 w-8 text-on-surface-variant/30 mb-2" />
-            <p className="typo-body-sm font-medium text-on-surface-variant">
-              Ничего не найдено
+          <div className="py-12 flex flex-col items-center justify-center text-center p-6 text-text-tertiary">
+            <Sparkles className="h-6 w-6 text-text-tertiary/50 mb-2" />
+            <p className="text-xs font-bold text-text-primary">
+              // НИЧЕГО НЕ НАЙДЕНО
             </p>
-            <p className="typo-caption text-xs text-on-surface-variant/50 mt-0.5">
-              Попробуйте изменить запрос «{search}»
+            <p className="text-[11px] text-text-tertiary mt-0.5">
+              По запросу «{search}» совпадений нет
             </p>
           </div>
         ) : (
           groupedCommands.map((group) => (
             <div key={group.category} className="py-1.5">
-              <div className="px-3 py-1 typo-caption text-[11px] font-semibold text-on-surface-variant/70 uppercase tracking-wider">
-                {group.category}
+              <div className="px-3 py-1 text-[10px] font-bold text-text-tertiary uppercase tracking-wider">
+                // {group.category}
               </div>
               <div className="space-y-0.5 mt-0.5">
                 {group.items.map(({ item, index }) => {
@@ -335,19 +335,19 @@ function CommandPaletteContent({ onClose }: CommandPaletteContentProps) {
                       onClick={() => item.perform()}
                       onMouseEnter={() => setSelectedIndex(index)}
                       className={cn(
-                        "flex items-center justify-between gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all",
+                        "flex items-center justify-between gap-3 px-3 py-2 rounded-none cursor-pointer transition-all border",
                         isSelected
-                          ? "bg-primary text-on-primary font-medium shadow-xs"
-                          : "text-on-surface hover:bg-surface-container"
+                          ? "bg-accent-subtle border-accent-border text-text-primary font-medium"
+                          : "border-transparent text-text-secondary hover:bg-subtle"
                       )}
                     >
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <div
                           className={cn(
-                            "h-7 w-7 rounded-md flex items-center justify-center shrink-0 border transition-colors",
+                            "h-6 w-6 rounded-none flex items-center justify-center shrink-0 border transition-colors",
                             isSelected
-                              ? "bg-black/10 border-black/20 text-on-primary"
-                              : "bg-surface-container border-outline-variant/60"
+                              ? "bg-accent text-accent-contrast border-accent-border"
+                              : "bg-subtle border-border-subtle"
                           )}
                         >
                           {item.icon}
@@ -355,8 +355,8 @@ function CommandPaletteContent({ onClose }: CommandPaletteContentProps) {
                         <div className="min-w-0 flex-1">
                           <p
                             className={cn(
-                              "typo-body-sm text-xs truncate leading-tight",
-                              isSelected ? "text-on-primary font-semibold" : "text-on-surface"
+                              "text-xs truncate leading-tight",
+                              isSelected ? "text-text-primary font-semibold" : "text-text-secondary"
                             )}
                           >
                             {item.title}
@@ -364,10 +364,10 @@ function CommandPaletteContent({ onClose }: CommandPaletteContentProps) {
                           {item.subtitle && (
                             <p
                               className={cn(
-                                "typo-caption text-[11px] truncate mt-0.5",
+                                "text-[10px] truncate mt-0.5",
                                 isSelected
-                                  ? "text-on-primary/80"
-                                  : "text-on-surface-variant/70"
+                                  ? "text-text-secondary"
+                                  : "text-text-tertiary"
                               )}
                             >
                               {item.subtitle}
@@ -377,9 +377,9 @@ function CommandPaletteContent({ onClose }: CommandPaletteContentProps) {
                       </div>
 
                       {isSelected && (
-                        <div className="flex items-center gap-1 text-[11px] text-on-primary/80 shrink-0 font-label-mono">
-                          <span>Перейти</span>
-                          <ArrowRight className="h-3.5 w-3.5" />
+                        <div className="flex items-center gap-1 text-[10px] text-accent shrink-0 font-mono font-bold">
+                          <span>EXECUTE</span>
+                          <ArrowRight className="h-3 w-3" />
                         </div>
                       )}
                     </div>
@@ -392,28 +392,28 @@ function CommandPaletteContent({ onClose }: CommandPaletteContentProps) {
       </div>
 
       {/* Футер с подсказками клавиш */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-t border-outline-variant/60 bg-surface-container-low/30 typo-caption text-[11px] text-on-surface-variant/70">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5">
-            <kbd className="font-label-mono bg-surface-container border border-outline-variant px-1 rounded text-[10px]">
+      <div className="flex items-center justify-between px-4 py-2 border-t border-border-subtle bg-subtle text-[11px] text-text-tertiary font-mono">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1">
+            <kbd className="bg-surface border border-border-subtle px-1 rounded-none text-[10px]">
               ↑
             </kbd>
-            <kbd className="font-label-mono bg-surface-container border border-outline-variant px-1 rounded text-[10px]">
+            <kbd className="bg-surface border border-border-subtle px-1 rounded-none text-[10px]">
               ↓
             </kbd>
             <span>Навигация</span>
           </span>
-          <span className="flex items-center gap-1.5">
-            <kbd className="font-label-mono bg-surface-container border border-outline-variant px-1 rounded text-[10px]">
+          <span className="flex items-center gap-1">
+            <kbd className="bg-surface border border-border-subtle px-1 rounded-none text-[10px]">
               ↵
             </kbd>
-            <span>Выбрать</span>
+            <span>Выбор</span>
           </span>
         </div>
 
-        <div className="flex items-center gap-1 text-primary font-medium">
+        <div className="flex items-center gap-1 text-accent font-bold">
           <Command className="h-3 w-3" />
-          <span>Nexus Command</span>
+          <span>NEXUS // CLI</span>
         </div>
       </div>
     </>
@@ -443,7 +443,7 @@ export function CommandPaletteModal() {
 
   return (
     <Dialog open={isPaletteOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="sm:max-w-[620px] p-0 bg-surface-container-lowest border-outline-variant text-on-surface overflow-hidden shadow-2xl shadow-black/40 gap-0">
+      <DialogContent className="sm:max-w-[620px] p-0 bg-surface border-border-subtle text-text-primary overflow-hidden shadow-2xl gap-0">
         {isPaletteOpen && <CommandPaletteContent onClose={closeModal} />}
       </DialogContent>
     </Dialog>

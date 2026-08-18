@@ -82,150 +82,150 @@ function EditContactForm({
         e.preventDefault();
         handleSubmit(onSubmit)(e);
       }}
-      className="space-y-4 py-2"
+      className="space-y-4 py-2 font-sans"
     >
       {/* Имя */}
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <label
           htmlFor="edit-contact-name"
-          className="typo-caption font-medium text-on-surface flex items-center gap-1.5"
+          className="text-xs font-mono text-text-secondary flex items-center gap-1.5"
         >
-          <User className="h-3.5 w-3.5 text-on-surface-variant" />
-          Имя <span className="text-error">*</span>
+          <User className="h-3.5 w-3.5 text-text-tertiary" />
+          ИМЯ <span className="text-status-danger">*</span>
         </label>
         <input
           id="edit-contact-name"
           type="text"
           placeholder="Имя контакта"
           {...register("name")}
-          className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors ${
+          className={`w-full rounded-none border bg-subtle px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors ${
             errors.name
-              ? "border-error focus:border-error"
-              : "border-outline-variant focus:border-primary"
+              ? "border-status-danger focus:border-status-danger"
+              : "border-border-subtle focus:border-border-strong"
           }`}
         />
         {errors.name && (
-          <p className="typo-caption text-error">{errors.name.message}</p>
+          <p className="text-[11px] font-mono text-status-danger">{errors.name.message}</p>
         )}
       </div>
 
       {/* Email & Телефон */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <label
             htmlFor="edit-contact-email"
-            className="typo-caption font-medium text-on-surface flex items-center gap-1.5"
+            className="text-xs font-mono text-text-secondary flex items-center gap-1.5"
           >
-            <Mail className="h-3.5 w-3.5 text-on-surface-variant" />
-            Email <span className="text-error">*</span>
+            <Mail className="h-3.5 w-3.5 text-text-tertiary" />
+            EMAIL <span className="text-status-danger">*</span>
           </label>
           <input
             id="edit-contact-email"
             type="email"
             placeholder="user@example.com"
             {...register("email")}
-            className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors ${
+            className={`w-full rounded-none border bg-subtle px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors ${
               errors.email
-                ? "border-error focus:border-error"
-                : "border-outline-variant focus:border-primary"
+                ? "border-status-danger focus:border-status-danger"
+                : "border-border-subtle focus:border-border-strong"
             }`}
           />
           {errors.email && (
-            <p className="typo-caption text-error">{errors.email.message}</p>
+            <p className="text-[11px] font-mono text-status-danger">{errors.email.message}</p>
           )}
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <label
             htmlFor="edit-contact-phone"
-            className="typo-caption font-medium text-on-surface flex items-center gap-1.5"
+            className="text-xs font-mono text-text-secondary flex items-center gap-1.5"
           >
-            <Phone className="h-3.5 w-3.5 text-on-surface-variant" />
-            Телефон <span className="text-error">*</span>
+            <Phone className="h-3.5 w-3.5 text-text-tertiary" />
+            ТЕЛЕФОН <span className="text-status-danger">*</span>
           </label>
           <input
             id="edit-contact-phone"
             type="tel"
             placeholder="+7 (999) 000-00-00"
             {...register("phone")}
-            className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors ${
+            className={`w-full rounded-none border bg-subtle px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors ${
               errors.phone
-                ? "border-error focus:border-error"
-                : "border-outline-variant focus:border-primary"
+                ? "border-status-danger focus:border-status-danger"
+                : "border-border-subtle focus:border-border-strong"
             }`}
           />
           {errors.phone && (
-            <p className="typo-caption text-error">{errors.phone.message}</p>
+            <p className="text-[11px] font-mono text-status-danger">{errors.phone.message}</p>
           )}
         </div>
       </div>
 
       {/* Компания & Должность */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <label
             htmlFor="edit-contact-company"
-            className="typo-caption font-medium text-on-surface flex items-center gap-1.5"
+            className="text-xs font-mono text-text-secondary flex items-center gap-1.5"
           >
-            <Building2 className="h-3.5 w-3.5 text-on-surface-variant" />
-            Компания
+            <Building2 className="h-3.5 w-3.5 text-text-tertiary" />
+            КОМПАНИЯ
           </label>
           <input
             id="edit-contact-company"
             type="text"
             placeholder="Название компании"
             {...register("company")}
-            className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors ${
+            className={`w-full rounded-none border bg-subtle px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors ${
               errors.company
-                ? "border-error focus:border-error"
-                : "border-outline-variant focus:border-primary"
+                ? "border-status-danger focus:border-status-danger"
+                : "border-border-subtle focus:border-border-strong"
             }`}
           />
           {errors.company && (
-            <p className="typo-caption text-error">{errors.company.message}</p>
+            <p className="text-[11px] font-mono text-status-danger">{errors.company.message}</p>
           )}
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <label
             htmlFor="edit-contact-position"
-            className="typo-caption font-medium text-on-surface flex items-center gap-1.5"
+            className="text-xs font-mono text-text-secondary flex items-center gap-1.5"
           >
-            <Briefcase className="h-3.5 w-3.5 text-on-surface-variant" />
-            Должность
+            <Briefcase className="h-3.5 w-3.5 text-text-tertiary" />
+            ДОЛЖНОСТЬ
           </label>
           <input
             id="edit-contact-position"
             type="text"
             placeholder="Должность"
             {...register("jobPosition")}
-            className={`w-full rounded border bg-surface-container px-3 py-2 typo-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none transition-colors ${
+            className={`w-full rounded-none border bg-subtle px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors ${
               errors.jobPosition
-                ? "border-error focus:border-error"
-                : "border-outline-variant focus:border-primary"
+                ? "border-status-danger focus:border-status-danger"
+                : "border-border-subtle focus:border-border-strong"
             }`}
           />
           {errors.jobPosition && (
-            <p className="typo-caption text-error">
+            <p className="text-[11px] font-mono text-status-danger">
               {errors.jobPosition.message}
             </p>
           )}
         </div>
       </div>
 
-      <DialogFooter className="pt-3 gap-2 sm:gap-0">
+      <DialogFooter className="pt-3 gap-2 sm:gap-2 font-mono">
         <Button
           type="button"
           variant="outline"
           onClick={onClose}
-          className="border-outline-variant text-on-surface hover:bg-surface-container"
+          className="rounded-none text-xs"
         >
           Отмена
         </Button>
         <Button
           type="submit"
           disabled={isPending}
-          className="bg-primary text-on-primary hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="rounded-none text-xs bg-accent text-accent-contrast hover:bg-accent-hover font-bold disabled:opacity-50"
         >
           {isPending ? "Сохранение..." : "Сохранить изменения"}
         </Button>
@@ -247,13 +247,13 @@ export function EditContactModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="sm:max-w-[500px] bg-surface-container-lowest border-outline-variant text-on-surface">
+      <DialogContent className="sm:max-w-[500px] bg-surface border-border-strong text-text-primary rounded-none">
         <DialogHeader>
-          <DialogTitle className="typo-title-lg text-primary flex items-center gap-2">
-            <Edit3 className="h-5 w-5 text-primary" />
-            Редактировать контакт
+          <DialogTitle className="text-sm font-bold text-text-primary flex items-center gap-2 font-mono">
+            <Edit3 className="h-4.5 w-4.5 text-accent" />
+            РЕДАКТИРОВАТЬ КОНТАКТ
           </DialogTitle>
-          <DialogDescription className="typo-caption text-on-surface-variant">
+          <DialogDescription className="text-xs text-text-secondary">
             Измените контактные данные и сохраните изменения
           </DialogDescription>
         </DialogHeader>

@@ -36,17 +36,17 @@ export function TaskCard({
       onDragStart={(e) => onDragStart?.(e, task)}
       onDragEnd={onDragEnd}
       className={cn(
-        "group relative rounded-lg border border-outline-variant bg-surface-container-lowest p-3.5 shadow-xs hover:border-outline transition-all duration-150 cursor-grab active:cursor-grabbing select-none flex flex-col gap-2.5",
+        "group relative rounded-none border border-border-subtle bg-surface p-3 shadow-2xs hover:border-border-strong transition-all duration-150 cursor-grab active:cursor-grabbing select-none flex flex-col gap-2",
         className
       )}
     >
-      {/* Header: Grip + Title + Actions */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-start gap-1.5 min-w-0 flex-1">
-          <GripVertical className="h-4 w-4 text-on-surface-variant/40 group-hover:text-on-surface-variant/70 shrink-0 mt-0.5" />
-          <h4 className="typo-body-sm font-medium text-primary leading-snug break-words">
-            {task.title}
-          </h4>
+      {/* Header: Grip + Mono ID + Actions */}
+      <div className="flex items-center justify-between gap-1.5 font-mono text-[10px]">
+        <div className="flex items-center gap-1 text-text-tertiary">
+          <GripVertical className="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" />
+          <span className="text-text-tertiary font-bold group-hover:text-accent transition-colors">
+            TSK-{String(task.id).padStart(3, "0")}
+          </span>
         </div>
 
         {/* Edit & Delete Action Buttons */}
@@ -60,9 +60,9 @@ export function TaskCard({
               }}
               aria-label={`Редактировать ${task.title}`}
               title="Редактировать"
-              className="p-1 text-on-surface-variant hover:text-primary rounded hover:bg-surface-container transition-colors cursor-pointer"
+              className="p-1 text-text-secondary hover:text-text-primary rounded-none hover:bg-muted transition-colors cursor-pointer"
             >
-              <Edit2 className="h-3.5 w-3.5" />
+              <Edit2 className="h-3 w-3" />
             </button>
           )}
           {onDelete && (
@@ -74,25 +74,30 @@ export function TaskCard({
               }}
               aria-label={`Удалить ${task.title}`}
               title="Удалить"
-              className="p-1 text-on-surface-variant hover:text-error rounded hover:bg-surface-container transition-colors cursor-pointer"
+              className="p-1 text-text-secondary hover:text-status-danger rounded-none hover:bg-status-danger/10 transition-colors cursor-pointer"
             >
-              <Trash2 className="h-3.5 w-3.5" />
+              <Trash2 className="h-3 w-3" />
             </button>
           )}
         </div>
       </div>
 
+      {/* Task Title */}
+      <h4 className="text-xs font-medium text-text-primary leading-snug break-words pl-4">
+        {task.title}
+      </h4>
+
       {/* Description */}
       {task.description && (
-        <p className="typo-caption text-on-surface-variant/80 line-clamp-3 text-xs pl-5 whitespace-pre-wrap">
+        <p className="text-[11px] text-text-secondary line-clamp-3 pl-4 whitespace-pre-wrap">
           {task.description}
         </p>
       )}
 
       {/* Footer: Date badge */}
       {formattedDate && (
-        <div className="flex items-center justify-between pt-1 text-[11px] text-on-surface-variant/60 pl-5">
-          <span className="flex items-center gap-1 font-label-mono">
+        <div className="flex items-center justify-between pt-1 border-t border-border-subtle text-[10px] text-text-tertiary pl-4 font-mono">
+          <span className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
             {formattedDate}
           </span>

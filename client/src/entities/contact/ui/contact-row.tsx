@@ -1,7 +1,7 @@
 "use client";
 
 import type { Contact } from "../model/types";
-import { MoreHorizontal, Trash2, Edit2 } from "lucide-react";
+import { Trash2, Edit2 } from "lucide-react";
 import { cn } from "@/shared/lib";
 
 interface ContactRowProps {
@@ -26,65 +26,66 @@ export function ContactRow({ contact, className, onEdit, onDelete }: ContactRowP
   return (
     <div
       className={cn(
-        "grid grid-cols-[1.5fr_1.5fr_1fr_auto] gap-gutter px-gutter py-3 items-center border-b border-outline-variant/60 hover:bg-surface-container-low transition-colors last:border-b-0",
+        "grid grid-cols-[1.5fr_1.5fr_1fr_auto] gap-gutter px-gutter py-3 items-center border-b border-border-subtle hover:bg-subtle/70 transition-colors last:border-b-0 group",
         className
       )}
     >
       {/* Contact name & avatar */}
       <div className="flex items-center gap-2.5 min-w-0">
-        <div className="h-8 w-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary font-medium text-xs shrink-0">
+        <div className="h-7 w-7 rounded-none bg-accent text-accent-contrast border border-accent-border flex items-center justify-center font-mono font-bold text-xs shrink-0">
           {initials}
         </div>
         <div className="min-w-0">
-          <p className="typo-body-sm font-medium text-primary truncate">{contact.name}</p>
+          <p className="text-xs font-medium text-text-primary truncate group-hover:text-accent transition-colors">
+            {contact.name}
+          </p>
           {(contact.position || contact.jobPosition || contact.company) && (
-            <p className="typo-caption text-on-surface-variant/70 truncate">
+            <p className="text-[11px] text-text-tertiary font-mono truncate">
               {[contact.position || contact.jobPosition, contact.company].filter(Boolean).join(" • ")}
             </p>
           )}
         </div>
-
       </div>
 
       {/* Email */}
-      <div className="min-w-0 text-on-surface-variant typo-body-sm truncate">
+      <div className="min-w-0 text-text-secondary text-xs font-mono truncate">
         {contact.email ? (
           <a
             href={`mailto:${contact.email}`}
-            className="hover:text-primary hover:underline transition-colors"
+            className="hover:text-text-primary hover:underline transition-colors"
           >
             {contact.email}
           </a>
         ) : (
-          <span className="text-on-surface-variant/40">—</span>
+          <span className="text-text-tertiary/40">—</span>
         )}
       </div>
 
       {/* Phone */}
-      <div className="hidden sm:block min-w-0 text-on-surface-variant typo-body-sm truncate">
+      <div className="hidden sm:block min-w-0 text-text-secondary text-xs font-mono truncate tabular-nums">
         {contact.phone ? (
           <a
             href={`tel:${contact.phone}`}
-            className="hover:text-primary hover:underline transition-colors"
+            className="hover:text-text-primary hover:underline transition-colors"
           >
             {contact.phone}
           </a>
         ) : (
-          <span className="text-on-surface-variant/40">—</span>
+          <span className="text-text-tertiary/40">—</span>
         )}
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-end gap-1">
+      <div className="flex items-center justify-end gap-1 font-mono">
         {onEdit && (
           <button
             type="button"
             onClick={() => onEdit(contact)}
             aria-label={`Редактировать ${contact.name}`}
             title="Редактировать"
-            className="p-1.5 text-on-surface-variant hover:text-primary rounded hover:bg-surface-container transition-colors cursor-pointer"
+            className="p-1.5 text-text-secondary hover:text-text-primary rounded-none hover:bg-muted transition-colors cursor-pointer"
           >
-            <Edit2 className="h-4 w-4" />
+            <Edit2 className="h-3.5 w-3.5" />
           </button>
         )}
         {onDelete && (
@@ -93,18 +94,9 @@ export function ContactRow({ contact, className, onEdit, onDelete }: ContactRowP
             onClick={() => onDelete(contact.id)}
             aria-label={`Удалить ${contact.name}`}
             title="Удалить"
-            className="p-1.5 text-on-surface-variant hover:text-error rounded hover:bg-surface-container transition-colors cursor-pointer"
+            className="p-1.5 text-text-secondary hover:text-status-danger rounded-none hover:bg-status-danger/10 transition-colors cursor-pointer"
           >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        )}
-        {!onEdit && !onDelete && (
-          <button
-            type="button"
-            aria-label="Действия с контактом"
-            className="p-1.5 text-on-surface-variant hover:text-primary rounded hover:bg-surface-container transition-colors cursor-pointer"
-          >
-            <MoreHorizontal className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         )}
       </div>
