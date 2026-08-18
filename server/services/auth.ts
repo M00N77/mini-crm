@@ -204,48 +204,74 @@ export async function loginUser(email: string, password: string) {
   }
 }
 
-export async function loginOrRegisterWithGoogle(email: string, name: string) {
+export async function loginOrRegisterGoogleUser(payload: {
+  googleSub: string;
+  email: string;
+  name: string;
+  emailVerified: boolean;
+}) {
+  const { googleSub, email, name, emailVerified } = payload;
   const client = await pool.connect();
   let committed = false;
 
   try {
     await client.query("begin");
-    let user = await authRepository.emailTaken(client, email);
 
+    // 1. Ищем существующего пользователя по google_sub
+    let result = await client.query(
+      "select id, email, name, google_sub, created_at from users where google_sub = $1",
+      [googleSub],
+    );
+    let user = result.rows[0];
+
+    // 2. Если по google_sub не найден, ищем по email (Account Linking)
     if (!user) {
-      // Генерируем надежный случайный пароль для пользователя Google OAuth
-      const randomPassword = crypto.randomBytes(32).toString("hex");
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(randomPassword, salt);
-
-      const result = await client.query(
-        "insert into users (email, hashed_password, name) values ($1, $2, $3) returning id, email, name, created_at",
-        [email, hashedPassword, name || email.split("@")[0]],
+      const emailUserResult = await client.query(
+        "select id, email, name, google_sub, created_at from users where email = $1",
+        [email],
       );
-      user = result.rows[0];
+
+      if (emailUserResult.rows.length > 0) {
+        if (!emailVerified) {
+          throw new AppError("Google email is not verified", 403);
+        }
+        // Привязываем google_sub к уже существующему аккаунту
+        const linked = await client.query(
+          "update users set google_sub = $1 where id = $2 returning id, email, name, google_sub, created_at",
+          [googleSub, emailUserResult.rows[0].id],
+        );
+        user = linked.rows[0];
+      }
     }
 
-    const { hashed_password, ...userWithoutPassword } = user;
-    const secretKey = JWT_SECRET;
+    // 3. Если пользователя нет ни по sub, ни по email — создаем нового (без пароля)
+    if (!user) {
+      const created = await client.query(
+        "insert into users (email, name, google_sub) values ($1, $2, $3) returning id, email, name, google_sub, created_at",
+        [email, name || email.split("@")[0], googleSub],
+      );
+      user = created.rows[0];
+    }
 
-    const payload: TokenPayload = {
+    const secretKey = JWT_SECRET;
+    const tokenPayload: TokenPayload = {
       userId: user.id,
       email: user.email,
     };
 
     const { accessToken, refreshToken, hashedRefreshToken, expiresAt, jti } =
-      TokenService.generatePair(payload, secretKey);
+      TokenService.generatePair(tokenPayload, secretKey);
 
     await client.query(
       "insert into refresh_tokens (user_id, token_hash, expires_at, jti) values ($1, $2, $3, $4) returning *",
-      [payload.userId, hashedRefreshToken, expiresAt, jti],
+      [user.id, hashedRefreshToken, expiresAt, jti],
     );
 
     await client.query("commit");
     committed = true;
 
     return {
-      user: new UserDto(userWithoutPassword),
+      user: new UserDto(user),
       accessToken,
       refreshToken,
     };

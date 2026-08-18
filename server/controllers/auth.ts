@@ -152,20 +152,24 @@ export async function googleCallback(req: Request, res: Response) {
   }
 
   const googleProfile = (await userResponse.json()) as {
+    sub: string;
     email: string;
     name?: string;
     picture?: string;
+    email_verified?: boolean;
   };
 
-  if (!googleProfile.email) {
+  if (!googleProfile.email || !googleProfile.sub) {
     return res.redirect(`${clientLoginUrl}?error=no_email_provided`);
   }
 
   // 3. Авторизуем или создаем пользователя в БД и генерируем сессионные токены
-  const result = await service.loginOrRegisterWithGoogle(
-    googleProfile.email,
-    googleProfile.name || googleProfile.email.split("@")[0],
-  );
+  const result = await service.loginOrRegisterGoogleUser({
+    googleSub: googleProfile.sub,
+    email: googleProfile.email,
+    name: googleProfile.name || googleProfile.email.split("@")[0],
+    emailVerified: googleProfile.email_verified !== false,
+  });
 
   // 4. Устанавливаем refreshToken в HttpOnly cookie
   res.cookie("token", result.refreshToken, refreshCookieOptions);
