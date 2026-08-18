@@ -1,6 +1,26 @@
 # ⚡ Nexus CRM (Mini-CRM)
 
+> 🚀 **Live Production Deployment:** [https://mini-crm-web-swart.vercel.app](https://mini-crm-web-swart.vercel.app)  
+> 📖 **API Swagger Docs:** [https://mini-crm-api-ms.vercel.app/api-docs](https://mini-crm-api-ms.vercel.app/api-docs)  
+> ⚡ **Backend REST API:** [https://mini-crm-api-ms.vercel.app](https://mini-crm-api-ms.vercel.app)
+
 Полнофункциональная Fullstack CRM-система для управления контактами, задачами (Kanban-доска) и заметками с двухфакторной моделью авторизации (Email/Password + Google OAuth 2.0), командной палитрой быстрого поиска, персистентным центром уведомлений и бескомпромиссной 90° швейцарской визуальной геометрией.
+
+---
+
+## 📸 Интерфейс системы
+
+<p align="center">
+  <img src="client/public/1.png" alt="Главный лендинг и интерактивный демо-стенд" width="100%" />
+</p>
+
+| Панель управления (Дашборд) | Панель поиска и командная строка (⌘K) |
+| :---: | :---: |
+| <img src="client/public/2.png" alt="Панель управления и оперативная сводка" width="100%" /> | <img src="client/public/3.png" alt="Панель поиска и командная строка" width="100%" /> |
+
+| Редактор контакта и база клиентов | Мобильная адаптивность (Mobile UI) |
+| :---: | :---: |
+| <img src="client/public/4.png" alt="Редактирование контакта и база клиентов" width="100%" /> | <img src="client/public/5.png" alt="Мобильный интерфейс Nexus CRM" width="100%" /> |
 
 ---
 
