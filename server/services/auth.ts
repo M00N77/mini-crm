@@ -57,7 +57,15 @@ export async function rotateRefreshToken(curRefreshToken: string) {
           // Токен уже отозван ротацией — возможна гонка параллельных запросов
           const diffTime = Date.now() - new Date(existing.revoked_at).getTime();
           if (diffTime < 15000) {
-            throw new AppError("Concurrent refresh request", 409);
+            // Grace period: параллельный запрос — генерируем только accessToken
+            // без повторной ротации refresh (он уже создан первым запросом)
+            await client.query("commit");
+            committed = true;
+            const accessToken = TokenService.generateAccess(
+              { userId: payload.userId, email: payload.email },
+              secretKey,
+            );
+            return { accessToken, refreshToken: null };
           }
           // Старый отозванный токен — просто отказ, сессии не трогаем
           throw new AppError("Invalid refresh token", 401);
@@ -68,6 +76,9 @@ export async function rotateRefreshToken(curRefreshToken: string) {
 
       // Валидный по подписи JWT с jti, которого нет в БД, — токен вне нашей
       // выдачи (подделан/утёк до первого использования) → гасим все сессии
+      console.warn(
+        `[SECURITY] Token reuse detected for user ${payload.userId}, jti=${payload.jti}`,
+      );
       await client.query("delete from refresh_tokens where user_id = $1", [
         payload.userId,
       ]);

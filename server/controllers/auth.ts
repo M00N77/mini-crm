@@ -38,7 +38,9 @@ export async function refreshUser(req: Request, res: Response) {
   if (!result) throw new AppError("Invalid refresh token", 401);
 
   const { refreshToken, ...resultWithoutRefresh } = result;
-  res.cookie("token", refreshToken, refreshCookieOptions);
+  if (refreshToken) {
+    res.cookie("token", refreshToken, refreshCookieOptions);
+  }
 
   return res.status(200).send(resultWithoutRefresh);
 }
