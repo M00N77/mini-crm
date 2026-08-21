@@ -42,6 +42,27 @@ class ApiClient {
           credentials: "include",
         });
 
+        // Concurrent refresh race — retry once after short pause
+        if (res.status === 409) {
+          await new Promise((r) => setTimeout(r, 150));
+          const retryRes = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+          });
+          if (!retryRes.ok) {
+            throw new Error("Failed to refresh token");
+          }
+          const retryData = (await retryRes.json()) as {
+            accessToken?: string;
+          };
+          if (retryData?.accessToken) {
+            useAuthStore.getState().setAccessToken(retryData.accessToken);
+            return retryData.accessToken;
+          }
+          return null;
+        }
+
         if (!res.ok) {
           throw new Error("Failed to refresh token");
         }
