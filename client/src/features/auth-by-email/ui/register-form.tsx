@@ -165,6 +165,16 @@ export function RegisterForm() {
         >
           {isPending ? "Создание учетной записи..." : "Создать аккаунт"}
         </button>
+        <p className="text-[11px] font-mono text-text-tertiary text-center leading-relaxed px-1">
+          Создавая аккаунт, вы соглашаетесь с{" "}
+          <Link href="/terms" target="_blank" className="text-text-secondary hover:text-accent underline">
+            Пользовательским соглашением
+          </Link>{" "}
+          и{" "}
+          <Link href="/privacy" target="_blank" className="text-text-secondary hover:text-accent underline">
+            Политикой конфиденциальности
+          </Link>
+        </p>
         <p className="text-center text-xs font-mono text-text-tertiary pt-1">
           Уже зарегистрированы?{" "}
           <Link href="/login" className="text-accent hover:underline font-bold">
