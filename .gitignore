@@ -32,3 +32,6 @@ yarn-error.log*
 DESIGN_TOKENS_AND_COMPONENTS.md
 .vercel
 .env*
+AGENTS.md
+CLAUDE.md
+prompt.txt
